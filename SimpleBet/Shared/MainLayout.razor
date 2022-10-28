@@ -1,0 +1,49 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>SimpleBet</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <div class="dropdown">
+                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Moj profil
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <div class="item p-2">
+                        <NavLink href="/Account/ChangePassword">
+                            <span class="oi oi-lock-locked" aria-hidden="true"></span> Promijeni lozinku
+                        </NavLink>
+                    </div>
+                    <div class="item p-2">
+                        <NavLink href="/Account/PersonalData">
+                            <span class="oi oi-person" aria-hidden="true"></span> Osobni podaci
+                        </NavLink>
+                    </div>
+                    <div class="item p-2">
+                        <NavLink href="/Logout">
+                            <span class="oi oi-account-logout" aria-hidden="true"></span> Odjava
+                        </NavLink>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

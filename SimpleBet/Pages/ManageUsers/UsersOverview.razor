@@ -1,0 +1,168 @@
+﻿@page "/ManageUsers/UsersOverview"
+
+@using DataAcesss.Data
+@using DataAcesss.Repositories.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using Models.ViewModels
+@using NLog
+@using SimpleBet.Helpers
+
+@inject IUserRepository UserRepository
+@inject IClanRepository ClanRepository
+@inject UserManager<ApplicationUser> _UserManager
+@inject IJSRuntime JsRuntime
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Pregled korisnika</PageTitle>
+
+<div id="container">
+    <SfSpinner @bind-Visible="@SpinnerVisible" Size="50"></SfSpinner>
+</div>
+
+<SfGrid @ref="GridUsers" DataSource="UserList" AllowPaging="true" Toolbar="@(new List<string>() { "Edit", "Delete", "Update", "Cancel" })">
+    <GridEvents OnActionBegin="OnActionBegin" TValue="UsersOverviewVM"></GridEvents>
+    <GridPageSettings PageSize="12"></GridPageSettings>
+    <GridEditSettings AllowDeleting="true" AllowEditing="true" Mode="EditMode.Normal" ShowDeleteConfirmDialog="true"></GridEditSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(UsersOverviewVM.Id) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(UsersOverviewVM.UserName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UsersOverviewVM.FullName) AllowEditing="false" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UsersOverviewVM.Email) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UsersOverviewVM.ClanName) TextAlign="TextAlign.Center" Width="150" EditType="EditType.DropDownEdit">
+            <EditTemplate>
+                <SfDropDownList Width="250px" TValue="int" TItem="ClanDropDown" @bind-Value="@((context as UsersOverviewVM).ClanId)" DataSource="ClanDropDownList">
+                    <DropDownListFieldSettings Value="ClanId" Text="ClanName"></DropDownListFieldSettings>
+                </SfDropDownList>
+			</EditTemplate>
+        </GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema podataka za prikaz.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+
+@code {
+    private bool SpinnerVisible { get; set; } = false;
+    public List<UsersOverviewVM> UserList { get; set; } = new List<UsersOverviewVM>();
+    public List<ClanDropDown> ClanDropDownList { get; set; }
+    SfGrid<UsersOverviewVM> GridUsers;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                this.SpinnerVisible = true;
+                await Task.Delay(1);
+                UserList = await UserRepository.GetUsersAsync();
+                ClanDropDownList = await ClanRepository.GetClansDropDownAsync();
+                this.SpinnerVisible = false;
+                StateHasChanged();
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+    }
+
+    public async void OnActionBegin(ActionEventArgs<UsersOverviewVM> Args)
+    {
+        if (Args.RequestType.ToString() == "Delete")
+        {
+            try
+            {
+                ApplicationUser user = await _UserManager.FindByIdAsync(Args.Data.Id);
+
+                if (user != null)
+                {
+                    var result = await _UserManager.DeleteAsync(user);
+
+                    if (result.Succeeded)
+                    {
+                        await JsRuntime.ToastrSuccess("Korisnik je uspješno obrisan.");
+                    }
+                    else
+                    {
+                        await JsRuntime.ToastrWarning("Korisnik nije obrisan.");
+                    }
+                }
+                else
+                {
+                    await JsRuntime.ToastrWarning("Korisnik nije pronađen u bazi.");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+
+        if (Args.RequestType.ToString() == "Save")
+        {
+            try
+            {
+                ApplicationUser user = await _UserManager.FindByIdAsync(Args.Data.Id);
+
+                if (user != null)
+                {
+                    user.ClanId = Args.Data.ClanId;
+                    user.Email = Args.Data.Email;
+                    user.UserName = Args.Data.UserName;
+
+                    var result = await _UserManager.UpdateAsync(user);
+
+                    if (result.Succeeded)
+                    {
+                        await JsRuntime.ToastrSuccess("Korisnik je uspješno ažuriran.");
+                    }
+                    else
+                    {
+                        await JsRuntime.ToastrInfo("Nije ažuriran nijedan redak.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+    }
+}

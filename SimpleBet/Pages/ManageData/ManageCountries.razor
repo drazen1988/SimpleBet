@@ -1,0 +1,134 @@
+﻿@page "/ManageData/ManageCountries"
+
+@using DataAcesss.Data
+@using DataAcesss.Repositories.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using Models.ViewModels
+@using NLog
+@using SimpleBet.Helpers
+
+@inject UserManager<ApplicationUser> _UserManager
+@inject ICountryRepository CountryRepository
+@inject IJSRuntime JsRuntime
+
+@attribute [Authorize(Roles = "Admin")]
+
+<SfGrid @ref="GridCountries" DataSource="CountryList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+    <GridEvents OnActionBegin="OnActionBegin" TValue="ManageCountriesVM"></GridEvents>
+    <GridPageSettings PageSize="12"></GridPageSettings>
+    <GridEditSettings AllowDeleting="true" AllowEditing="true" AllowAdding="true" Mode="EditMode.Normal" ShowDeleteConfirmDialog="true"></GridEditSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(ManageCountriesVM.CountryId) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(ManageCountriesVM.CountryName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(ManageCountriesVM.CountryCoeficient) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(ManageCountriesVM.IsWinner) DisplayAsCheckBox=true TextAlign="TextAlign.Center" Width="150"></GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema podataka za prikaz.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    SfGrid<ManageCountriesVM> GridCountries;
+    public List<ManageCountriesVM> CountryList { get; set; } = new List<ManageCountriesVM>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        CountryList = await CountryRepository.GetAllCountriesAsync();
+    }
+
+    public async void OnActionBegin(ActionEventArgs<ManageCountriesVM> Args)
+    {
+        if (Args.RequestType.ToString() == "Delete")
+        {
+            try
+            {
+                bool success = await CountryRepository.DeleteCountryAsync(Args.Data.CountryId);
+
+                if (success)
+                {
+                    await JsRuntime.ToastrSuccess("Podatak je uspješno obrisan.");
+                }
+                else
+                {
+                    await JsRuntime.ToastrInfo("Nije obrisan nijedan redak.");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+
+        if (Args.RequestType.ToString() == "Save")
+        {
+            try
+            {
+                if (Args.Action == "Add")
+                {
+                    var authState = await authenticationStateTask;
+                    ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+                    Args.Data.UserId = user.Id;
+
+                    bool success = await CountryRepository.AddCountryAsync(Args.Data);
+
+                    if (success)
+                    {
+                        await JsRuntime.ToastrSuccess("Utakmica je uspješno unesena.");
+                        await GridCountries.Refresh();
+                    }
+                    else
+                    {
+                        await JsRuntime.ToastrWarning("Utakmica nije unesena.");
+                    }
+                }
+
+                if (Args.Action == "Edit")
+                {
+                    int rowsUpdated = await CountryRepository.UpdateCountryAsync(Args.Data);
+
+                    if (rowsUpdated > 0)
+                    {
+                        await JsRuntime.ToastrSuccess("Podatak je uspješno ažuriran.");
+                    }
+                    else
+                    {
+                        await JsRuntime.ToastrInfo("Nije ažuriran nijedan redak.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+    }
+}

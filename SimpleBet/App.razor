@@ -1,0 +1,29 @@
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <SimpleBet.Pages.RedirectToLogin></SimpleBet.Pages.RedirectToLogin>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <AuthorizeView>
+                <Authorized>
+                    <PageTitle>Not found</PageTitle>
+                    <LayoutView Layout="@typeof(MainLayout)">
+                        <div class="not-found">
+                            <h1>Ups! Stranica nije pronađena.</h1>
+                            <br />
+                            <h2>Pokušaj na nekoj drugoj adresi.</h2>
+                        </div>
+                    </LayoutView>
+                </Authorized>
+                <NotAuthorized>
+                    <SimpleBet.Pages.RedirectToLogin></SimpleBet.Pages.RedirectToLogin>
+                </NotAuthorized>
+            </AuthorizeView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

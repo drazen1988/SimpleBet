@@ -1,0 +1,205 @@
+﻿@page "/ManageData/ManageResults"
+
+@using DataAcesss.Data
+@using DataAcesss.Repositories.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc;
+@using System.Text;
+@using Models.ViewModels
+@using NLog
+@using OpenQA.Selenium;
+@using OpenQA.Selenium.Chrome;
+@using OpenQA.Selenium.Support.UI;
+@using SimpleBet.Helpers
+@using SeleniumExtras.WaitHelpers;
+@using System.Reflection
+
+@inject UserManager<ApplicationUser> _UserManager
+@inject IMatchRepository MatchRepository
+@inject IJSRuntime JsRuntime
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Rezultati</PageTitle>
+
+
+<div id="container">
+    <SfSpinner @bind-Visible="@SpinnerVisible" Size="50"></SfSpinner>
+</div>
+
+<button class="btn btn-primary mb-2" @onclick="GetResults">Dohvati rezultate</button>
+<button class="btn btn-success mb-2" @onclick="SaveResults">Spremi rezultate</button>
+<br />
+<br />
+<SfGrid @ref="GridMatches" DataSource="MatchList" AllowPaging="true">
+    <GridPageSettings PageSize="12"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(MatchVM.MatchDateTime) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.HomeTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.AwayTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.Result) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema podataka za prikaz.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private bool SpinnerVisible { get; set; } = false;
+    public List<MatchVM> MatchList { get; set; } = new List<MatchVM>();
+    SfGrid<MatchVM> GridMatches;
+
+    public async Task GetResults()
+    {
+        this.SpinnerVisible = true;
+        await Task.Delay(1);
+        //string resultsUrl = "https://www.rezultati.com/nogomet/hrvatska/supersport-hnl/rezultati/";
+        string resultsUrl = "https://www.rezultati.com/nogomet/svijet/svjetsko-prvenstvo/rezultati/";
+        int resultCounter = 0;
+
+        MatchList = await MatchRepository.GetAllMatchesAsync();
+
+        if (MatchList != null & MatchList.Count > 0)
+        {
+            var options = new ChromeOptions();
+            options.AddArguments("headless");
+
+            using (IWebDriver driver = new ChromeDriver(AppDomain.CurrentDomain.BaseDirectory, options))
+            {
+                driver.Navigate().GoToUrl(resultsUrl);
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(1));
+
+                try
+                {
+                    wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(@".event__match")));
+                    var webIdElements = driver.FindElements(By.CssSelector(@".event__match"));
+
+                    foreach (var match in MatchList)
+                    {
+                        foreach (var item in webIdElements)
+                        {
+                            string id = item.GetAttribute("id");
+                            int indexId = id.LastIndexOf('_');
+                            indexId++;
+                            id = id.Substring(indexId, id.Length - indexId);
+
+                            if (match.WebId == id)
+                            {
+                                match.HomeScore = Convert.ToInt32(item.FindElement(By.CssSelector(@".event__score--home")).Text);
+                                match.AwayScore = Convert.ToInt32(item.FindElement(By.CssSelector(@".event__score--away")).Text);
+                                match.Result = $"{match.HomeScore} : {match.AwayScore}";
+
+                                // After result is assigned, determine the winner
+                                if (match.HomeScore > match.AwayScore)
+                                {
+                                    match.WinningBetType = 1;
+                                }
+                                else if (match.HomeScore < match.AwayScore)
+                                {
+                                    match.WinningBetType = 2;
+                                }
+                                else
+                                {
+                                    match.WinningBetType = 3;
+                                }
+                                resultCounter++;
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger logger = LogManager.GetLogger("errorLogger");
+                    logger.Error(e, "");
+
+                    if (e.InnerException == null)
+                    {
+                        await JsRuntime.ToastrError(e.Message);
+                    }
+                    else
+                    {
+                        await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                    }
+                }
+
+                if (resultCounter > 0)
+                {
+                    await JsRuntime.ToastrSuccess($"Uspješno su dohvaćeni rezultati za {resultCounter} utakmica.");
+                }
+                else
+                {
+                    await JsRuntime.ToastrInfo("Nije dohvaćen nijedan rezultat.");
+                }
+
+                await GridMatches.Refresh();
+            }
+        }
+        else
+        {
+            await JsRuntime.ToastrWarning("Najprije dohvatite i spremite utakmice.");
+        }
+
+        this.SpinnerVisible = false;
+    }
+
+    public async Task SaveResults()
+    {
+        if (MatchList != null & MatchList.Count > 0)
+        {
+            try
+            {
+                this.SpinnerVisible = true;
+                await Task.Delay(1);
+
+                var authState = await authenticationStateTask;
+                ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+                int resultsCount = 0;
+
+                foreach (var item in MatchList)
+                {
+                    item.UserId = user.Id;
+                    int rowsUpdated = await MatchRepository.AddResultsAsync(item);
+                    if (rowsUpdated > 0) resultsCount++;
+                }
+
+                await GridMatches.Refresh();
+
+                if (resultsCount > 0)
+                {
+                    await JsRuntime.ToastrSuccess($"Uspješno je spremljeno {resultsCount} novih rezultata.");
+                }
+                else
+                {
+                    await JsRuntime.ToastrInfo("Navedeni rezultati već postoje u bazi.");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+        else
+        {
+            await JsRuntime.ToastrWarning("Niste dohvatili nijedan rezultat.");
+        }
+
+        this.SpinnerVisible = false;
+    }
+}

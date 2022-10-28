@@ -1,0 +1,141 @@
+﻿@page "/Results/MatchResults"
+
+@using DataAcesss.Data
+@using Models.ViewModels
+@using DataAcesss.Repositories.Interfaces
+@using NLog
+@using SimpleBet.Helpers
+
+@inject IJSRuntime JsRuntime
+@inject IMatchRepository MatchRepository
+@inject IBetRepository BetRepository
+@inject ICountryRepository CountryRepository
+@attribute [Authorize]
+
+<PageTitle>Rezultati</PageTitle>
+
+<label>Pobjednik prvenstva:</label>
+<br />
+<SfDropDownList Width="240px" ID="country-bet" @ref="dropObj" Placeholder="Pobjednik još nije poznat" Enabled="false" TValue="int" TItem="Country" @bind-Value="countryBetValue" DataSource="CountryList">
+    <DropDownListFieldSettings Value="CountryId" Text="CountryName"></DropDownListFieldSettings>
+</SfDropDownList>
+<br />
+<br />
+<br />
+<SfGrid @ref="GridMatchResults" DataSource="MatchResultsList" AllowPaging="true">
+    <GridPageSettings PageSize="8"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(MatchResultsVM.MatchId) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(MatchResultsVM.MatchDateTime) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchResultsVM.HomeTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchResultsVM.AwayTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchResultsVM.Result) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(MatchResultsVM.WinnersCount) TextAlign="TextAlign.Center" Width="50"></GridColumn>
+        <GridColumn Width="120">
+            <Template>
+                @{
+                    var match = (context as MatchResultsVM);
+                }
+                <button class="btn btn-primary" @onclick="()=>GetDetails(match)">Detalji</button>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema nijedne utakmice u najavi.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+<SfDialog Width="250px" @bind-Visible="DialogVisible" IsModal="true" ShowCloseIcon="true">
+    <DialogTemplates>
+        <Header>
+            <span>Lista pobjednika</span>
+        </Header>
+        <Content>
+            <div class="dialog-content">
+                <SfGrid @ref="GridWinnersList" DataSource="WinnersList">
+                    <GridColumns>
+                        <GridColumn Field=@nameof(WinnerListVM.UserId) IsPrimaryKey=true Visible=false></GridColumn>
+                        <GridColumn Field=@nameof(WinnerListVM.UserName) TextAlign="TextAlign.Center"></GridColumn>
+                    </GridColumns>
+                    <GridTemplates>
+                        <EmptyRecordTemplate>
+                            <div class="text-center">
+                                <span>Nitko nije pogodio ovu utakmicu!</span>
+                            </div>
+                        </EmptyRecordTemplate>
+                    </GridTemplates>
+                </SfGrid>
+            </div>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+    SfGrid<MatchResultsVM> GridMatchResults;
+    SfGrid<WinnerListVM> GridWinnersList;
+    SfDropDownList<int, Country> dropObj;
+    private bool DialogVisible { get; set; } = false;
+    private int countryBetValue = 0;
+    public List<Country> CountryList { get; set; } = new List<Country>();
+    public List<MatchResultsVM> MatchResultsList { get; set; } = new List<MatchResultsVM>();
+    public List<WinnerListVM> WinnersList { get; set; } = new List<WinnerListVM>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Datasource for dropdown
+            CountryList = await CountryRepository.GetWinningCountryAsync();
+
+            if (CountryList != null && CountryList.Count() > 0)
+            {
+                countryBetValue = CountryList.FirstOrDefault().CountryId;
+            }
+
+            // Datasource for grid
+            MatchResultsList = await MatchRepository.GetAllMatchResultsAsync();
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+
+    public async Task GetDetails(MatchResultsVM val)
+    {
+        try
+        {
+            WinnersList = await BetRepository.GetWinnerListAsync(val.MatchId);
+            this.DialogVisible = true;
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}
+

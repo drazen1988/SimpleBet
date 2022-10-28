@@ -1,0 +1,172 @@
+﻿<div class="top-row navbar navbar-dark p-0 ">
+    <div class="container-fluid p-0">
+        <div class="logo"></div>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="dropdown profile">
+            <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButtonSmall" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Moj profil
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonSmall">
+                <div class="item p-2">
+                    <NavLink href="/Account/ChangePassword">
+                        <span class="oi oi-lock-locked" aria-hidden="true"></span> Promijeni lozinku
+                    </NavLink>
+                </div>
+                <div class="item p-2">
+                    <NavLink href="/Account/PersonalData">
+                        <span class="oi oi-person" aria-hidden="true"></span> Osobni podaci
+                    </NavLink>
+                </div>
+                <div class="item p-2">
+                    <NavLink href="/Logout">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span> Odjava
+                    </NavLink>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass">
+    <nav class="flex-column">
+        <div class="nav-item px-3" @onclick="ToggleNavMenu">
+            <NavLink class="nav-link" href="/Home" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Početna
+            </NavLink>
+        </div>
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link dropdown-parent" @onclick="()=>expandSubMenuManageUsers = !expandSubMenuManageUsers">
+                        <span class="oi oi-people" aria-hidden="true"></span> Administracija korisnika
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+        @if (expandSubMenuManageUsers)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/ManageUsers/UsersOverview">
+                    <span class="oi oi-list" aria-hidden="true"></span> Pregled korisnika
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/ManageUsers/CreateUser">
+                    <span class="oi oi-person" aria-hidden="true"></span> Kreiraj korisnika
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/ManageUsers/ClansOverview">
+                    <span class="oi oi-shield" aria-hidden="true"></span> Pregled klanova
+                </NavLink>
+            </div>
+        }
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link dropdown-parent" @onclick="()=>expandSubMenuManageData = !expandSubMenuManageData">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Administracija podataka
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+        @if (expandSubMenuManageData)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/ManageData/DataOverview">
+                    <span class="oi oi-list" aria-hidden="true"></span> Pregled podataka
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/ManageData/ManageGames">
+                    <span class="oi oi-spreadsheet" aria-hidden="true"></span> Utakmice
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/ManageData/ManageCoeficients">
+                    <span class="oi oi-dollar" aria-hidden="true"></span> Koeficijenti
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/ManageData/ManageResults">
+                    <span class="oi oi-star" aria-hidden="true"></span> Rezultati
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/ManageData/ManageCountries">
+                    <span class="oi oi-flag" aria-hidden="true"></span> Države
+                </NavLink>
+            </div>
+        }
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="ToggleNavMenu" href="/Bets/GameBets">
+                <span class="oi oi-spreadsheet" aria-hidden="true"></span> Ponuda
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="ToggleNavMenu" href="/Results/MatchResults">
+                <span class="oi oi-star" aria-hidden="true"></span> Rezultati
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="ToggleNavMenu" href="/LeaderBoards/MainLeaderBoard">
+                <span class="oi oi-sort-descending" aria-hidden="true"></span> Ukupni poredak
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link dropdown-parent" @onclick="()=>expandSubMenuStats = !expandSubMenuStats">
+                <span class="oi oi-bar-chart" aria-hidden="true"></span> Statistike
+            </NavLink>
+        </div>
+        @if (expandSubMenuStats)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/Statistics/GeneralStats">
+                    <span class="oi oi-bar-chart" aria-hidden="true"></span> Igrači
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/Statistics/ClanStats">
+                    <span class="oi oi-bar-chart" aria-hidden="true"></span> Klanovi
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/Statistics/MyStats">
+                    <span class="oi oi-bar-chart" aria-hidden="true"></span> Moja statistika
+                </NavLink>
+            </div>
+        }
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="ToggleNavMenu" href="/Other/Guidelines">
+                <span class="oi oi-info" aria-hidden="true"></span> Pravila i upute
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="ToggleNavMenu" href="/Other/ChatRoom">
+                <span class="oi oi-pencil" aria-hidden="true"></span> ChatRoom
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="ToggleNavMenu" href="/Other/Feedback">
+                <span class="oi oi-envelope-closed" aria-hidden="true"></span> Feedback
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+
+@code {
+    private bool collapseNavMenu = true;
+    private bool expandSubMenuManageData;
+    private bool expandSubMenuManageUsers;
+    private bool expandSubMenuStats;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

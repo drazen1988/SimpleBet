@@ -1,0 +1,182 @@
+﻿@page "/ManageData/ManageCoeficients"
+
+@using DataAcesss.Data
+@using DataAcesss.Repositories.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc;
+@using System.Text;
+@using Models.ViewModels
+@using NLog
+@using OpenQA.Selenium;
+@using OpenQA.Selenium.Chrome;
+@using OpenQA.Selenium.Support.UI;
+@using SimpleBet.Helpers
+@using SeleniumExtras.WaitHelpers;
+@using System.Reflection
+
+@inject UserManager<ApplicationUser> _UserManager
+@inject IMatchRepository MatchRepository
+@inject IJSRuntime JsRuntime
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Koeficijenti</PageTitle>
+
+
+<div id="container">
+    <SfSpinner @bind-Visible="@SpinnerVisible" Size="50"></SfSpinner>
+</div>
+
+<button class="btn btn-primary mb-2" @onclick="GetCoeficients">Dohvati koeficijente</button>
+<button class="btn btn-success mb-2" @onclick="SaveCoeficients">Spremi koeficijente</button>
+<br />
+<br />
+<SfGrid @ref="GridMatches" DataSource="MatchList" AllowPaging="true">
+    <GridPageSettings PageSize="12"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(MatchVM.MatchDateTime) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.HomeTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.AwayTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.HomeCoeficient) TextAlign="TextAlign.Center" Width="50"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.DrawCoeficient) TextAlign="TextAlign.Center" Width="50"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.AwayCoeficient) TextAlign="TextAlign.Center" Width="50"></GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema podataka za prikaz.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private bool SpinnerVisible { get; set; } = false;
+    List<string> Coeficients = new List<string>();
+    public List<MatchVM> MatchList { get; set; } = new List<MatchVM>();
+    SfGrid<MatchVM> GridMatches;
+
+    public async Task GetCoeficients()
+    {
+        this.SpinnerVisible = true;
+        await Task.Delay(1);
+        //string matchesUrl = "https://www.rezultati.com/nogomet/hrvatska/supersport-hnl/raspored/";
+        string matchesUrl = "https://www.rezultati.com/nogomet/svijet/svjetsko-prvenstvo/raspored/";
+        int coeficientCounter = 0;
+
+        MatchList = await MatchRepository.GetAllMatchesAsync();
+
+        if (MatchList != null & MatchList.Count > 0)
+        {
+            var options = new ChromeOptions();
+            options.AddArguments("headless");
+
+            using (IWebDriver driver = new ChromeDriver(AppDomain.CurrentDomain.BaseDirectory, options))
+            {
+                driver.Navigate().GoToUrl(matchesUrl);
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(1));
+
+                foreach (var item in MatchList)
+                {
+                    string coeficientsUrl = "https://www.rezultati.com/utakmica/" + item.WebId + "/#/tecajevi/1x2-oklade/kraj-utakmice";
+
+                    try
+                    {
+                        driver.Navigate().GoToUrl(coeficientsUrl);
+
+                        wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(@"//a[@title='Supersport']/ancestor::div[@class='ui-table__row']")));
+                        var parent = driver.FindElement(By.XPath(@"//a[@title='Supersport']/ancestor::div[@class='ui-table__row']"));
+                        var coeficientValues = parent.FindElements(By.CssSelector(@".oddsCell__odd"));
+
+                        // Always expect 3 coeficients
+                        item.HomeCoeficient = Convert.ToDecimal(coeficientValues[0].Text.Replace(".", ","));
+                        item.DrawCoeficient = Convert.ToDecimal(coeficientValues[1].Text.Replace(".", ","));
+                        item.AwayCoeficient = Convert.ToDecimal(coeficientValues[2].Text.Replace(".", ","));
+
+                        coeficientCounter++;
+                    }
+                    catch (Exception e)
+                    {
+                        //await JsRuntime.ToastrInfo($"Utakmica {item.HomeTeam} - {item.AwayTeam} još nema dostupne koeficijente.");
+                        await JsRuntime.ToastrInfo($"Ostale utakmice još nemaju dostupne koeficijente.");
+                        break;
+                    }
+                }
+
+                if (coeficientCounter > 0)
+                {
+                    await JsRuntime.ToastrSuccess($"Uspješno su dohvaćeni koeficijenti za {coeficientCounter} utakmice.");
+                }
+                else
+                {
+                    await JsRuntime.ToastrInfo("Nije dohvaćen nijedan koeficijent.");
+                }
+
+                await GridMatches.Refresh();
+            }
+        }
+        else
+        {
+            await JsRuntime.ToastrWarning("Najprije dohvatite i spremite utakmice.");
+        }
+
+        this.SpinnerVisible = false;
+    }
+
+    public async Task SaveCoeficients()
+    {
+        if (MatchList != null & MatchList.Count > 0)
+        {
+            try
+            {
+                this.SpinnerVisible = true;
+                await Task.Delay(1);
+
+                var authState = await authenticationStateTask;
+                ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+                int matchCount = 0;
+
+                foreach (var item in MatchList)
+                {
+                    item.UserId = user.Id;
+                    int rowsUpdated = await MatchRepository.AddCoeficientsAsync(item);
+                    if (rowsUpdated > 0) matchCount++;
+                }
+
+                await GridMatches.Refresh();
+
+                if (matchCount > 0)
+                {
+                    await JsRuntime.ToastrSuccess($"Uspješno su spremljeni koeficijenti za {matchCount} utakmice.");
+                }
+                else
+                {
+                    await JsRuntime.ToastrInfo("Navedeni koeficijenti već postoje u bazi.");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+        else
+        {
+            await JsRuntime.ToastrWarning("Niste dohvatili nijedan koeficijent.");
+        }
+
+        this.SpinnerVisible = false;
+    }
+}

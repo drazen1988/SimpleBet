@@ -1,0 +1,295 @@
+﻿@page "/Bets/GameBets"
+
+@using DataAcesss.Data
+@using Microsoft.AspNetCore.Identity
+@using Models.ViewModels
+@using DataAcesss.Repositories.Interfaces
+@using NLog
+@using SimpleBet.Helpers
+
+@inject UserManager<ApplicationUser> _UserManager
+@inject IMatchRepository MatchRepository
+@inject IBetRepository BetRepository
+@inject ICountryRepository CountryRepository
+@inject IJSRuntime JsRuntime
+@attribute [Authorize]
+
+<PageTitle>Ponuda</PageTitle>
+
+<label>Pobjednik prvenstva:</label>
+<br />
+<SfDropDownList Width="240px" ID="country-bet" @ref="dropObj" Enabled="countryBetEnabled" TValue="int" TItem="CountryBetVM" Placeholder="Odaberi pobjednika prvenstva" @bind-Value="countryBetValue" DataSource="CountryList">
+    <DropDownListFieldSettings Value="CountryId" Text="TextConcat"></DropDownListFieldSettings>
+    <DropDownListEvents TItem="CountryBetVM" TValue="int" ValueChange="CountryBet"></DropDownListEvents>
+</SfDropDownList>
+<br />
+<br />
+<br />
+<SfGrid @ref="GridMatches" DataSource="MatchList" AllowPaging="true">
+    <GridPageSettings PageSize="8"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(MatchVM.MatchId) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.MatchDateTime) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.HomeTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.AwayTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.HomeCoeficient) TextAlign="TextAlign.Center" Width="50"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.DrawCoeficient) TextAlign="TextAlign.Center" Width="50"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.AwayCoeficient) TextAlign="TextAlign.Center" Width="50"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.IsBetPlaced) DisplayAsCheckBox=true TextAlign="TextAlign.Center" Width="130"></GridColumn>
+        <GridColumn Width="120">
+            <Template>
+                @{
+                    var match = (context as MatchVM);
+                }
+                <button class="btn btn-primary" @onclick="()=>Bet(match)">Kladi se</button>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema nijedne utakmice u najavi.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+<SfDialog Width="200px" @bind-Visible="DialogVisible" IsModal="true" ShowCloseIcon="true">
+    <DialogTemplates>
+        <Header>
+            <span>Tvoja oklada</span>
+        </Header>
+        <Content>
+            <div class="dialog-content">
+                <SfRadioButton Label="1" Value="1" Name="BetChoice" ValueChange="onValueChange" @bind-Checked="valueChecked" TChecked="int"></SfRadioButton>
+                <SfRadioButton Label="X" Value="3" Name="BetChoice" ValueChange="onValueChange" @bind-Checked="valueChecked" TChecked="int"></SfRadioButton>
+                <SfRadioButton Label="2" Value="2" Name="BetChoice" ValueChange="onValueChange" @bind-Checked="valueChecked" TChecked="int"></SfRadioButton>
+            </div>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private bool DialogVisible { get; set; } = false;
+    public List<MatchVM> MatchList { get; set; } = new List<MatchVM>();
+    public List<CountryBetVM> CountryList { get; set; } = new List<CountryBetVM>();
+    SfGrid<MatchVM> GridMatches;
+    SfDropDownList<int, CountryBetVM> dropObj;
+    private BetVM CurrentBet { get; set; } = new BetVM();
+    private CountryBetVM CurrentCountryBet { get; set; } = new CountryBetVM();
+    private int valueChecked = 0;
+    private bool countryBetEnabled = true;
+    private int countryBetValue = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+            // Datasource for dropdown
+            CountryList = await CountryRepository.GetAllCountryBetsAsync();
+
+            if (CountryList != null && CountryList.Count() > 0)
+            {
+                CountryBet existingCountryBet = await CountryRepository.GetCountryBetAsync(user.Id);
+
+                if (existingCountryBet != null)
+                {
+                    countryBetValue = CountryList.FirstOrDefault(c => c.CountryId == existingCountryBet.CountryId).CountryId;
+                }
+            }
+
+            // After the first match begins, disable dropdown
+            Match firstMatch = await MatchRepository.GetFirstMatchAsync();
+
+            if (firstMatch != null && firstMatch.MatchDateTime < DateTime.Now)
+            {
+                countryBetEnabled = true;
+            }
+
+            await dropObj.RefreshDataAsync();
+
+            // Datasource for grid
+            MatchList = await MatchRepository.GetFutureMatchesAsync();
+
+            foreach (MatchVM match in MatchList)
+            {
+                Bet existingBet = await BetRepository.GetBetAsync(match.MatchId, user.Id);
+
+                if (existingBet != null)
+                {
+                    match.IsBetPlaced = true;
+                }
+                else
+                {
+                    match.IsBetPlaced = false;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+
+    public async Task Bet(MatchVM val)
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+            CurrentBet.MatchId = val.MatchId;
+            CurrentBet.UserId = user.Id;
+
+            // Get value for radio buttons for existing bets.
+            Bet existingBet = await BetRepository.GetBetAsync(CurrentBet.MatchId, CurrentBet.UserId);
+
+            if (existingBet != null)
+            {
+                valueChecked = existingBet.BetType;
+            }
+            else
+            {
+                valueChecked = 0;
+            }
+
+            this.DialogVisible = true;
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+
+    public async Task onValueChange(ChangeArgs<int> Args)
+    {
+        this.DialogVisible = false;
+        CurrentBet.BetType = Args.Value;
+
+        MatchVM currentMatch = MatchList.FirstOrDefault(m => m.MatchId == CurrentBet.MatchId);
+
+        // If user loads page before game start but clicks bet after it already started.
+        if (currentMatch.MatchDateTime < DateTime.Now)
+        {
+            await JsRuntime.ToastrError("Utakmica je već počela...", "Kasno pališ!");
+            return;
+        }
+
+        switch (Args.Value)
+        {
+            case 1:
+                CurrentBet.BetCoeficient = currentMatch.HomeCoeficient;
+                break;
+            case 2:
+                CurrentBet.BetCoeficient = currentMatch.AwayCoeficient;
+                break;
+            case 3:
+                CurrentBet.BetCoeficient = currentMatch.DrawCoeficient;
+                break;
+        }
+
+        try
+        {
+            string success = await BetRepository.SaveBetAsync(CurrentBet);
+
+            if (success == "insert")
+            {
+                currentMatch.IsBetPlaced = true;
+                await JsRuntime.ToastrSuccess("Oklada je unesena.");
+            }
+            else if (success == "update")
+            {
+                await JsRuntime.ToastrSuccess("Oklada je ažurirana.");
+            }
+            else
+            {
+                await JsRuntime.ToastrInfo("Oklada nije spremljena.");
+            }
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+
+        await GridMatches.Refresh();
+    }
+
+
+    public async Task CountryBet(ChangeEventArgs<int, CountryBetVM> args)
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+            CurrentCountryBet.CountryId = args.ItemData.CountryId;
+            CurrentCountryBet.CountryCoeficient = args.ItemData.CountryCoeficient;
+            CurrentCountryBet.UserId = user.Id;
+
+            string success = await CountryRepository.SaveCountryBetAsync(CurrentCountryBet);
+
+            if (success == "insert")
+            {
+                await JsRuntime.ToastrSuccess("Oklada je unesena.");
+            }
+            else if (success == "update")
+            {
+                await JsRuntime.ToastrSuccess("Oklada je ažurirana.");
+            }
+            else
+            {
+                await JsRuntime.ToastrInfo("Oklada nije spremljena.");
+            }
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}

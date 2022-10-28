@@ -1,0 +1,58 @@
+﻿@page "/LeaderBoards/MainLeaderBoard"
+
+@using DataAcesss.Data
+@using DataAcesss.Repositories.Interfaces
+@using Models.ViewModels
+@using Microsoft.AspNetCore.Identity;
+@using NLog
+@using SimpleBet.Helpers
+
+@inject IJSRuntime JsRuntime
+@inject ILeaderBoardRepository LeaderBoardRepository
+@attribute [Authorize]
+
+<PageTitle>Ukupni poredak</PageTitle>
+
+<SfGrid DataSource="LeaderBoardList" AllowPaging="true">
+    <GridPageSettings PageSize="10"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(LeaderBoardVM.UserId) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(LeaderBoardVM.Position) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(LeaderBoardVM.UserName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(LeaderBoardVM.ClanName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(LeaderBoardVM.TotalCoeficient) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema podataka za prikaz.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+@code {
+    public List<LeaderBoardVM> LeaderBoardList { get; set; } = new List<LeaderBoardVM>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            LeaderBoardList = await LeaderBoardRepository.GetLeaderBoardAsync();
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}

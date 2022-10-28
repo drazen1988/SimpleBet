@@ -1,0 +1,61 @@
+﻿@page "/Other/Guidelines"
+
+@using NLog
+@using SimpleBet.Helpers
+@using System.IO
+
+@inject IJSRuntime JsRuntime
+@attribute [Authorize]
+
+<PageTitle>Pravila</PageTitle>
+
+<h3>Pravila</h3>
+
+<div class="container mb-4">
+    <div class="mt-4 p-4 bg-light rounded">
+        <p>Kladimo se na ishod svake utakmice od početka do kraja prvenstva, a opcije su 1, X, 2.</p>
+        <p>Do početka prvenstva je dostupno klađenje na pobjednika prvenstva, i u slučaju pogotka taj se koeficijent uključuje u ukupni koeficijent igrača.</p>
+        <p>Igra se na regularno vrijeme, što znači da se nakon grupne faze <b>ne igra na produžetke i penale.</b></p>
+        <p>Koristimo koeficijente sa SuperSporta.</p>
+        <p>Utakmica je na aplikaciji dostupna za unos tipa do početka, nakon toga se više nećete moći kladiti, pa pripazite na pravovremeni unos.</p>
+        <p>Prvaka morate odabrati do početka prve utakmice!</p>
+        <p>Igrači su podijeljeni u klanove i svaki igrač mora pripadati nekom klanu.</p>
+        <p>Svaki klan se sastoji od minimalno 4 igrača a maksimalni broj igrača u jednom klanu nije limitiran.</p>
+        <p>Ukupni koeficijent klana je samo informativnog karaktera i <b>ne utječe na konačni poredak igrača.</b> Svrha klanova je jačanje timskog duha i dodatne zabave :)</p>
+        <p>Pogođeni koeficijenti se međusobno množe a pobijednik kladionice je igrač koji na kraju prvenstva ima najveći ukupni koeficijent!</p>
+    </div>
+</div>
+
+<h3>Korisničke upute</h3>
+<button class="btn btn-primary mt-2 mb-4" @onclick="DownloadGuidelines">Preuzmi korisničke upute</button>
+
+@code {
+    private IJSObjectReference jsModule { get; set; }
+
+    public async Task DownloadGuidelines()
+    {
+        try
+        {
+            jsModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/fileDownloader.js");
+
+            var fileName = "SimpleBet - Korisničke upute.docx";
+            byte[] read = File.ReadAllBytes(@"./wwwroot/files/SimpleBet - Korisničke upute.docx");
+
+            await jsModule.InvokeVoidAsync("fileDownloader", fileName, Convert.ToBase64String(read));
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}

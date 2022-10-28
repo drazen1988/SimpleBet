@@ -1,0 +1,148 @@
+﻿@page "/ManageUsers/ClansOverview"
+
+@using DataAcesss.Data
+@using DataAcesss.Repositories.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using Models.ViewModels
+@using NLog
+@using SimpleBet.Helpers
+
+@inject UserManager<ApplicationUser> _UserManager
+@inject IClanRepository ClanRepository
+@inject IJSRuntime JsRuntime
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Pregled klanova</PageTitle>
+
+<SfGrid @ref="GridClans" DataSource="ClanList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+    <GridEvents OnActionBegin="OnActionBegin" TValue="UsersPerClanVM"></GridEvents>
+    <GridPageSettings PageSize="12"></GridPageSettings>
+    <GridEditSettings AllowDeleting="true" AllowEditing="true" AllowAdding="true" Mode="EditMode.Normal" ShowDeleteConfirmDialog="true"></GridEditSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(UsersPerClanVM.ClanId) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(UsersPerClanVM.ClanName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UsersPerClanVM.UsersPerClan) TextAlign="TextAlign.Center" Width="50" AllowAdding="false" AllowEditing="false"></GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema podataka za prikaz.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    public List<UsersPerClanVM> ClanList { get; set; } = new List<UsersPerClanVM>();
+    SfGrid<UsersPerClanVM> GridClans;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            ClanList = await ClanRepository.GetUsersPerClanAsync();
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+
+    public async void OnActionBegin(ActionEventArgs<UsersPerClanVM> Args)
+    {
+        if (Args.RequestType.ToString() == "Delete")
+        {
+            try
+            {
+                bool success = await ClanRepository.DeleteClanAsync(Args.Data.ClanId);
+
+                if (success)
+                {
+                    await JsRuntime.ToastrSuccess("Podatak je uspješno obrisan.");
+                }
+                else
+                {
+                    await JsRuntime.ToastrInfo("Nije obrisan nijedan redak.");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+
+        if (Args.RequestType.ToString() == "Save")
+        {
+            try
+            {
+                if (Args.Action == "Add")
+                {
+                    var authState = await authenticationStateTask;
+                    ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+                    bool success = await ClanRepository.AddClanAsync(Args.Data.ClanName, user.Id);
+
+                    if (success)
+                    {
+                        await JsRuntime.ToastrSuccess("Klan je uspješno unesen.");
+                    }
+                    else
+                    {
+                        await JsRuntime.ToastrWarning("Klan nije unesen.");
+                    }
+                }
+
+                if (Args.Action == "Edit")
+                {
+                    int rowsUpdated = await ClanRepository.UpdateClanAsync(Args.Data.ClanId, Args.Data.ClanName);
+
+                    if (rowsUpdated > 0)
+                    {
+                        await JsRuntime.ToastrSuccess("Klan je uspješno ažuriran.");
+                    }
+                    else
+                    {
+                        await JsRuntime.ToastrWarning("Klan nije ažuriran.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+    }
+}

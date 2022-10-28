@@ -1,0 +1,82 @@
+﻿@page "/Other/Feedback"
+
+@using DataAcesss.Data
+@using Microsoft.AspNetCore.Identity
+@using NLog
+@using SimpleBet.Helpers
+@using Models.ViewModels
+@using DataAcesss.Repositories.Interfaces
+
+@inject UserManager<ApplicationUser> _UserManager
+@inject IMailRepository MailRepository
+@inject IJSRuntime JsRuntime
+@attribute [Authorize]
+
+<PageTitle>Feedback</PageTitle>
+
+<h4>Pomognite nam poboljšati aplikaciju!</h4>
+<h6>Svoje prijedloge pošaljite kroz formu.</h6>
+
+<br />
+<EditForm Model="Model" OnValidSubmit="SendMail">
+    <DataAnnotationsValidator />
+    <SfDropDownList Width="150px" TValue="int?" TItem="FeedbackDropDown" Placeholder="Vrsta poruke" @bind-Value="Model.SelectedValue" DataSource="Model.FeedbackDropDownList">
+        <DropDownListFieldSettings Value="FeedbackTypeValue" Text="FeedbackTypeText"></DropDownListFieldSettings>
+    </SfDropDownList>
+    <br />
+    <br />
+    <SfTextBox Multiline=true Placeholder="Opis prijedloga" @bind-Value="Model.Description" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+    <br />
+    <br />
+    <button type="submit" class="btn btn-primary">Pošalji</button>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    public FeedbackVM Model { get; set; } = new FeedbackVM();
+
+    protected override void OnInitialized()
+    {
+        Model.FeedbackDropDownList = Model.InitializeDropDown();
+    }
+
+    public async void SendMail()
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+            FeedbackDropDown dropDownItem = Model.FeedbackDropDownList.Where(f => f.FeedbackTypeValue == Model.SelectedValue).FirstOrDefault();
+            bool success = await MailRepository.SendFeedbackAsync(dropDownItem.FeedbackTypeText, Model.Description, user.UserName, user.FullName);
+
+            if (success)
+            {
+                await JsRuntime.ToastrSuccess("Mail je uspješno poslan.");
+                Model.Description = "";
+                Model.SelectedValue = null;
+                StateHasChanged();
+            }
+            else
+            {
+                await JsRuntime.ToastrWarning("Mail nije poslan.");
+            }
+
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}

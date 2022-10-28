@@ -1,0 +1,160 @@
+﻿@page "/ManageUsers/CreateUser"
+
+@using DataAcesss.Data
+@using DataAcesss.Repositories.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using Models.ViewModels
+@using NLog
+@using SimpleBet.Helpers
+
+@inject IClanRepository ClanRepository
+@inject IUserRepository UserRepository
+@inject UserManager<ApplicationUser> _UserManager
+@inject IJSRuntime JsRuntime
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Kreiraj korisnika</PageTitle>
+
+<div class="p-3 bg-light rounded">
+    <p class="mb-2">Korisničko ime mora biti jedinstveno.</p>
+    <p class="mb-2">Lozinka mora sadržavati minimalno 8 znakova.</p>
+    <p class="m-0">Lozinka mora sadržavati minimalno jedno veliko slovo.</p>
+</div>
+
+<EditForm Model="Model" OnValidSubmit="AddUser">
+    <DataAnnotationsValidator />
+    <SfTextBox Placeholder="Korisničko ime" CssClass="mb-2" @bind-Value="Model.UserName" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+    <br />
+    <SfTextBox Placeholder="Ime" CssClass="mb-2" @bind-Value="Model.FirstName" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+    <br />
+    <SfTextBox Placeholder="Prezime" CssClass="mb-2" @bind-Value="Model.LastName" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+    <br />
+    <SfTextBox Placeholder="Email" CssClass="mb-2" @bind-Value="Model.Email" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+    <br />
+    <SfDropDownList Width="250px" TValue="int" CssClass="mb-2" TItem="ClanDropDown" Placeholder="Klan" @bind-Value="Model.ClanId" DataSource="Model.ClanDropDownList" FloatLabelType="FloatLabelType.Auto">
+        <DropDownListFieldSettings Value="ClanId" Text="ClanName"></DropDownListFieldSettings>
+    </SfDropDownList>
+    <br />
+    <SfTextBox Placeholder="Lozinka" CssClass="mb-2" Type="InputType.Password" @bind-Value="Model.Password" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+    <br />
+    <SfTextBox Placeholder="Potvrdi lozinku" CssClass="mb-2" Type="InputType.Password" @bind-Value="Model.ConfirmPassword" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+    <br />
+    <SfDropDownList Width="250px" TValue="string" TItem="UserRoleDropDown" Placeholder="Razina prava" @bind-Value="Model.UserRole" DataSource="Model.UserRoleDropDownList" FloatLabelType="FloatLabelType.Auto">
+        <DropDownListFieldSettings Value="Name" Text="Name"></DropDownListFieldSettings>
+    </SfDropDownList>
+    <br />
+    <br />
+    <button type="submit" class="btn btn-primary">Kreiraj</button>
+</EditForm>
+
+@code {
+    public CreateUserVM Model = new CreateUserVM();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Model.UserRoleDropDownList = await UserRepository.GetUserRolesAsync();
+            Model.ClanDropDownList = await ClanRepository.GetClansDropDownAsync();
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+
+    private async void AddUser()
+    {
+        try
+        {
+            if (Model.Password != Model.ConfirmPassword)
+            {
+                await JsRuntime.ToastrWarning("Polja Nova lozinka i Potvrdi lozinku se ne podudaraju.");
+                return;
+            }
+
+            // Check if this username already exists.
+            var existingUser = await _UserManager.FindByNameAsync(Model.UserName);
+
+            if (existingUser != null)
+            {
+                await JsRuntime.ToastrWarning($"Korisničko ime {Model.UserName} već postoji.", "Izaberite drugo korisničko ime");
+                return;
+            }
+
+            var user = new ApplicationUser
+                {
+                    UserName = Model.UserName,
+                    FirstName = Model.FirstName,
+                    LastName = Model.LastName,
+                    Email = Model.Email,
+                    ClanId = Model.ClanId,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
+
+            // Create new user in table AspNetUsers
+            var result = await _UserManager.CreateAsync(user, Model.Password);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+
+                foreach (var error in errors)
+                {
+                    await JsRuntime.ToastrError(error.ToString());
+                    return;
+                }
+            }
+
+            // Create role for new user in table AspNetUserRoles
+            var roleResult = await _UserManager.AddToRoleAsync(user, Model.UserRole);
+
+            if (!roleResult.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+
+                foreach (var error in errors)
+                {
+                    await JsRuntime.ToastrError(error.ToString());
+                    return;
+                }
+            }
+
+            Model.UserName = "";
+            Model.FirstName = "";
+            Model.LastName = "";
+            Model.Email = "";
+            Model.Password = "";
+            Model.ConfirmPassword = "";
+            Model.ClanId = 0;
+            Model.UserRole = "";
+            StateHasChanged();
+
+            await JsRuntime.ToastrSuccess("Novi korisnik je uspješno kreiran.");
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}

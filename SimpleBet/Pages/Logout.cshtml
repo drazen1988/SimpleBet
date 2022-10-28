@@ -1,0 +1,13 @@
+﻿@page "/Logout"
+@model SimpleBet.Pages.LogoutModel
+
+
+<form method="post" id="logoutForm">
+    @Html.AntiForgeryToken()
+</form>
+
+<script>
+    (() => {
+        document.getElementById('logoutForm').submit();
+    })()
+</script>

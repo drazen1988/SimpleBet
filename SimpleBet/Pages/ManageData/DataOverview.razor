@@ -1,0 +1,219 @@
+﻿@page "/ManageData/DataOverview"
+
+@using DataAcesss.Data
+@using DataAcesss.Repositories.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using Models.ViewModels
+@using NLog
+@using SimpleBet.Helpers
+
+@inject UserManager<ApplicationUser> _UserManager
+@inject IMatchRepository MatchRepository
+@inject IJSRuntime JsRuntime
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Pregled podataka</PageTitle>
+
+<div id="container">
+    <SfSpinner @bind-Visible="@SpinnerVisible" Size="50"></SfSpinner>
+</div>
+
+<button class="btn btn-danger" @onclick="DeleteClickHandler">Obriši sve</button>
+<br />
+<br />
+<SfGrid @ref="GridMatches" DataSource="MatchList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+    <GridEvents OnActionBegin="OnActionBegin" TValue="MatchVM"></GridEvents>
+    <GridPageSettings PageSize="12"></GridPageSettings>
+    <GridEditSettings AllowDeleting="true" AllowEditing="true" AllowAdding="true" Mode="EditMode.Normal" ShowDeleteConfirmDialog="true"></GridEditSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(MatchVM.MatchId) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.MatchDateTime) EditType="EditType.DateTimePickerEdit" DefaultValue="@(DateTime.Now)" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.WebId) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.HomeTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.AwayTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.HomeCoeficient) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.DrawCoeficient) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.AwayCoeficient) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.Result) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema podataka za prikaz.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+<DeleteConfirmation DialogMessage=@DialogMessage ConfirmationChanged="DeleteAllData"></DeleteConfirmation>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private bool SpinnerVisible { get; set; } = false;
+    public string DialogMessage;
+    public List<MatchVM> MatchList { get; set; } = new List<MatchVM>();
+    SfGrid<MatchVM> GridMatches;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                this.SpinnerVisible = true;
+                await Task.Delay(1);
+                MatchList = await MatchRepository.GetAllMatchesAsync();
+                this.SpinnerVisible = false;
+                StateHasChanged();
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+    }
+
+    public async Task DeleteClickHandler()
+    {
+        DialogMessage = $"Jeste li sigurni da želite obrisati sve podatke?";
+        await JsRuntime.InvokeVoidAsync("ShowDeleteConfirmationModal");
+    }
+
+    public async void OnActionBegin(ActionEventArgs<MatchVM> Args)
+    {
+        if (Args.RequestType.ToString() == "Delete")
+        {
+            try
+            {
+                bool success = await MatchRepository.DeleteMatchAsync(Args.Data.WebId);
+
+                if (success)
+                {
+                    await JsRuntime.ToastrSuccess("Podatak je uspješno obrisan.");
+                }
+                else
+                {
+                    await JsRuntime.ToastrInfo("Nije obrisan nijedan redak.");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+
+        if (Args.RequestType.ToString() == "Save")
+        {
+            try
+            {
+                if (Args.Action == "Add")
+                {
+                    var authState = await authenticationStateTask;
+                    ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+                    Args.Data.UserId = user.Id;
+
+                    bool success = await MatchRepository.AddMatchAsync(Args.Data);
+
+                    if (success)
+                    {
+                        await JsRuntime.ToastrSuccess("Utakmica je uspješno unesena.");
+                        await GridMatches.Refresh();
+                    }
+                    else
+                    {
+                        await JsRuntime.ToastrWarning("Utakmica nije unesena.");
+                    }
+                }
+
+                if (Args.Action == "Edit")
+                {
+                    int rowsUpdated = await MatchRepository.UpdateMatchAsync(Args.Data);
+
+                    if (rowsUpdated > 0)
+                    {
+                        await JsRuntime.ToastrSuccess("Podatak je uspješno ažuriran.");
+                    }
+                    else
+                    {
+                        await JsRuntime.ToastrInfo("Nije ažuriran nijedan redak.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+    }
+
+    public async Task DeleteAllData(bool isConfirmed)
+    {
+        if (isConfirmed)
+        {
+            try
+            {
+                int rowsDeleted = await MatchRepository.DeleteAllMatchesAsync();
+
+                if (rowsDeleted > 0)
+                {
+                    await JsRuntime.ToastrSuccess($"Uspješno je obrisano {rowsDeleted} redaka.");
+                }
+                else
+                {
+                    await JsRuntime.ToastrInfo("Nije obrisan nijedan redak.");
+                }
+
+                MatchList = await MatchRepository.GetAllMatchesAsync();
+                await GridMatches.Refresh();
+            }
+            catch (Exception e)
+            {
+                Logger logger = LogManager.GetLogger("errorLogger");
+                logger.Error(e, "");
+
+                if (e.InnerException == null)
+                {
+                    await JsRuntime.ToastrError(e.Message);
+                }
+                else
+                {
+                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+                }
+            }
+        }
+
+        await JsRuntime.InvokeVoidAsync("HideDeleteConfirmationModal");
+    }
+}
+

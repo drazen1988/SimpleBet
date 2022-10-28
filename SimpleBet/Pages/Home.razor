@@ -1,0 +1,84 @@
+﻿@page "/Home"
+
+@using DataAcesss.Repositories.Interfaces
+@using NLog
+@using SimpleBet.Helpers
+
+@inject IJSRuntime JsRuntime
+@inject IUserRepository UserRepository
+@inject IClanRepository ClanRepository
+@attribute [Authorize]
+
+<PageTitle>Početna</PageTitle>
+
+<div class="container counter-section">
+    <div class="row text-center">
+        <div class="col-sm-12 col-md-6 col-lg-3 counter-box">
+            <div class="icon-box">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <p class="counter" data-val="@UserCount">0</p>
+            <p>Igrača</p>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-3 counter-box">
+            <div class="icon-box">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <p class="counter" data-val="@ClanCount">0</p>
+            <p>Klanova</p>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-3 counter-box">
+            <div class="icon-box">
+                <i class="fa-solid fa-flag"></i>
+            </div>
+            <p class="counter" data-val="32">0</p>
+            <p>Države</p>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-3 counter-box">
+            <div class="icon-box">
+                <i class="fa-solid fa-dice"></i>
+            </div>
+            <p class="counter" data-val="64">0</p>
+            <p>Utakmice</p>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private IJSObjectReference jsModule { get; set; }
+    private int UserCount { get; set; }
+    private int ClanCount { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            jsModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/index.js");
+            await jsModule.InvokeVoidAsync("CounterUp");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            UserCount = await UserRepository.GetUserCountAsync();
+            ClanCount = await ClanRepository.GetClanCountAsync();
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}

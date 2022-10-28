@@ -1,0 +1,85 @@
+﻿@page "/"
+@layout EmptyLayout
+
+@using DataAcesss.Data
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Logging
+@using NLog
+@using SimpleBet.Helpers
+@using Models.ViewModels
+@using SimpleBet.Middleware
+@using DataAcesss.Repositories.Interfaces
+
+@inject IJSRuntime JsRuntime
+@inject SignInManager<ApplicationUser> _SignInManager
+@inject UserManager<ApplicationUser> _UserManager
+@inject NavigationManager _NavManager
+@inject IUserRepository UserRepository
+
+<PageTitle>Login</PageTitle>
+
+<div id="bgImage"></div>
+
+<EditForm Model="Model" OnValidSubmit="SignIn">
+    <div class="login-form">
+        <DataAnnotationsValidator />
+        <SfTextBox Placeholder="Korisničko ime" @bind-Value="Model.UserName" CssClass="mb-2" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+        <br />
+        <SfTextBox Placeholder="Lozinka" Type="InputType.Password" @bind-Value="Model.Password" FloatLabelType="FloatLabelType.Always"></SfTextBox>
+        <br />
+        <br />
+        <div class="text-center">
+            <button class="btn btn-primary" type="submit">Prijava</button>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    public LoginVM Model { get; set; } = new LoginVM();
+
+    public async void SignIn()
+    {
+        try
+        {
+            var user = await _UserManager.FindByNameAsync(Model.UserName);
+
+            if (user == null)
+            {
+                await JsRuntime.ToastrWarning("Pogrešno korisničko ime i/ili lozinka.");
+                return;
+            }
+
+            var result = await _SignInManager.CheckPasswordSignInAsync(user, Model.Password, true);
+
+            if (result.Succeeded)
+            {
+                Guid key = Guid.NewGuid();
+                BlazorCookieLoginMiddleware.Logins[key] = new LoginInfo { UserName = Model.UserName, Password = Model.Password };
+                _NavManager.NavigateTo($"/login?key={key}", true);
+            }
+            else if (result.IsLockedOut)
+            {
+                await JsRuntime.ToastrWarning("Vaš korisnički račun je zablokiran. Pokušajte ponovno nakon 5 minuta");
+            }
+            else
+            {
+                await JsRuntime.ToastrWarning("Pogrešno korisničko ime i/ili lozinka.");
+            }
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}

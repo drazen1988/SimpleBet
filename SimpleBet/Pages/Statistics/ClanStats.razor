@@ -1,0 +1,86 @@
+﻿@page "/Statistics/ClanStats"
+@using Models.ViewModels
+@using DataAcesss.Repositories.Interfaces
+@using NLog
+@using SimpleBet.Helpers
+
+@inject IJSRuntime JsRuntime
+@inject IStatsRepository StatsRepository
+@attribute [Authorize]
+
+<PageTitle>Klanovi</PageTitle>
+
+<SfAccumulationChart EnableBorderOnMouseMove="false" Title="Broj igrača po klanovima" EnableAnimation="true">
+    <AccumulationChartTitleStyle Size="23px"></AccumulationChartTitleStyle>
+    <AccumulationChartTooltipSettings Header="" Format="<b>${point.x}</b><br>Broj igrača: <b>${point.y}</b>" Enable="true"></AccumulationChartTooltipSettings>
+    <AccumulationChartLegendSettings Visible="false"></AccumulationChartLegendSettings>
+    <AccumulationChartSeriesCollection>
+        <AccumulationChartSeries DataSource="ClanUsers" XName="ClanName" YName="UsersCount" Name="ClanName">
+            <AccumulationDataLabelSettings Visible="true" Name="Label" Position="AccumulationLabelPosition.Outside">
+                <AccumulationChartDataLabelFont FontWeight="600"></AccumulationChartDataLabelFont>
+                <AccumulationChartConnector Length="20px" Type="ConnectorType.Curve"></AccumulationChartConnector>
+            </AccumulationDataLabelSettings>
+        </AccumulationChartSeries>
+    </AccumulationChartSeriesCollection>
+</SfAccumulationChart>
+
+<SfChart Title="Poredak po klanovima (prosječni koeficijent)">
+    <ChartTitleStyle Size="23px"></ChartTitleStyle>
+    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category">
+    </ChartPrimaryXAxis>
+
+    <ChartSeriesCollection>
+        <ChartSeries DataSource="WinnersList" XName="ClanName" YName="AvgCoeficient" Type="ChartSeriesType.Column">
+            <ChartMarker>
+                <ChartDataLabel Visible="true"/>
+            </ChartMarker>
+        </ChartSeries>
+    </ChartSeriesCollection>
+</SfChart>
+
+<br />
+<br />
+<SfChart Title="Poredak po klanovima (pogođene utakmice)">
+    <ChartTitleStyle Size="23px"></ChartTitleStyle>
+    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category">
+    </ChartPrimaryXAxis>
+
+    <ChartSeriesCollection>
+        <ChartSeries DataSource="WinnersListAbs" XName="ClanName" YName="WinningBetsCount" Type="ChartSeriesType.Column">
+            <ChartMarker>
+                <ChartDataLabel Visible="true"/>
+            </ChartMarker>
+        </ChartSeries>
+    </ChartSeriesCollection>
+</SfChart>
+
+
+@code{
+    public List<ClanStatsVM.ClanStatsPercentage> WinnersList { get; set; } = new List<ClanStatsVM.ClanStatsPercentage>();
+    public List<ClanStatsVM.ClanStatsAbs> WinnersListAbs { get; set; } = new List<ClanStatsVM.ClanStatsAbs>();
+    public List<ClanStatsVM.ClanUsers> ClanUsers { get; set; } = new List<ClanStatsVM.ClanUsers>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            WinnersList = await StatsRepository.GetClanStatsAsync();
+            WinnersListAbs = await StatsRepository.GetClanStatsAbsAsync();
+            ClanUsers = await StatsRepository.GetClanUsersAsync();
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}

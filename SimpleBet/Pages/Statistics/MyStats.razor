@@ -1,0 +1,97 @@
+﻿@page "/Statistics/MyStats"
+
+@using DataAcesss.Data
+@using Microsoft.AspNetCore.Identity
+@using Models.ViewModels
+@using DataAcesss.Repositories.Interfaces
+@using NLog
+@using SimpleBet.Helpers
+
+@inject IJSRuntime JsRuntime
+@inject UserManager<ApplicationUser> _UserManager
+@inject IStatsRepository StatsRepository
+
+<PageTitle>Moja statistika</PageTitle>
+
+<h3>Općenito</h3>
+
+<div class="form-container p-3 mb-2 bg-light rounded">
+    <div class="mb-3 mb-3">
+        <div class="label fw-bold">Korisnik: </div>
+        <div class="value">@Model.UserName</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Klan: </div>
+        <div class="value">@Model.ClanName</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Ukupan broj odigranih oklada: </div>
+        <div class="value">@Model.TotalBetCount</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Broj pogođenih oklada: </div>
+        <div class="value">@Model.WinningBetCount</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Najbolji pogođeni koeficijent: </div>
+        <div class="value">@Model.BestWinningCoeficient</div>
+    </div>
+</div>
+
+<br />
+<h3>Detalji</h3>
+
+<SfGrid DataSource="betList" AllowPaging="true">
+    <GridPageSettings PageSize="10"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(MyStatsGridVM.MatchId) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(MyStatsGridVM.MatchDateTime) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MyStatsGridVM.HomeTeam) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(MyStatsGridVM.AwayTeam) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(MyStatsGridVM.Result) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(MyStatsGridVM.BetType) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(MyStatsGridVM.BetCoeficient) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MyStatsGridVM.IsWinningBet) DisplayAsCheckBox=true TextAlign="TextAlign.Center" Width="150"></GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema podataka za prikaz.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private MyStatsVM Model { get; set; } = new MyStatsVM();
+    private List<MyStatsGridVM> betList { get; set; } = new List<MyStatsGridVM>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+            Model = await StatsRepository.GetMyStatsAsync(user.Id);
+            betList = await StatsRepository.GetBetsByUserAsync(user.Id);
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}

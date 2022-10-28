@@ -1,0 +1,67 @@
+﻿@page "/Account/PersonalData"
+
+@using DataAcesss.Data
+@using DataAcesss.Repositories.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using NLog
+@using SimpleBet.Helpers
+
+@inject IJSRuntime JsRuntime
+@inject IClanRepository ClanRepository
+@inject UserManager<ApplicationUser> _UserManager
+
+<PageTitle>Osobni podaci</PageTitle>
+
+<div class="form-container p-3 mb-2 bg-light rounded">
+    <div class="mb-3 mb-3">
+        <div class="label fw-bold">Korisničko ime: </div>
+        <div class="value">@Model.UserName</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Ime i prezime: </div>
+        <div class="value">@Model.FullName</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Email: </div>
+        <div class="value">@Model.Email</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Klan: </div>
+        <div class="value">@ClanName</div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    public ApplicationUser Model { get; set; } = new ApplicationUser();
+    public string ClanName { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+            Model = await _UserManager.GetUserAsync(authState.User);
+            Clan clan = await ClanRepository.GetClanAsync(Model.ClanId);
+            ClanName = clan.ClanName;
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}

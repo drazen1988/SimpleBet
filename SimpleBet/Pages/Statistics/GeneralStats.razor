@@ -1,0 +1,166 @@
+﻿@page "/Statistics/GeneralStats"
+@using DataAcesss.Data
+@using Models.ViewModels
+@using DataAcesss.Repositories.Interfaces
+@using NLog
+@using SimpleBet.Helpers
+
+@inject IJSRuntime JsRuntime
+@inject IStatsRepository StatsRepository
+@inject IMatchRepository MatchRepository
+@attribute [Authorize]
+
+<PageTitle>Igrači</PageTitle>
+
+<h4 class="text-center">Top 5 igrača s najboljim pobjedničkim nizom</h4>
+<br />
+
+<SfGrid DataSource="UserStreaks">
+    <GridColumns>
+        <GridColumn Field=@nameof(GeneralStatsVM.BestUserStreak.UserId) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(GeneralStatsVM.BestUserStreak.UserName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(GeneralStatsVM.BestUserStreak.Streak) TextAlign="TextAlign.Center" Width="200"></GridColumn>
+        <GridColumn Width="120">
+            <Template>
+                @{
+                    var streak = (context as GeneralStatsVM.BestUserStreak);
+                }
+                <button class="btn btn-primary" @onclick="()=>GetDetails(streak)">Detalji</button>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema dostupnih podataka.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+<br />
+<br />
+<br />
+<h4 class="text-center">Top 5 najboljih pogođenih koeficijenata</h4>
+<br />
+
+<SfGrid DataSource="BestUserCoeficient">
+    <GridColumns>
+        <GridColumn Field=@nameof(GeneralStatsVM.BestUserCoeficient.UserId) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(GeneralStatsVM.BestUserCoeficient.UserName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(GeneralStatsVM.BestUserCoeficient.BestCoeficient) TextAlign="TextAlign.Center" Width="250"></GridColumn>
+        <GridColumn Field=@nameof(GeneralStatsVM.BestUserCoeficient.Match) TextAlign="TextAlign.Center" Width="200"></GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema dostupnih podataka.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+<br />
+<br />
+<br />
+<h4 class="text-center">Broj pobjednika po danima</h4>
+<br />
+<SfChart>
+    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category"></ChartPrimaryXAxis>
+
+    <ChartSeriesCollection>
+        <ChartSeries DataSource="WinsPerDay" XName="MatchDate" YName="WinnersCount" Type="ChartSeriesType.Line">
+        </ChartSeries>
+    </ChartSeriesCollection>
+</SfChart>
+<br />
+<br />
+
+<SfDialog Width="350px" @bind-Visible="DialogVisible" IsModal="true" ShowCloseIcon="true">
+    <DialogTemplates>
+        <Header>
+            <span>Pogođene utakmice</span>
+        </Header>
+        <Content>
+            <div class="dialog-content">
+                <SfGrid DataSource="MatchList">
+                    <GridColumns>
+                        <GridColumn Field=@nameof(GeneralStatsVM.MatchList.Match) TextAlign="TextAlign.Center"></GridColumn>
+                    </GridColumns>
+                    <GridTemplates>
+                        <EmptyRecordTemplate>
+                            <div class="text-center">
+                                <span>Nema dostupnih podataka.</span>
+                            </div>
+                        </EmptyRecordTemplate>
+                    </GridTemplates>
+                </SfGrid>
+            </div>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+    private bool DialogVisible { get; set; } = false;
+    private List<GeneralStatsVM.MatchList> MatchList = new List<GeneralStatsVM.MatchList>();
+    private List<GeneralStatsVM.BestUserStreak> UserStreaks { get; set; } = new List<GeneralStatsVM.BestUserStreak>();
+    private List<GeneralStatsVM.BestUserCoeficient> BestUserCoeficient { get; set; } = new List<GeneralStatsVM.BestUserCoeficient>();
+    private List<GeneralStatsVM.WinsPerDay> WinsPerDay { get; set; } = new List<GeneralStatsVM.WinsPerDay>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            UserStreaks = await StatsRepository.GetBestUserStreakAsync();
+            BestUserCoeficient = await StatsRepository.GetBestUsersCoeficientAsync();
+            WinsPerDay = await StatsRepository.GetWinsPerDayAsync();
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+
+    public async Task GetDetails(GeneralStatsVM.BestUserStreak val)
+    {
+        try
+        {
+            // Clear all previous data before new insert.
+            MatchList.Clear();
+
+            foreach (int matchId in val.MatchIdList)
+            {
+                Match match = await MatchRepository.GetMatchByIdAsync(matchId);
+                string matchName = $"{match.HomeTeam} - {match.AwayTeam} ({match.Result})";
+                GeneralStatsVM.MatchList matchList = new GeneralStatsVM.MatchList();
+                matchList.Match = matchName;
+                MatchList.Add(matchList);
+            }
+
+            this.DialogVisible = true;
+        }
+        catch (Exception e)
+        {
+            Logger logger = LogManager.GetLogger("errorLogger");
+            logger.Error(e, "");
+
+            if (e.InnerException == null)
+            {
+                await JsRuntime.ToastrError(e.Message);
+            }
+            else
+            {
+                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
+            }
+        }
+    }
+}
