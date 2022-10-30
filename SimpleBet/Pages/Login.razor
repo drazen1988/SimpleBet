@@ -4,7 +4,6 @@
 @using DataAcesss.Data
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Logging
-@using NLog
 @using SimpleBet.Helpers
 @using Models.ViewModels
 @using SimpleBet.Middleware
@@ -36,6 +35,7 @@
 
 
 @code {
+    private const string SITE_NAME = "Login";
     public LoginVM Model { get; set; } = new LoginVM();
 
     public async void SignIn()
@@ -69,17 +69,7 @@
         }
         catch (Exception e)
         {
-            Logger logger = LogManager.GetLogger("errorLogger");
-            logger.Error(e, "");
-
-            if (e.InnerException == null)
-            {
-                await JsRuntime.ToastrError(e.Message);
-            }
-            else
-            {
-                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-            }
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 }

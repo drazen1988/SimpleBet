@@ -11,7 +11,11 @@ namespace DataAcesss.Data
 
         [Required]
         public string ClanName { get; set; }
+
+        [Required]
         public DateTime ClanDate { get; set; }
+
+        [Required]
         public string UserId { get; set; }
     }
 }

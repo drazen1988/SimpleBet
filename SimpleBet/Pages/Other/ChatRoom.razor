@@ -1,12 +1,44 @@
 ﻿@page "/Other/ChatRoom"
 
+@using DataAcesss.Data
+@using DataAcesss.Repositories.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using Models.ViewModels
+@using NLog
+@using SimpleBet.Helpers
+
+@inject UserManager<ApplicationUser> _UserManager
+@inject IChatRepository ChatRepository
+@inject IJSRuntime JsRuntime
 @attribute [Authorize]
 
-<PageTitle>Forum</PageTitle>
+<PageTitle>@SITE_NAME</PageTitle>
 
-<h3>Forum</h3>
+<h3>@SITE_NAME</h3>
 
+@foreach (ChatPostVM post in Model.ChatPosts)
+{
+    <div class="container mb-4">
+        <div class="mt-4 p-4 bg-light rounded">
+            <SfTextBox Placeholder="Naslov posta" @bind-Value="post.Title" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+            <SfTextBox Multiline=true Placeholder="Poruka" @bind-Value="post.Message" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+        </div>
+    </div>
+}
 
 @code {
+    private const string SITE_NAME = "ChatRoom";
+    public ChatRoomVM Model { get; set; } = new ChatRoomVM();
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Model = await ChatRepository.GetAllPostsAsync();
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
 }

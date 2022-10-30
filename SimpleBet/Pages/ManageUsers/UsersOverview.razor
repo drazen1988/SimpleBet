@@ -4,7 +4,6 @@
 @using DataAcesss.Repositories.Interfaces
 @using Microsoft.AspNetCore.Identity
 @using Models.ViewModels
-@using NLog
 @using SimpleBet.Helpers
 
 @inject IUserRepository UserRepository
@@ -47,6 +46,7 @@
 
 
 @code {
+    private const string SITE_NAME = "UsersOverview";
     private bool SpinnerVisible { get; set; } = false;
     public List<UsersOverviewVM> UserList { get; set; } = new List<UsersOverviewVM>();
     public List<ClanDropDown> ClanDropDownList { get; set; }
@@ -68,17 +68,7 @@
             }
             catch (Exception e)
             {
-                Logger logger = LogManager.GetLogger("errorLogger");
-                logger.Error(e, "");
-
-                if (e.InnerException == null)
-                {
-                    await JsRuntime.ToastrError(e.Message);
-                }
-                else
-                {
-                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-                }
+                await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
             }
         }
     }
@@ -111,17 +101,7 @@
             }
             catch (Exception e)
             {
-                Logger logger = LogManager.GetLogger("errorLogger");
-                logger.Error(e, "");
-
-                if (e.InnerException == null)
-                {
-                    await JsRuntime.ToastrError(e.Message);
-                }
-                else
-                {
-                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-                }
+                await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
             }
         }
 
@@ -151,17 +131,7 @@
             }
             catch (Exception e)
             {
-                Logger logger = LogManager.GetLogger("errorLogger");
-                logger.Error(e, "");
-
-                if (e.InnerException == null)
-                {
-                    await JsRuntime.ToastrError(e.Message);
-                }
-                else
-                {
-                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-                }
+                await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
             }
         }
     }

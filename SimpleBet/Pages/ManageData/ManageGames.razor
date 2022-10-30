@@ -6,7 +6,6 @@
 @using Microsoft.AspNetCore.Mvc;
 @using System.Text;
 @using Models.ViewModels
-@using NLog
 @using OpenQA.Selenium;
 @using OpenQA.Selenium.Chrome;
 @using OpenQA.Selenium.Support.UI;
@@ -46,6 +45,7 @@
 </SfGrid>
 
 @code {
+    private const string SITE_NAME = "ManageGames";
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
@@ -151,17 +151,7 @@
         }
         catch (Exception e)
         {
-            Logger logger = LogManager.GetLogger("errorLogger");
-            logger.Error(e, "");
-
-            if (e.InnerException == null)
-            {
-                await JsRuntime.ToastrError(e.Message);
-            }
-            else
-            {
-                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-            }
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 
@@ -199,17 +189,7 @@
             }
             catch (Exception e)
             {
-                Logger logger = LogManager.GetLogger("errorLogger");
-                logger.Error(e, "");
-
-                if (e.InnerException == null)
-                {
-                    await JsRuntime.ToastrError(e.Message);
-                }
-                else
-                {
-                    await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-                }
+                await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
             }
         }
         else

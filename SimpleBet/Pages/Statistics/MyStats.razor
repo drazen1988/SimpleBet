@@ -4,7 +4,6 @@
 @using Microsoft.AspNetCore.Identity
 @using Models.ViewModels
 @using DataAcesss.Repositories.Interfaces
-@using NLog
 @using SimpleBet.Helpers
 
 @inject IJSRuntime JsRuntime
@@ -63,6 +62,7 @@
 </SfGrid>
 
 @code {
+    private const string SITE_NAME = "MyStats";
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
@@ -81,17 +81,7 @@
         }
         catch (Exception e)
         {
-            Logger logger = LogManager.GetLogger("errorLogger");
-            logger.Error(e, "");
-
-            if (e.InnerException == null)
-            {
-                await JsRuntime.ToastrError(e.Message);
-            }
-            else
-            {
-                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-            }
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 }

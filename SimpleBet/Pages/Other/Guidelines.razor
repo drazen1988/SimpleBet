@@ -1,6 +1,5 @@
 ﻿@page "/Other/Guidelines"
 
-@using NLog
 @using SimpleBet.Helpers
 @using System.IO
 
@@ -30,6 +29,7 @@
 <button class="btn btn-primary mt-2 mb-4" @onclick="DownloadGuidelines">Preuzmi korisničke upute</button>
 
 @code {
+    private const string SITE_NAME = "Guidelines";
     private IJSObjectReference jsModule { get; set; }
 
     public async Task DownloadGuidelines()
@@ -45,17 +45,7 @@
         }
         catch (Exception e)
         {
-            Logger logger = LogManager.GetLogger("errorLogger");
-            logger.Error(e, "");
-
-            if (e.InnerException == null)
-            {
-                await JsRuntime.ToastrError(e.Message);
-            }
-            else
-            {
-                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-            }
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 }

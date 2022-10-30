@@ -2,7 +2,6 @@
 @using DataAcesss.Data
 @using Models.ViewModels
 @using DataAcesss.Repositories.Interfaces
-@using NLog
 @using SimpleBet.Helpers
 
 @inject IJSRuntime JsRuntime
@@ -100,6 +99,7 @@
 </SfDialog>
 
 @code {
+    private const string SITE_NAME = "GeneralStats";
     private bool DialogVisible { get; set; } = false;
     private List<GeneralStatsVM.MatchList> MatchList = new List<GeneralStatsVM.MatchList>();
     private List<GeneralStatsVM.BestUserStreak> UserStreaks { get; set; } = new List<GeneralStatsVM.BestUserStreak>();
@@ -116,17 +116,7 @@
         }
         catch (Exception e)
         {
-            Logger logger = LogManager.GetLogger("errorLogger");
-            logger.Error(e, "");
-
-            if (e.InnerException == null)
-            {
-                await JsRuntime.ToastrError(e.Message);
-            }
-            else
-            {
-                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-            }
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 
@@ -150,17 +140,7 @@
         }
         catch (Exception e)
         {
-            Logger logger = LogManager.GetLogger("errorLogger");
-            logger.Error(e, "");
-
-            if (e.InnerException == null)
-            {
-                await JsRuntime.ToastrError(e.Message);
-            }
-            else
-            {
-                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-            }
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 }

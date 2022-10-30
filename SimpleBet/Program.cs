@@ -66,8 +66,9 @@ try
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IClanRepository, ClanRepository>();
     builder.Services.AddScoped<IMailRepository, MailRepository>();
+    builder.Services.AddScoped<IChatRepository, ChatRepository>();
+
     builder.Services.AddSyncfusionBlazor();
-    builder.Services.AddHostedService<HostApplicationLifetimeEventsHostedService>();
 
     var config = new MapperConfiguration(cfg =>
     {

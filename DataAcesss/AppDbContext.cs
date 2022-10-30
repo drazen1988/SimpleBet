@@ -21,6 +21,8 @@ namespace DataAcesss
         public DbSet<EventLog> EventLogs { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<Clan> Clans { get; set; }
+        public DbSet<ChatPost> ChatPosts { get; set; }
+        public DbSet<ChatReply> ChatReplies { get; set; }
         public DbSet<LeaderBoardVM> LeaderBoard { get; set; }
         public DbSet<MatchResultsVM> MatchResults { get; set; }
         public DbSet<ClanStatsVM.ClanStatsPercentage> ClanStats { get; set; }
@@ -77,6 +79,10 @@ namespace DataAcesss
 
             modelBuilder.Entity<AuditLog>()
             .Property(l => l.LogDateTime)
+            .HasDefaultValueSql("getdate()");
+
+            modelBuilder.Entity<ChatPost>()
+            .Property(cp => cp.PostDateTime)
             .HasDefaultValueSql("getdate()");
 
             modelBuilder.Entity<LeaderBoardVM>().HasNoKey();

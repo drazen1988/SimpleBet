@@ -4,7 +4,6 @@
 @using DataAcesss.Repositories.Interfaces
 @using Models.ViewModels
 @using Microsoft.AspNetCore.Identity;
-@using NLog
 @using SimpleBet.Helpers
 
 @inject IJSRuntime JsRuntime
@@ -32,6 +31,7 @@
 </SfGrid>
 
 @code {
+    private const string SITE_NAME = "MainLeaderBoard";
     public List<LeaderBoardVM> LeaderBoardList { get; set; } = new List<LeaderBoardVM>();
 
     protected override async Task OnInitializedAsync()
@@ -42,17 +42,7 @@
         }
         catch (Exception e)
         {
-            Logger logger = LogManager.GetLogger("errorLogger");
-            logger.Error(e, "");
-
-            if (e.InnerException == null)
-            {
-                await JsRuntime.ToastrError(e.Message);
-            }
-            else
-            {
-                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-            }
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 }

@@ -4,7 +4,6 @@
 @using DataAcesss.Repositories.Interfaces
 @using Microsoft.AspNetCore.Identity
 @using Models.ViewModels
-@using NLog
 @using SimpleBet.Helpers
 
 @inject IClanRepository ClanRepository
@@ -48,6 +47,7 @@
 </EditForm>
 
 @code {
+    private const string SITE_NAME = "CreateUser";
     public CreateUserVM Model = new CreateUserVM();
 
     protected override async Task OnInitializedAsync()
@@ -59,17 +59,7 @@
         }
         catch (Exception e)
         {
-            Logger logger = LogManager.GetLogger("errorLogger");
-            logger.Error(e, "");
-
-            if (e.InnerException == null)
-            {
-                await JsRuntime.ToastrError(e.Message);
-            }
-            else
-            {
-                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-            }
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 
@@ -144,17 +134,7 @@
         }
         catch (Exception e)
         {
-            Logger logger = LogManager.GetLogger("errorLogger");
-            logger.Error(e, "");
-
-            if (e.InnerException == null)
-            {
-                await JsRuntime.ToastrError(e.Message);
-            }
-            else
-            {
-                await JsRuntime.ToastrError(e.Message + " Inner exception: " + e.InnerException.Message);
-            }
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 }
