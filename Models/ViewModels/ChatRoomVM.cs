@@ -13,11 +13,25 @@ namespace Models.ViewModels
         {
             ChatPosts = new List<ChatPostVM>();
             ChatReplies = new List<ChatReplyVM>();
+            PostSortDropDownList = new List<PostSortDropDown>();
         }
 
         public List<ChatPostVM> ChatPosts { get; set; }
         public List<ChatReplyVM> ChatReplies { get; set; }
         public string CurrentUserId { get; set; }
+        public List<PostSortDropDown> PostSortDropDownList { get; set; }
+        public int SelectedValue { get; set; }
+
+        public List<PostSortDropDown> InitializeDropDown()
+        {
+            List<PostSortDropDown> list = new List<PostSortDropDown> {
+            new PostSortDropDown(){ SortTypeValue = 1, SortTypeText = "Po datumu" },
+            new PostSortDropDown(){ SortTypeValue = 2, SortTypeText = "Po lajkovima" },
+            new PostSortDropDown(){ SortTypeValue = 3, SortTypeText = "Po dislajkovima" }
+            };
+
+            return list;
+        }
     }
 
     public class ChatPostVM
@@ -60,5 +74,11 @@ namespace Models.ViewModels
             get { return AuthorName + ", " + ReplyDateTime.ToString(); }
             set { }
         }
+    }
+
+    public class PostSortDropDown
+    {
+        public int? SortTypeValue { get; set; }
+        public string SortTypeText { get; set; }
     }
 }

@@ -17,6 +17,11 @@
 
 <button class="btn btn-primary" @onclick="()=>ShowNewPost = !ShowNewPost">Novi post</button>
 
+<SfDropDownList Width="150px" CssClass="float-end" TValue="int" TItem="PostSortDropDown" Placeholder="Sortiraj" @bind-Value="Model.SelectedValue" DataSource="Model.PostSortDropDownList">
+    <DropDownListFieldSettings Value="SortTypeValue" Text="SortTypeText"></DropDownListFieldSettings>
+    <DropDownListEvents TItem="PostSortDropDown" TValue="int" ValueChange="SortPosts"></DropDownListEvents>
+</SfDropDownList>
+
 @if (ShowNewPost)
 {
     <div class="container mb-4 p-0">
@@ -129,6 +134,7 @@
             Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
             Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
             Model.CurrentUserId = user.Id;
+            Model.PostSortDropDownList = Model.InitializeDropDown();
         }
         catch (Exception e)
         {
@@ -150,6 +156,8 @@
             if (success)
             {
                 ShowNewPost = false;
+                NewPost.Title = "";
+                NewPost.Message = "";
                 Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
             }
         }
@@ -328,6 +336,29 @@
             if (success)
             {
                 Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task SortPosts(ChangeEventArgs<int, PostSortDropDown> args)
+    {
+        try
+        {
+            switch (args.ItemData.SortTypeValue)
+            {
+                case 1:
+                    Model.ChatPosts = Model.ChatPosts.OrderByDescending(c => c.PostDateTime).ToList();
+                    break;
+                case 2:
+                    Model.ChatPosts = Model.ChatPosts.OrderByDescending(c => c.TotalLikes).ToList();
+                    break;
+                case 3:
+                    Model.ChatPosts = Model.ChatPosts.OrderByDescending(c => c.TotalDislikes).ToList();
+                    break;
             }
         }
         catch (Exception e)
