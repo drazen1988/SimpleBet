@@ -20,7 +20,7 @@
     <GridColumns>
         <GridColumn Field=@nameof(UsersPerClanVM.ClanId) IsPrimaryKey=true Visible=false></GridColumn>
         <GridColumn Field=@nameof(UsersPerClanVM.ClanName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(UsersPerClanVM.UsersPerClan) TextAlign="TextAlign.Center" Width="50" AllowAdding="false" AllowEditing="false"></GridColumn>
+        <GridColumn Field=@nameof(UsersPerClanVM.UsersPerClan) TextAlign="TextAlign.Center" Width="150" AllowAdding="false" AllowEditing="false"></GridColumn>
     </GridColumns>
     <GridTemplates>
         <EmptyRecordTemplate>
@@ -61,7 +61,9 @@
 
                 if (success)
                 {
-                    await JsRuntime.ToastrSuccess("Podatak je uspješno obrisan.");
+                    await JsRuntime.ToastrSuccess("Klan je uspješno obrisan.");
+                    ClanList = await ClanRepository.GetUsersPerClanAsync();
+                    await GridClans.Refresh();
                 }
                 else
                 {
@@ -88,6 +90,8 @@
                     if (success)
                     {
                         await JsRuntime.ToastrSuccess("Klan je uspješno unesen.");
+                        ClanList = await ClanRepository.GetUsersPerClanAsync();
+                        await GridClans.Refresh();
                     }
                     else
                     {
@@ -102,6 +106,8 @@
                     if (rowsUpdated > 0)
                     {
                         await JsRuntime.ToastrSuccess("Klan je uspješno ažuriran.");
+                        ClanList = await ClanRepository.GetUsersPerClanAsync();
+                        await GridClans.Refresh();
                     }
                     else
                     {

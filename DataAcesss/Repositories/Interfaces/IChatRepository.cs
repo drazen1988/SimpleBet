@@ -5,15 +5,15 @@ namespace DataAcesss.Repositories.Interfaces
 {
     public interface IChatRepository
     {
-        Task<bool> AddPostAsync(ChatPostVM chatPost);
+        Task<bool> AddPostAsync(ChatPostVM chatPostVM);
         Task<bool> DeletePostAsync(int postId);
-        Task<int> UpdatePostAsync(ChatPostVM chatPost);
-        Task<ChatRoomVM> GetAllPostsAsync();
-        Task<ChatPost> GetPostByIdAsync(int postId);
-        Task<bool> LikePostAsync(int postId);
-        Task<bool> AddReplyAsync(int postId);
+        Task<int> UpdatePostAsync(int postId, string title, string message);
+        Task<List<ChatPostVM>> GetAllPostsAsync();
+        Task<bool> LikePostAsync(int postId, string userId);
+        Task<bool> DislikePostAsync(int postId, string userId);
+        Task<bool> AddReplyAsync(ChatReplyVM chatReplyVM);
         Task<bool> DeleteReplyAsync(int replyId);
-        Task<int> UpdateReplyAsync(ChatReplyVM chatReply);
-        Task<List<ChatReplyVM>> GetAllRepliesAsync(int postId);
+        Task<int> UpdateReplyAsync(int replyId, string message);
+        Task<List<ChatReplyVM>> GetAllRepliesAsync();
     }
 }

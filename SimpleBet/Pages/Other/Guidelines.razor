@@ -10,6 +10,10 @@
 
 <h3>Pravila</h3>
 
+<div id="container">
+    <SfSpinner @bind-Visible="@SpinnerVisible" Size="50"></SfSpinner>
+</div>
+
 <div class="container mb-4">
     <div class="mt-4 p-4 bg-light rounded">
         <p>Kladimo se na ishod svake utakmice od početka do kraja prvenstva, a opcije su 1, X, 2.</p>
@@ -31,17 +35,22 @@
 @code {
     private const string SITE_NAME = "Guidelines";
     private IJSObjectReference jsModule { get; set; }
+    private bool SpinnerVisible { get; set; } = false;
 
     public async Task DownloadGuidelines()
     {
         try
         {
+            this.SpinnerVisible = true;
+            await Task.Delay(1);
+
             jsModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/fileDownloader.js");
 
             var fileName = "SimpleBet - Korisničke upute.docx";
             byte[] read = File.ReadAllBytes(@"./wwwroot/files/SimpleBet - Korisničke upute.docx");
 
             await jsModule.InvokeVoidAsync("fileDownloader", fileName, Convert.ToBase64String(read));
+            this.SpinnerVisible = false;
         }
         catch (Exception e)
         {

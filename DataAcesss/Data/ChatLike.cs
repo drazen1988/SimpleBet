@@ -3,25 +3,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataAcesss.Data
 {
-    public class ChatReply
+    public class ChatLike
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int ReplyId { get; set; }
-
-        [Required]
-        public string AuthorId { get; set; }
+        public int LikeId { get; set; }
 
         [Required]
         public int PostId { get; set; }
 
         [Required]
-        public string Message { get; set; }
+        public string LikeType { get; set; }
 
         [Required]
-        public DateTime ReplyDateTime { get; set; }
+        public string UserId { get; set; }
+
+        [Required]
+        public DateTime LikeDate { get; set; }
 
         [ForeignKey("PostId")]
-        public ChatPost ChatPost { get; set; }
+        public ChatPost Post { get; set; }
     }
 }

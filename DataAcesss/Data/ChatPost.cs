@@ -18,7 +18,9 @@ namespace DataAcesss.Data
         [Required]
         public string Message { get; set; }
 
-        public int TotalLikes { get; set; }
+        public List<ChatLike> TotalLikes { get; set; }
+
+        public List<ChatReply> TotalReplies { get; set; }
 
         [Required]
         public DateTime PostDateTime { get; set; }

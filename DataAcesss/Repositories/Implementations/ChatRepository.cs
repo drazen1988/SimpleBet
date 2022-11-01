@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using DataAcesss.Data;
 using DataAcesss.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Models.ViewModels;
+using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace DataAcesss.Repositories.Implementations
 {
@@ -16,54 +19,157 @@ namespace DataAcesss.Repositories.Implementations
             _mapper = mapper;
         }
 
-        public Task<bool> AddPostAsync(ChatPostVM chatPost)
+        public async Task<bool> AddPostAsync(ChatPostVM chatPostVM)
         {
-            throw new NotImplementedException();
+            ChatPost chatPost = _mapper.Map<ChatPostVM, ChatPost>(chatPostVM);
+            context.ChatPosts.Add(chatPost);
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<bool> AddReplyAsync(int postId)
+        public async Task<bool> AddReplyAsync(ChatReplyVM chatReplyVM)
         {
-            throw new NotImplementedException();
+            ChatReply chatReply = _mapper.Map<ChatReplyVM, ChatReply>(chatReplyVM);
+            context.ChatReplies.Add(chatReply);
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<bool> DeletePostAsync(int postId)
+        public async Task<bool> DeletePostAsync(int postId)
         {
-            throw new NotImplementedException();
+            ChatPost existingPost = await context.ChatPosts.FindAsync(postId);
+
+            if (existingPost != null)
+            {
+                context.ChatPosts.Remove(existingPost);
+                await context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
         }
 
-        public Task<bool> DeleteReplyAsync(int replyId)
+        public async Task<bool> DeleteReplyAsync(int replyId)
         {
-            throw new NotImplementedException();
+            ChatReply existingReply = await context.ChatReplies.FindAsync(replyId);
+
+            if (existingReply != null)
+            {
+                context.ChatReplies.Remove(existingReply);
+                await context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
         }
 
-        public Task<ChatRoomVM> GetAllPostsAsync()
+        public async Task<List<ChatPostVM>> GetAllPostsAsync()
         {
-            throw new NotImplementedException();
+            Task<List<ChatPostVM>> chatPostList = (from post in context.ChatPosts
+                                                   join user in context.Users
+                                                   on post.AuthorId equals user.Id
+                                                   select new ChatPostVM() { 
+                                                       PostId = post.PostId, 
+                                                       AuthorId = post.AuthorId, 
+                                                       AuthorName = user.UserName, 
+                                                       Title = post.Title, 
+                                                       Message = post.Message, 
+                                                       PostDateTime = post.PostDateTime, 
+                                                       TotalLikes = post.TotalLikes.Where(l=>l.LikeType.ToLower()=="like").Count(), 
+                                                       TotalDislikes = post.TotalLikes.Where(l=>l.LikeType.ToLower()=="dislike").Count(), 
+                                                       TotalReplies = post.TotalReplies.Where(r=>r.PostId == post.PostId).Count() 
+                                                   }).OrderByDescending(c=>c.PostDateTime).ToListAsync();
+
+            return await chatPostList;
         }
 
-        public Task<List<ChatReplyVM>> GetAllRepliesAsync(int postId)
+        public async Task<List<ChatReplyVM>> GetAllRepliesAsync()
         {
-            throw new NotImplementedException();
+            Task<List<ChatReplyVM>> chatReplyList = (from reply in context.ChatReplies
+                                                     join user in context.Users
+                                                     on reply.AuthorId equals user.Id
+                                                     select new ChatReplyVM() { ReplyId = reply.ReplyId, AuthorId = reply.AuthorId, AuthorName = user.UserName, Message = reply.Message, PostId = reply.PostId, ReplyDateTime = reply.ReplyDateTime }).OrderBy(c=>c.ReplyDateTime).ToListAsync();
+
+            return await chatReplyList;
         }
 
-        public Task<ChatPost> GetPostByIdAsync(int postId)
+        public async Task<bool> LikePostAsync(int postId, string userId)
         {
-            throw new NotImplementedException();
+            ChatLike existingLike = await context.ChatLikes.Where(p => p.PostId == postId && p.UserId == userId && p.LikeType.ToLower() == "like").FirstOrDefaultAsync();
+
+            // One user can't like same post twice. Second click will undo post like.
+            if (existingLike == null)
+            {
+                ChatLike chatLike = new ChatLike();
+                chatLike.UserId = userId;
+                chatLike.PostId = postId;
+                chatLike.LikeType = "Like";
+                context.ChatLikes.Add(chatLike);
+                await context.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                context.ChatLikes.Remove(existingLike);
+                await context.SaveChangesAsync();
+                return false;
+            }
         }
 
-        public Task<bool> LikePostAsync(int postId)
+        public async Task<bool> DislikePostAsync(int postId, string userId)
         {
-            throw new NotImplementedException();
+            ChatLike existingDislike = await context.ChatLikes.Where(p => p.PostId == postId && p.UserId == userId && p.LikeType.ToLower() == "dislike").FirstOrDefaultAsync();
+
+            // One user can't dislike same post twice. Second click will undo post dislike.
+            if (existingDislike == null)
+            {
+                ChatLike chatLike = new ChatLike();
+                chatLike.UserId = userId;
+                chatLike.PostId = postId;
+                chatLike.LikeType = "Dislike";
+                context.ChatLikes.Add(chatLike);
+                await context.SaveChangesAsync();
+                return true;
+            }
+            else
+            {
+                context.ChatLikes.Remove(existingDislike);
+                await context.SaveChangesAsync();
+                return false;
+            }
         }
 
-        public Task<int> UpdatePostAsync(ChatPostVM chatPost)
+        public async Task<int> UpdatePostAsync(int postId, string title, string message)
         {
-            throw new NotImplementedException();
+            ChatPost existingPost = await context.ChatPosts.FindAsync(postId);
+
+            if (existingPost != null)
+            {
+                existingPost.Title = title;
+                existingPost.Message = message;
+                context.Update(existingPost);
+                return await context.SaveChangesAsync();
+            }
+            else
+            {
+                return 0;
+            }
         }
 
-        public Task<int> UpdateReplyAsync(ChatReplyVM chatReply)
+        public async Task<int> UpdateReplyAsync(int replyId, string message)
         {
-            throw new NotImplementedException();
+            ChatReply existingReply = await context.ChatReplies.FindAsync(replyId);
+
+            if (existingReply != null)
+            {
+                existingReply.Message = message;
+                context.Update(existingReply);
+                return await context.SaveChangesAsync();
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

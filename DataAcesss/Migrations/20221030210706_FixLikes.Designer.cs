@@ -4,6 +4,7 @@ using DataAcesss;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAcesss.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221030210706_FixLikes")]
+    partial class FixLikes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,10 +244,6 @@ namespace DataAcesss.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<string>("LikeType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
@@ -306,7 +304,7 @@ namespace DataAcesss.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PostId")
+                    b.Property<int?>("PostId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReplyDateTime")
@@ -894,14 +892,14 @@ namespace DataAcesss.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "63b92e30-5828-4b5b-836a-30040f9424f7",
+                            ConcurrencyStamp = "ff8544d5-0971-4120-a702-d186daae6d5c",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "5c327c5c-0ccd-4b6b-bf7a-05829bbf3a95",
+                            ConcurrencyStamp = "036cbf99-dcd4-4d4b-9aae-d6e1f3197815",
                             Name = "Korisnik",
                             NormalizedName = "Korisnik"
                         });
@@ -1222,10 +1220,8 @@ namespace DataAcesss.Migrations
             modelBuilder.Entity("DataAcesss.Data.ChatReply", b =>
                 {
                     b.HasOne("DataAcesss.Data.ChatPost", "ChatPost")
-                        .WithMany("TotalReplies")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("PostId");
 
                     b.Navigation("ChatPost");
                 });
@@ -1295,8 +1291,6 @@ namespace DataAcesss.Migrations
             modelBuilder.Entity("DataAcesss.Data.ChatPost", b =>
                 {
                     b.Navigation("TotalLikes");
-
-                    b.Navigation("TotalReplies");
                 });
 #pragma warning restore 612, 618
         }

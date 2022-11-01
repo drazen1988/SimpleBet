@@ -17,6 +17,8 @@ namespace DataAcesss.Mapper
             CreateMap<ApplicationUser, UsersOverviewVM>().ReverseMap();
             CreateMap<Clan, ClanDropDown>().ReverseMap();
             CreateMap<IdentityRole, UserRoleDropDown>().ReverseMap();
+            CreateMap<ChatPost, ChatPostVM>().ReverseMap();
+            CreateMap<ChatReply, ChatReplyVM>().ReverseMap();
         }
     }
 }

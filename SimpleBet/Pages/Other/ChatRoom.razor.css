@@ -1,0 +1,22 @@
+﻿.container .rounded i {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.container .rounded i span {
+    font-size: 16px;
+    cursor: auto;
+}
+
+.container .rounded .like-icon {
+    font-size: 18px;
+}
+
+.container .rounded .dislike-icon {
+    font-size: 18px;
+    margin-left: 12px;
+}
+
+.container .total-replies {
+    color: #0071c1;
+}

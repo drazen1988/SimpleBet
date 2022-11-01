@@ -14,27 +14,320 @@
 
 <PageTitle>@SITE_NAME</PageTitle>
 
-<h3>@SITE_NAME</h3>
 
-@foreach (ChatPostVM post in Model.ChatPosts)
+<button class="btn btn-primary" @onclick="()=>ShowNewPost = !ShowNewPost">Novi post</button>
+
+@if (ShowNewPost)
 {
-    <div class="container mb-4">
-        <div class="mt-4 p-4 bg-light rounded">
-            <SfTextBox Placeholder="Naslov posta" @bind-Value="post.Title" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
-            <SfTextBox Multiline=true Placeholder="Poruka" @bind-Value="post.Message" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+    <div class="container mb-4 p-0">
+        <div class="px-4 mt-4 bg-light rounded">
+            <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>ShowNewPost = false"></i>
+            <SfTextBox CssClass="mt-0" Placeholder="Naslov posta" @bind-Value="NewPost.Title" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+            <SfTextBox Multiline=true Placeholder="Poruka" @bind-Value="NewPost.Message" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+            <button class="btn btn-primary mt-3 mb-4" @onclick="SavePost">Objavi</button>
         </div>
     </div>
 }
 
+@foreach (ChatPostVM post in Model.ChatPosts)
+{
+    <div class="container mt-4 px-0">
+        <div class="p-2 px-3 bg-success rounded" style="--bs-bg-opacity: .3;">
+
+            @if (post.EditPostVisible)
+            {
+                <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>post.EditPostVisible = !post.EditPostVisible"></i>
+                <SfTextBox CssClass="mt-0" Placeholder="Naslov posta" @bind-Value="EditPostTitle" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+                <SfTextBox Multiline=true Placeholder="Poruka" @bind-Value="EditPostMessage" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+                <button class="btn btn-primary mt-3 mb-4" @onclick="()=>SaveEditPost(post.PostId, EditPostTitle, EditPostMessage)">Objavi</button>
+            }
+            else
+            {
+                <h4>@post.Title</h4>
+                <p class="mb-3">@post.Message</p>
+                <i class="fa fa-thumbs-up float-start text-primary like-icon" title="Sviđa mi se" @onclick="() => LikePost(post.PostId)"><span class="mx-2 text-secondary">@post.TotalLikes</span></i>
+                <i class="fa fa-thumbs-down float-start text-danger dislike-icon" title="Sviđa mi se" @onclick="() => DislikePost(post.PostId)"><span class="mx-2 text-secondary">@post.TotalDislikes</span></i>
+                <p class="float-end">@post.PostFooter</p>
+                <br>
+            }
+        </div>
+        @if (Model.CurrentUserId == post.AuthorId)
+        {
+            <button type="button" class="btn btn-link p-0 px-1" @onclick="()=>DeletePost(post.PostId)">Obriši post</button>
+            <button type="button" class="btn btn-link p-0" @onclick="()=>EditPost(post.PostId)">Uredi post</button>
+        }
+        <button type="button" class="btn btn-link p-0 px-1" @onclick="()=>ShowNewReply(post.PostId)">
+            Odgovori
+        </button>
+        <button type="button" class="btn btn-link p-0" @onclick="()=>ShowReplies(post.PostId)">Prikaži komentare</button>
+        <span class="total-replies">(@post.TotalReplies)</span>
+    </div>
+
+    @if (post.NewReplyVisible)
+    {
+        <div class="container px-0 mb-4">
+            <div class="px-4 bg-light rounded">
+                <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>ShowNewReply(post.PostId)"></i>
+                <SfTextBox Multiline=true CssClass="mt-0" Placeholder="Poruka" @bind-Value="NewReply.Message" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+                <button class="btn btn-primary mt-3 mb-4" @onclick="()=>SaveReply(post.PostId)">Objavi</button>
+            </div>
+        </div>
+    }
+
+    @if (post.AllRepliesVisible)
+    {
+        @foreach (ChatReplyVM reply in Model.ChatReplies)
+        {
+            @if (reply.PostId == post.PostId)
+            {
+                <div class="container mt-2">
+                    <div class="mx-3 p-2 bg-warning rounded" style="--bs-bg-opacity: .3;">
+                        @if (reply.EditReplyVisible)
+                        {
+                            <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>reply.EditReplyVisible = !reply.EditReplyVisible"></i>
+                            <SfTextBox Multiline=true CssClass="mt-0" Placeholder="Poruka" @bind-Value="EditReplyMessage" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+                            <button class="btn btn-primary mt-3 mb-2" @onclick="()=>SaveEditReply(reply.ReplyId, EditReplyMessage)">Objavi</button>
+                        }
+                        else
+                        {
+                            <p>@reply.Message</p>
+                            <p class="float-end">@reply.ReplyFooter</p>
+                            @if (Model.CurrentUserId == reply.AuthorId)
+                            {
+                                <button type="button" class="btn btn-link p-0" @onclick="()=>DeleteReply(reply.ReplyId)">Obriši</button>
+                                <button type="button" class="btn btn-link p-0" @onclick="()=>EditReply(reply.ReplyId)">Uredi</button>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        }
+    }
+}
+
 @code {
     private const string SITE_NAME = "ChatRoom";
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    public bool ShowNewPost { get; set; } = false;
     public ChatRoomVM Model { get; set; } = new ChatRoomVM();
+    public ChatPostVM NewPost { get; set; } = new ChatPostVM();
+    public ChatReplyVM NewReply { get; set; } = new ChatReplyVM();
+    public string EditPostTitle { get; set; }
+    public string EditPostMessage { get; set; }
+    public string EditReplyMessage { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Model = await ChatRepository.GetAllPostsAsync();
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+            Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+            Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
+            Model.CurrentUserId = user.Id;
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task SavePost()
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+            NewPost.AuthorId = user.Id;
+
+            bool success = await ChatRepository.AddPostAsync(NewPost);
+            await JsRuntime.ToastrSuccess("Novi post objavljen.");
+
+            if (success)
+            {
+                ShowNewPost = false;
+                Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public void EditPost(int postId)
+    {
+        EditPostTitle = Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().Title;
+        EditPostMessage = Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().Message;
+        Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().EditPostVisible = !Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().EditPostVisible;
+    }
+
+    public async Task SaveEditPost(int postId, string title, string message)
+    {
+        try
+        {
+            int rowsUpdated = await ChatRepository.UpdatePostAsync(postId, title, message);
+
+            if (rowsUpdated > 0)
+            {
+                Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                EditPostTitle = "";
+                EditPostMessage = "";
+            }
+            else
+            {
+                await JsRuntime.ToastrWarning("Post nije ažuriran.");
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task DeletePost(int postId)
+    {
+        try
+        {
+            bool success = await ChatRepository.DeletePostAsync(postId);
+
+            if (success)
+            {
+                Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                await JsRuntime.ToastrSuccess("Vaš post je obrisan.");
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task LikePost(int postId)
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+            bool success = await ChatRepository.LikePostAsync(postId, user.Id);
+
+            if (success)
+            {
+                Model.ChatPosts.Where(p => p.PostId == postId).FirstOrDefault().TotalLikes += 1;
+            }
+            else
+            {
+                Model.ChatPosts.Where(p => p.PostId == postId).FirstOrDefault().TotalLikes -= 1;
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task DislikePost(int postId)
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+
+            bool success = await ChatRepository.DislikePostAsync(postId, user.Id);
+
+            if (success)
+            {
+                Model.ChatPosts.Where(p => p.PostId == postId).FirstOrDefault().TotalDislikes += 1;
+            }
+            else
+            {
+                Model.ChatPosts.Where(p => p.PostId == postId).FirstOrDefault().TotalDislikes -= 1;
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public void ShowNewReply(int postId)
+    {
+        Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().NewReplyVisible = !Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().NewReplyVisible;
+    }
+
+    public void ShowReplies(int postId)
+    {
+        Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().AllRepliesVisible = !Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().AllRepliesVisible;
+    }
+
+    public async Task SaveReply(int postId)
+    {
+        try
+        {
+            var authState = await authenticationStateTask;
+            ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
+            NewReply.AuthorId = user.Id;
+            NewReply.PostId = postId;
+
+            bool success = await ChatRepository.AddReplyAsync(NewReply);
+
+            if (success)
+            {
+                Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().NewReplyVisible = false;
+                Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().AllRepliesVisible = true;
+                Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().TotalReplies += 1;
+                Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
+                NewReply.Message = "";
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public void EditReply(int replyId)
+    {
+        EditReplyMessage = Model.ChatReplies.Where(c => c.ReplyId == replyId).FirstOrDefault().Message;
+        Model.ChatReplies.Where(c => c.ReplyId == replyId).FirstOrDefault().EditReplyVisible = !Model.ChatReplies.Where(c => c.ReplyId == replyId).FirstOrDefault().EditReplyVisible;
+    }
+
+    public async Task SaveEditReply(int replyId, string message)
+    {
+        try
+        {
+            int rowsUpdated = await ChatRepository.UpdateReplyAsync(replyId, message);
+
+            if (rowsUpdated > 0)
+            {
+                Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
+                EditReplyMessage = "";
+            }
+            else
+            {
+                await JsRuntime.ToastrWarning("Komentar nije ažuriran.");
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task DeleteReply(int replyId)
+    {
+        try
+        {
+            bool success = await ChatRepository.DeleteReplyAsync(replyId);
+
+            if (success)
+            {
+                Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
+            }
         }
         catch (Exception e)
         {

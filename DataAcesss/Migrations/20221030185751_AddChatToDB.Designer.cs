@@ -4,6 +4,7 @@ using DataAcesss;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAcesss.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221030185751_AddChatToDB")]
+    partial class AddChatToDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -229,37 +231,6 @@ namespace DataAcesss.Migrations
                     b.ToTable("Bets");
                 });
 
-            modelBuilder.Entity("DataAcesss.Data.ChatLike", b =>
-                {
-                    b.Property<int>("LikeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LikeId"), 1L, 1);
-
-                    b.Property<DateTime>("LikeDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
-
-                    b.Property<string>("LikeType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("LikeId");
-
-                    b.HasIndex("PostId");
-
-                    b.ToTable("ChatLikes");
-                });
-
             modelBuilder.Entity("DataAcesss.Data.ChatPost", b =>
                 {
                     b.Property<int>("PostId")
@@ -285,6 +256,9 @@ namespace DataAcesss.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TotalLikes")
+                        .HasColumnType("int");
+
                     b.HasKey("PostId");
 
                     b.ToTable("ChatPosts");
@@ -306,13 +280,11 @@ namespace DataAcesss.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PostId")
+                    b.Property<int?>("PostId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReplyDateTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getdate()");
+                        .HasColumnType("datetime2");
 
                     b.HasKey("ReplyId");
 
@@ -894,14 +866,14 @@ namespace DataAcesss.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "63b92e30-5828-4b5b-836a-30040f9424f7",
+                            ConcurrencyStamp = "7a494198-8ea3-4791-878f-e40bc20a7717",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "5c327c5c-0ccd-4b6b-bf7a-05829bbf3a95",
+                            ConcurrencyStamp = "942e8755-5ed3-4bf0-bcd2-6fb1ed2bdf0a",
                             Name = "Korisnik",
                             NormalizedName = "Korisnik"
                         });
@@ -1208,24 +1180,11 @@ namespace DataAcesss.Migrations
                     b.Navigation("Match");
                 });
 
-            modelBuilder.Entity("DataAcesss.Data.ChatLike", b =>
-                {
-                    b.HasOne("DataAcesss.Data.ChatPost", "Post")
-                        .WithMany("TotalLikes")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Post");
-                });
-
             modelBuilder.Entity("DataAcesss.Data.ChatReply", b =>
                 {
                     b.HasOne("DataAcesss.Data.ChatPost", "ChatPost")
-                        .WithMany("TotalReplies")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("PostId");
 
                     b.Navigation("ChatPost");
                 });
@@ -1290,13 +1249,6 @@ namespace DataAcesss.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DataAcesss.Data.ChatPost", b =>
-                {
-                    b.Navigation("TotalLikes");
-
-                    b.Navigation("TotalReplies");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,6 +4,7 @@ using DataAcesss;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAcesss.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221030205002_AddedPostLikes")]
+    partial class AddedPostLikes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,10 +244,6 @@ namespace DataAcesss.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<string>("LikeType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
@@ -285,6 +283,9 @@ namespace DataAcesss.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TotalLikes")
+                        .HasColumnType("int");
+
                     b.HasKey("PostId");
 
                     b.ToTable("ChatPosts");
@@ -306,7 +307,7 @@ namespace DataAcesss.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PostId")
+                    b.Property<int?>("PostId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReplyDateTime")
@@ -894,14 +895,14 @@ namespace DataAcesss.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "63b92e30-5828-4b5b-836a-30040f9424f7",
+                            ConcurrencyStamp = "7502b3fd-40fb-4a4a-ace8-647270657934",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "5c327c5c-0ccd-4b6b-bf7a-05829bbf3a95",
+                            ConcurrencyStamp = "8ea6ca95-5ede-4b33-ac3f-add02baaf091",
                             Name = "Korisnik",
                             NormalizedName = "Korisnik"
                         });
@@ -1211,7 +1212,7 @@ namespace DataAcesss.Migrations
             modelBuilder.Entity("DataAcesss.Data.ChatLike", b =>
                 {
                     b.HasOne("DataAcesss.Data.ChatPost", "Post")
-                        .WithMany("TotalLikes")
+                        .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1222,10 +1223,8 @@ namespace DataAcesss.Migrations
             modelBuilder.Entity("DataAcesss.Data.ChatReply", b =>
                 {
                     b.HasOne("DataAcesss.Data.ChatPost", "ChatPost")
-                        .WithMany("TotalReplies")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("PostId");
 
                     b.Navigation("ChatPost");
                 });
@@ -1290,13 +1289,6 @@ namespace DataAcesss.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DataAcesss.Data.ChatPost", b =>
-                {
-                    b.Navigation("TotalLikes");
-
-                    b.Navigation("TotalReplies");
                 });
 #pragma warning restore 612, 618
         }
