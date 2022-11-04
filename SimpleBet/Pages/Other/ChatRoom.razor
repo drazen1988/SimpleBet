@@ -14,7 +14,13 @@
 
 <PageTitle>@SITE_NAME</PageTitle>
 
+<SfAutoComplete TValue="string" @ref="AutoCompleteAuthor" TItem="string" Placeholder="Pretraži autora posta" Width="300px" DataSource="Model.AuthorNameUnique">
+    <AutoCompleteFieldSettings Value="AuthorNameUnique" />
+    <AutoCompleteEvents TValue="string" TItem="string" ValueChange="FilterAuthors"></AutoCompleteEvents>
+</SfAutoComplete>
 
+<br />
+<br />
 <button class="btn btn-primary" @onclick="()=>ShowNewPost = !ShowNewPost">Novi post</button>
 
 <SfDropDownList Width="150px" CssClass="float-end" TValue="int" TItem="PostSortDropDown" Placeholder="Sortiraj" @bind-Value="Model.SelectedValue" DataSource="Model.PostSortDropDownList">
@@ -24,17 +30,20 @@
 
 @if (ShowNewPost)
 {
-    <div class="container mb-4 p-0">
-        <div class="px-4 mt-4 bg-light rounded">
-            <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>ShowNewPost = false"></i>
-            <SfTextBox CssClass="mt-0" Placeholder="Naslov posta" @bind-Value="NewPost.Title" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
-            <SfTextBox Multiline=true Placeholder="Poruka" @bind-Value="NewPost.Message" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
-            <button class="btn btn-primary mt-3 mb-4" @onclick="SavePost">Objavi</button>
+    <EditForm Model="NewPost" OnValidSubmit="SavePost">
+        <DataAnnotationsValidator />
+        <div class="container mb-4 p-0">
+            <div class="px-4 mt-4 bg-light rounded">
+                <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>ShowNewPost = false"></i>
+                <SfTextBox CssClass="mt-0" Placeholder="Naslov posta" @bind-Value="NewPost.Title" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+                <SfTextBox Multiline=true Placeholder="Poruka" @bind-Value="NewPost.Message" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+                <button type="submit" class="btn btn-primary mt-3 mb-4">Objavi</button>
+            </div>
         </div>
-    </div>
+    </EditForm>
 }
 
-@foreach (ChatPostVM post in Model.ChatPosts)
+@foreach (ChatPostVM post in Model.ChatPostsFiltered)
 {
     <div class="container mt-4 px-0">
         <div class="p-2 px-3 bg-success rounded" style="--bs-bg-opacity: .3;">
@@ -42,9 +51,9 @@
             @if (post.EditPostVisible)
             {
                 <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>post.EditPostVisible = !post.EditPostVisible"></i>
-                <SfTextBox CssClass="mt-0" Placeholder="Naslov posta" @bind-Value="EditPostTitle" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
-                <SfTextBox Multiline=true Placeholder="Poruka" @bind-Value="EditPostMessage" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
-                <button class="btn btn-primary mt-3 mb-4" @onclick="()=>SaveEditPost(post.PostId, EditPostTitle, EditPostMessage)">Objavi</button>
+                <SfTextBox CssClass="mt-0" Placeholder="Naslov posta" @bind-Value="Model.EditPostTitle" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+                <SfTextBox Multiline=true Placeholder="Poruka" @bind-Value="Model.EditPostMessage" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+                <button class="btn btn-primary mt-3 mb-4" @onclick="()=>SaveEditPost(post.PostId, Model.EditPostTitle, Model.EditPostMessage)">Objavi</button>
             }
             else
             {
@@ -90,8 +99,8 @@
                         @if (reply.EditReplyVisible)
                         {
                             <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>reply.EditReplyVisible = !reply.EditReplyVisible"></i>
-                            <SfTextBox Multiline=true CssClass="mt-0" Placeholder="Poruka" @bind-Value="EditReplyMessage" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
-                            <button class="btn btn-primary mt-3 mb-2" @onclick="()=>SaveEditReply(reply.ReplyId, EditReplyMessage)">Objavi</button>
+                            <SfTextBox Multiline=true CssClass="mt-0" Placeholder="Poruka" @bind-Value="Model.EditReplyMessage" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+                            <button class="btn btn-primary mt-3 mb-2" @onclick="()=>SaveEditReply(reply.ReplyId, Model.EditReplyMessage)">Objavi</button>
                         }
                         else
                         {
@@ -111,6 +120,7 @@
     }
 }
 
+
 @code {
     private const string SITE_NAME = "ChatRoom";
     [CascadingParameter]
@@ -120,9 +130,7 @@
     public ChatRoomVM Model { get; set; } = new ChatRoomVM();
     public ChatPostVM NewPost { get; set; } = new ChatPostVM();
     public ChatReplyVM NewReply { get; set; } = new ChatReplyVM();
-    public string EditPostTitle { get; set; }
-    public string EditPostMessage { get; set; }
-    public string EditReplyMessage { get; set; }
+    SfAutoComplete<string, string> AutoCompleteAuthor;
 
     protected override async Task OnInitializedAsync()
     {
@@ -131,10 +139,11 @@
             var authState = await authenticationStateTask;
             ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
 
-            Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+            Model.ChatPostsFiltered = Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
             Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
             Model.CurrentUserId = user.Id;
             Model.PostSortDropDownList = Model.InitializeDropDown();
+            Model.AuthorNameUnique = Model.ChatPosts.Select(c => c.AuthorName).Distinct().ToList();
         }
         catch (Exception e)
         {
@@ -158,7 +167,14 @@
                 ShowNewPost = false;
                 NewPost.Title = "";
                 NewPost.Message = "";
-                Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                Model.ChatPostsFiltered = Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                Model.AuthorNameUnique = Model.ChatPosts.Select(c => c.AuthorName).Distinct().ToList();
+
+                // After save and refresh, filter author again.
+                string value = AutoCompleteAuthor.Value;
+                if (!String.IsNullOrWhiteSpace(value))
+                    Model.ChatPostsFiltered = Model.ChatPosts.Where(c => c.AuthorName == value).ToList();
+
             }
         }
         catch (Exception e)
@@ -169,22 +185,34 @@
 
     public void EditPost(int postId)
     {
-        EditPostTitle = Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().Title;
-        EditPostMessage = Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().Message;
+        Model.EditPostTitle = Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().Title;
+        Model.EditPostMessage = Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().Message;
         Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().EditPostVisible = !Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().EditPostVisible;
     }
 
     public async Task SaveEditPost(int postId, string title, string message)
     {
+        if (String.IsNullOrWhiteSpace(title) || String.IsNullOrWhiteSpace(message))
+        {
+            await JsRuntime.ToastrWarning("Naslov i poruka posta moraju biti popunjeni!");
+            return;
+        }
+
         try
         {
             int rowsUpdated = await ChatRepository.UpdatePostAsync(postId, title, message);
 
             if (rowsUpdated > 0)
             {
-                Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
-                EditPostTitle = "";
-                EditPostMessage = "";
+                Model.ChatPostsFiltered = Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                Model.AuthorNameUnique = Model.ChatPosts.Select(c => c.AuthorName).Distinct().ToList();
+                Model.EditPostTitle = "";
+                Model.EditPostMessage = "";
+
+                // After edit and refresh, filter author again.
+                string value = AutoCompleteAuthor.Value;
+                if (!String.IsNullOrWhiteSpace(value))
+                    Model.ChatPostsFiltered = Model.ChatPosts.Where(c => c.AuthorName == value).ToList();
             }
             else
             {
@@ -205,7 +233,14 @@
 
             if (success)
             {
-                Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                Model.ChatPostsFiltered = Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                Model.AuthorNameUnique = Model.ChatPosts.Select(c => c.AuthorName).Distinct().ToList();
+
+                // After delete and refresh, filter author again.
+                string value = AutoCompleteAuthor.Value;
+                if (!String.IsNullOrWhiteSpace(value))
+                    Model.ChatPostsFiltered = Model.ChatPosts.Where(c => c.AuthorName == value).ToList();
+
                 await JsRuntime.ToastrSuccess("Vaš post je obrisan.");
             }
         }
@@ -222,16 +257,8 @@
             var authState = await authenticationStateTask;
             ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
 
-            bool success = await ChatRepository.LikePostAsync(postId, user.Id);
-
-            if (success)
-            {
-                Model.ChatPosts.Where(p => p.PostId == postId).FirstOrDefault().TotalLikes += 1;
-            }
-            else
-            {
-                Model.ChatPosts.Where(p => p.PostId == postId).FirstOrDefault().TotalLikes -= 1;
-            }
+            int addLike = await ChatRepository.LikePostAsync(postId, user.Id);
+            Model.ChatPosts.Where(p => p.PostId == postId).FirstOrDefault().TotalLikes += addLike;
         }
         catch (Exception e)
         {
@@ -246,16 +273,9 @@
             var authState = await authenticationStateTask;
             ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
 
-            bool success = await ChatRepository.DislikePostAsync(postId, user.Id);
+            int addDislike = await ChatRepository.DislikePostAsync(postId, user.Id);
+            Model.ChatPosts.Where(p => p.PostId == postId).FirstOrDefault().TotalDislikes += addDislike;
 
-            if (success)
-            {
-                Model.ChatPosts.Where(p => p.PostId == postId).FirstOrDefault().TotalDislikes += 1;
-            }
-            else
-            {
-                Model.ChatPosts.Where(p => p.PostId == postId).FirstOrDefault().TotalDislikes -= 1;
-            }
         }
         catch (Exception e)
         {
@@ -301,7 +321,7 @@
 
     public void EditReply(int replyId)
     {
-        EditReplyMessage = Model.ChatReplies.Where(c => c.ReplyId == replyId).FirstOrDefault().Message;
+        Model.EditReplyMessage = Model.ChatReplies.Where(c => c.ReplyId == replyId).FirstOrDefault().Message;
         Model.ChatReplies.Where(c => c.ReplyId == replyId).FirstOrDefault().EditReplyVisible = !Model.ChatReplies.Where(c => c.ReplyId == replyId).FirstOrDefault().EditReplyVisible;
     }
 
@@ -314,7 +334,7 @@
             if (rowsUpdated > 0)
             {
                 Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
-                EditReplyMessage = "";
+                Model.EditReplyMessage = "";
             }
             else
             {
@@ -365,5 +385,20 @@
         {
             await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
+    }
+
+    public async void LoadMorePosts()
+    {
+        await JsRuntime.ToastrSuccess("LoadMorePosts.");
+        //Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+        //Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
+    }
+
+    public void FilterAuthors(Syncfusion.Blazor.DropDowns.ChangeEventArgs<string, string> args)
+    {
+        if (args.Value != null)
+            Model.ChatPostsFiltered = Model.ChatPosts.Where(c => c.AuthorName == args.Value).ToList();
+        else
+            Model.ChatPostsFiltered = Model.ChatPosts;
     }
 }

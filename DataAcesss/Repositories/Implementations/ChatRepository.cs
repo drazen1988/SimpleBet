@@ -68,17 +68,18 @@ namespace DataAcesss.Repositories.Implementations
             Task<List<ChatPostVM>> chatPostList = (from post in context.ChatPosts
                                                    join user in context.Users
                                                    on post.AuthorId equals user.Id
-                                                   select new ChatPostVM() { 
-                                                       PostId = post.PostId, 
-                                                       AuthorId = post.AuthorId, 
-                                                       AuthorName = user.UserName, 
-                                                       Title = post.Title, 
-                                                       Message = post.Message, 
-                                                       PostDateTime = post.PostDateTime, 
-                                                       TotalLikes = post.TotalLikes.Where(l=>l.LikeType.ToLower()=="like").Count(), 
-                                                       TotalDislikes = post.TotalLikes.Where(l=>l.LikeType.ToLower()=="dislike").Count(), 
-                                                       TotalReplies = post.TotalReplies.Where(r=>r.PostId == post.PostId).Count() 
-                                                   }).OrderByDescending(c=>c.PostDateTime).ToListAsync();
+                                                   select new ChatPostVM()
+                                                   {
+                                                       PostId = post.PostId,
+                                                       AuthorId = post.AuthorId,
+                                                       AuthorName = user.UserName,
+                                                       Title = post.Title,
+                                                       Message = post.Message,
+                                                       PostDateTime = post.PostDateTime,
+                                                       TotalLikes = post.TotalLikes.Where(l => l.LikeType.ToLower() == "like").Count(),
+                                                       TotalDislikes = post.TotalLikes.Where(l => l.LikeType.ToLower() == "dislike").Count(),
+                                                       TotalReplies = post.TotalReplies.Where(r => r.PostId == post.PostId).Count()
+                                                   }).OrderByDescending(c => c.PostDateTime).ToListAsync();
 
             return await chatPostList;
         }
@@ -88,55 +89,71 @@ namespace DataAcesss.Repositories.Implementations
             Task<List<ChatReplyVM>> chatReplyList = (from reply in context.ChatReplies
                                                      join user in context.Users
                                                      on reply.AuthorId equals user.Id
-                                                     select new ChatReplyVM() { ReplyId = reply.ReplyId, AuthorId = reply.AuthorId, AuthorName = user.UserName, Message = reply.Message, PostId = reply.PostId, ReplyDateTime = reply.ReplyDateTime }).OrderBy(c=>c.ReplyDateTime).ToListAsync();
+                                                     select new ChatReplyVM() { ReplyId = reply.ReplyId, AuthorId = reply.AuthorId, AuthorName = user.UserName, Message = reply.Message, PostId = reply.PostId, ReplyDateTime = reply.ReplyDateTime }).OrderBy(c => c.ReplyDateTime).ToListAsync();
 
             return await chatReplyList;
         }
 
-        public async Task<bool> LikePostAsync(int postId, string userId)
-        {
-            ChatLike existingLike = await context.ChatLikes.Where(p => p.PostId == postId && p.UserId == userId && p.LikeType.ToLower() == "like").FirstOrDefaultAsync();
-
-            // One user can't like same post twice. Second click will undo post like.
-            if (existingLike == null)
-            {
-                ChatLike chatLike = new ChatLike();
-                chatLike.UserId = userId;
-                chatLike.PostId = postId;
-                chatLike.LikeType = "Like";
-                context.ChatLikes.Add(chatLike);
-                await context.SaveChangesAsync();
-                return true;
-            }
-            else
-            {
-                context.ChatLikes.Remove(existingLike);
-                await context.SaveChangesAsync();
-                return false;
-            }
-        }
-
-        public async Task<bool> DislikePostAsync(int postId, string userId)
+        public async Task<int> LikePostAsync(int postId, string userId)
         {
             ChatLike existingDislike = await context.ChatLikes.Where(p => p.PostId == postId && p.UserId == userId && p.LikeType.ToLower() == "dislike").FirstOrDefaultAsync();
 
-            // One user can't dislike same post twice. Second click will undo post dislike.
+            // User can't like a post if he already disliked it.
             if (existingDislike == null)
             {
-                ChatLike chatLike = new ChatLike();
-                chatLike.UserId = userId;
-                chatLike.PostId = postId;
-                chatLike.LikeType = "Dislike";
-                context.ChatLikes.Add(chatLike);
-                await context.SaveChangesAsync();
-                return true;
+                ChatLike existingLike = await context.ChatLikes.Where(p => p.PostId == postId && p.UserId == userId && p.LikeType.ToLower() == "like").FirstOrDefaultAsync();
+
+                // One user can't like same post twice. Second click will undo post like.
+                if (existingLike == null)
+                {
+                    ChatLike chatLike = new ChatLike();
+                    chatLike.UserId = userId;
+                    chatLike.PostId = postId;
+                    chatLike.LikeType = "Like";
+                    context.ChatLikes.Add(chatLike);
+                    await context.SaveChangesAsync();
+                    return 1;
+                }
+                else
+                {
+                    context.ChatLikes.Remove(existingLike);
+                    await context.SaveChangesAsync();
+                    return -1;
+                }
             }
-            else
+
+            return 0;
+        }
+
+        public async Task<int> DislikePostAsync(int postId, string userId)
+        {
+            ChatLike existingLike = await context.ChatLikes.Where(p => p.PostId == postId && p.UserId == userId && p.LikeType.ToLower() == "like").FirstOrDefaultAsync();
+
+            // User can't dislike a post if he already liked it.
+            if (existingLike == null)
             {
-                context.ChatLikes.Remove(existingDislike);
-                await context.SaveChangesAsync();
-                return false;
+                ChatLike existingDislike = await context.ChatLikes.Where(p => p.PostId == postId && p.UserId == userId && p.LikeType.ToLower() == "dislike").FirstOrDefaultAsync();
+
+                // One user can't dislike same post twice. Second click will undo post dislike.
+                if (existingDislike == null)
+                {
+                    ChatLike chatLike = new ChatLike();
+                    chatLike.UserId = userId;
+                    chatLike.PostId = postId;
+                    chatLike.LikeType = "Dislike";
+                    context.ChatLikes.Add(chatLike);
+                    await context.SaveChangesAsync();
+                    return 1;
+                }
+                else
+                {
+                    context.ChatLikes.Remove(existingDislike);
+                    await context.SaveChangesAsync();
+                    return -1;
+                }
             }
+
+            return 0;
         }
 
         public async Task<int> UpdatePostAsync(int postId, string title, string message)

@@ -9,8 +9,8 @@ namespace DataAcesss.Repositories.Interfaces
         Task<bool> DeletePostAsync(int postId);
         Task<int> UpdatePostAsync(int postId, string title, string message);
         Task<List<ChatPostVM>> GetAllPostsAsync();
-        Task<bool> LikePostAsync(int postId, string userId);
-        Task<bool> DislikePostAsync(int postId, string userId);
+        Task<int> LikePostAsync(int postId, string userId);
+        Task<int> DislikePostAsync(int postId, string userId);
         Task<bool> AddReplyAsync(ChatReplyVM chatReplyVM);
         Task<bool> DeleteReplyAsync(int replyId);
         Task<int> UpdateReplyAsync(int replyId, string message);

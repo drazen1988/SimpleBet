@@ -404,7 +404,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 1,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 400m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Katar",
                             IsWinner = false,
@@ -413,7 +413,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 2,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 250m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Ekvador",
                             IsWinner = false,
@@ -422,7 +422,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 3,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 80m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Senegal",
                             IsWinner = false,
@@ -431,7 +431,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 4,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 15m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Nizozemska",
                             IsWinner = false,
@@ -440,7 +440,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 5,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 8m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Engleska",
                             IsWinner = false,
@@ -449,7 +449,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 6,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 700m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Iran",
                             IsWinner = false,
@@ -458,7 +458,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 7,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 100m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "SAD",
                             IsWinner = false,
@@ -467,7 +467,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 8,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 150m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Wales",
                             IsWinner = false,
@@ -476,7 +476,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 9,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 9m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Argentina",
                             IsWinner = false,
@@ -485,7 +485,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 10,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 999m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Saudijska Arabija",
                             IsWinner = false,
@@ -494,7 +494,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 11,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 150m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Meksiko",
                             IsWinner = false,
@@ -503,7 +503,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 12,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 125m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Poljska",
                             IsWinner = false,
@@ -512,7 +512,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 13,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 7m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Francuska",
                             IsWinner = false,
@@ -521,7 +521,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 14,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 250m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Australija",
                             IsWinner = false,
@@ -530,7 +530,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 15,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 40m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Danska",
                             IsWinner = false,
@@ -539,7 +539,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 16,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 800m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Tunis",
                             IsWinner = false,
@@ -548,7 +548,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 17,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 9m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Španjolska",
                             IsWinner = false,
@@ -557,7 +557,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 18,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 750m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Kostarika",
                             IsWinner = false,
@@ -566,7 +566,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 19,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 12m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Njemačka",
                             IsWinner = false,
@@ -575,7 +575,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 20,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 400m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Japan",
                             IsWinner = false,
@@ -584,7 +584,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 21,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 15m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Belgija",
                             IsWinner = false,
@@ -593,7 +593,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 22,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 350m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Kanada",
                             IsWinner = false,
@@ -602,7 +602,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 23,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 450m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Maroko",
                             IsWinner = false,
@@ -611,7 +611,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 24,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 50m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Hrvatska",
                             IsWinner = false,
@@ -620,7 +620,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 25,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 5m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Brazil",
                             IsWinner = false,
@@ -629,7 +629,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 26,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 80m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Srbija",
                             IsWinner = false,
@@ -638,7 +638,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 27,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 80m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Švicarska",
                             IsWinner = false,
@@ -647,7 +647,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 28,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 350m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Kamerun",
                             IsWinner = false,
@@ -656,7 +656,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 29,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 15m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Portugal",
                             IsWinner = false,
@@ -665,7 +665,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 30,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 400m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Gana",
                             IsWinner = false,
@@ -674,7 +674,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 31,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 60m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Urugvaj",
                             IsWinner = false,
@@ -683,7 +683,7 @@ namespace DataAcesss.Migrations
                         new
                         {
                             CountryId = 32,
-                            CountryCoeficient = 0m,
+                            CountryCoeficient = 600m,
                             CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CountryName = "Južna Koreja",
                             IsWinner = false,
@@ -894,14 +894,14 @@ namespace DataAcesss.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "63b92e30-5828-4b5b-836a-30040f9424f7",
+                            ConcurrencyStamp = "a9d3ef3b-360e-4172-86e5-4b24c4449dcc",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "5c327c5c-0ccd-4b6b-bf7a-05829bbf3a95",
+                            ConcurrencyStamp = "7659ae18-5455-4270-bb76-512fb68801dc",
                             Name = "Korisnik",
                             NormalizedName = "Korisnik"
                         });

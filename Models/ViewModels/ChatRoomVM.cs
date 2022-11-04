@@ -12,15 +12,26 @@ namespace Models.ViewModels
         public ChatRoomVM()
         {
             ChatPosts = new List<ChatPostVM>();
+            ChatPostsFiltered = new List<ChatPostVM>();
             ChatReplies = new List<ChatReplyVM>();
             PostSortDropDownList = new List<PostSortDropDown>();
+            AuthorNameUnique = new List<string>();
         }
 
         public List<ChatPostVM> ChatPosts { get; set; }
+        public List<ChatPostVM> ChatPostsFiltered { get; set; }
         public List<ChatReplyVM> ChatReplies { get; set; }
         public string CurrentUserId { get; set; }
+        public List<string> AuthorNameUnique { get; set; }
         public List<PostSortDropDown> PostSortDropDownList { get; set; }
         public int SelectedValue { get; set; }
+
+        [Required]
+        public string EditPostTitle { get; set; }
+        [Required]
+        public string EditPostMessage { get; set; }
+        [Required]
+        public string EditReplyMessage { get; set; }
 
         public List<PostSortDropDown> InitializeDropDown()
         {

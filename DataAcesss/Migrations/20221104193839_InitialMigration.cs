@@ -40,6 +40,22 @@ namespace DataAcesss.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatPosts",
+                columns: table => new
+                {
+                    PostId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AuthorId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostDateTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatPosts", x => x.PostId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Clans",
                 columns: table => new
                 {
@@ -47,7 +63,7 @@ namespace DataAcesss.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClanName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ClanDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -98,7 +114,7 @@ namespace DataAcesss.Migrations
                     CountryCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsWinner = table.Column<bool>(type: "bit", nullable: false),
                     CountryDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -165,9 +181,9 @@ namespace DataAcesss.Migrations
                 {
                     MatchId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    WebId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    HomeTeam = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AwayTeam = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WebId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    HomeTeam = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AwayTeam = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MatchDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     HomeCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DrawCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -175,7 +191,7 @@ namespace DataAcesss.Migrations
                     Result = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     WinningBetType = table.Column<int>(type: "int", nullable: false),
                     MatchDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -192,6 +208,23 @@ namespace DataAcesss.Migrations
                     AwayTeam = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Result = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     WinnersCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MyBetList",
+                columns: table => new
+                {
+                    MatchId = table.Column<int>(type: "int", nullable: false),
+                    HomeTeam = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AwayTeam = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Result = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BetType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BetCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsWinningBet = table.Column<bool>(type: "bit", nullable: false),
+                    MatchDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -257,12 +290,56 @@ namespace DataAcesss.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatLikes",
+                columns: table => new
+                {
+                    LikeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PostId = table.Column<int>(type: "int", nullable: false),
+                    LikeType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LikeDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatLikes", x => x.LikeId);
+                    table.ForeignKey(
+                        name: "FK_ChatLikes_ChatPosts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "ChatPosts",
+                        principalColumn: "PostId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChatReplies",
+                columns: table => new
+                {
+                    ReplyId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AuthorId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostId = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReplyDateTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatReplies", x => x.ReplyId);
+                    table.ForeignKey(
+                        name: "FK_ChatReplies_ChatPosts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "ChatPosts",
+                        principalColumn: "PostId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ClanId = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -296,7 +373,7 @@ namespace DataAcesss.Migrations
                 {
                     CountryBetId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CountryId = table.Column<int>(type: "int", nullable: false),
                     CountryCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsWinningBet = table.Column<bool>(type: "bit", nullable: false),
@@ -319,7 +396,7 @@ namespace DataAcesss.Migrations
                 {
                     BetId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MatchId = table.Column<int>(type: "int", nullable: false),
                     BetType = table.Column<int>(type: "int", nullable: false),
                     BetCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -427,8 +504,8 @@ namespace DataAcesss.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1", "47371298-99bb-4935-a523-6c4cdde44fb2", "Admin", "Admin" },
-                    { "2", "4f7af511-8ad2-41e8-9d9f-fd2554b7c32c", "Korisnik", "Korisnik" }
+                    { "1", "a9d3ef3b-360e-4172-86e5-4b24c4449dcc", "Admin", "Admin" },
+                    { "2", "7659ae18-5455-4270-bb76-512fb68801dc", "Korisnik", "Korisnik" }
                 });
 
             migrationBuilder.InsertData(
@@ -436,7 +513,7 @@ namespace DataAcesss.Migrations
                 columns: new[] { "ClanId", "ClanName", "UserId" },
                 values: new object[,]
                 {
-                    { 1, "SD Worx", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 1, "HRPRO", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
                     { 2, "Erste", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" }
                 });
 
@@ -445,38 +522,38 @@ namespace DataAcesss.Migrations
                 columns: new[] { "CountryId", "CountryCoeficient", "CountryName", "IsWinner", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 0m, "Katar", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 2, 0m, "Ekvador", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 3, 0m, "Senegal", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 4, 0m, "Nizozemska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 5, 0m, "Engleska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 6, 0m, "Iran", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 7, 0m, "SAD", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 8, 0m, "Wales", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 9, 0m, "Argentina", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 10, 0m, "Saudijska Arabija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 11, 0m, "Meksiko", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 12, 0m, "Poljska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 13, 0m, "Francuska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 14, 0m, "Australija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 15, 0m, "Danska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 16, 0m, "Tunis", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 17, 0m, "Španjolska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 18, 0m, "Kostarika", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 19, 0m, "Njemačka", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 20, 0m, "Japan", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 21, 0m, "Belgija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 22, 0m, "Kanada", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 23, 0m, "Maroko", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 24, 0m, "Hrvatska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 25, 0m, "Brazil", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 26, 0m, "Srbija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 27, 0m, "Švicarska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 28, 0m, "Kamerun", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 29, 0m, "Portugal", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 30, 0m, "Gana", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 31, 0m, "Urugvaj", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 32, 0m, "Južna Koreja", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" }
+                    { 1, 400m, "Katar", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 2, 250m, "Ekvador", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 3, 80m, "Senegal", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 4, 15m, "Nizozemska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 5, 8m, "Engleska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 6, 700m, "Iran", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 7, 100m, "SAD", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 8, 150m, "Wales", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 9, 9m, "Argentina", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 10, 999m, "Saudijska Arabija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 11, 150m, "Meksiko", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 12, 125m, "Poljska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 13, 7m, "Francuska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 14, 250m, "Australija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 15, 40m, "Danska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 16, 800m, "Tunis", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 17, 9m, "Španjolska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 18, 750m, "Kostarika", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 19, 12m, "Njemačka", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 20, 400m, "Japan", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 21, 15m, "Belgija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 22, 350m, "Kanada", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 23, 450m, "Maroko", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 24, 50m, "Hrvatska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 25, 5m, "Brazil", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 26, 80m, "Srbija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 27, 80m, "Švicarska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 28, 350m, "Kamerun", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 29, 15m, "Portugal", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 30, 400m, "Gana", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 31, 60m, "Urugvaj", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 32, 600m, "Južna Koreja", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" }
                 });
 
             migrationBuilder.InsertData(
@@ -492,7 +569,7 @@ namespace DataAcesss.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ClanId", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "d2b416d1-7861-4d6e-835e-4e1ebc65ce7b", 0, 2, "77dd27c4-8531-4741-9231-2c0d859d0c09", "test@test.com", false, "Pero", "Perić", true, null, "TEST@TEST.COM", "KORISNIK", "4d3ddf7eac043da6e1b25c70aad0efeb2b4978d14169d769052009e22e14dbba", null, false, "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46", false, "korisnik" });
+                values: new object[] { "d2b416d1-7861-4d6e-835e-4e1ebc65ce7b", 0, 2, "77dd27c4-8531-4741-9231-2c0d859d0c09", "test@test.com", false, "Pero", "Perić", true, null, "TEST@TEST.COM", "KORISNIK", "AQAAAAEAACcQAAAAECCRKBsGtZvndBuz9iFwly0sqK8/vI/2GskOb/RMBxQYQXXu/ZUBlmXye+qZ+PMxjg==", null, false, "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46", false, "korisnik" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -566,6 +643,16 @@ namespace DataAcesss.Migrations
                 column: "MatchId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChatLikes_PostId",
+                table: "ChatLikes",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatReplies_PostId",
+                table: "ChatReplies",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Clans_ClanName",
                 table: "Clans",
                 column: "ClanName",
@@ -586,8 +673,10 @@ namespace DataAcesss.Migrations
                 name: "IX_Matches_WebId",
                 table: "Matches",
                 column: "WebId",
-                unique: true,
-                filter: "[WebId] IS NOT NULL");
+                unique: true);
+
+            migrationBuilder.CreateProcedures();
+            migrationBuilder.CreateTriggers();
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -614,6 +703,12 @@ namespace DataAcesss.Migrations
                 name: "Bets");
 
             migrationBuilder.DropTable(
+                name: "ChatLikes");
+
+            migrationBuilder.DropTable(
+                name: "ChatReplies");
+
+            migrationBuilder.DropTable(
                 name: "ClanStats");
 
             migrationBuilder.DropTable(
@@ -638,6 +733,9 @@ namespace DataAcesss.Migrations
                 name: "MatchResults");
 
             migrationBuilder.DropTable(
+                name: "MyBetList");
+
+            migrationBuilder.DropTable(
                 name: "MyStats");
 
             migrationBuilder.DropTable(
@@ -654,6 +752,9 @@ namespace DataAcesss.Migrations
 
             migrationBuilder.DropTable(
                 name: "Matches");
+
+            migrationBuilder.DropTable(
+                name: "ChatPosts");
 
             migrationBuilder.DropTable(
                 name: "Countries");

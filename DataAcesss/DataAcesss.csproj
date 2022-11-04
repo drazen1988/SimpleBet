@@ -6,6 +6,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SQL\Create\StoredProceduresCreateAll.sql" />
+    <None Remove="SQL\Create\TriggersCreateAll.sql" />
+    <None Remove="SQL\Drop\StoredProceduresDropAll.sql" />
+    <None Remove="SQL\Drop\TriggersDropAll.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="SQL\Create\StoredProceduresCreateAll.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQL\Create\TriggersCreateAll.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQL\Drop\StoredProceduresDropAll.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQL\Drop\TriggersDropAll.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
