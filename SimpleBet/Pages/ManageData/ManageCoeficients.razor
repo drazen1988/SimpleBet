@@ -62,8 +62,6 @@
     {
         this.SpinnerVisible = true;
         await Task.Delay(1);
-        //string matchesUrl = "https://www.rezultati.com/nogomet/hrvatska/supersport-hnl/raspored/";
-        string matchesUrl = "https://www.rezultati.com/nogomet/svijet/svjetsko-prvenstvo/raspored/";
         int coeficientCounter = 0;
 
         MatchList = await MatchRepository.GetAllMatchesAsync();
@@ -75,7 +73,6 @@
 
             using (IWebDriver driver = new ChromeDriver(AppDomain.CurrentDomain.BaseDirectory, options))
             {
-                driver.Navigate().GoToUrl(matchesUrl);
                 WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(1));
 
                 foreach (var item in MatchList)
@@ -86,8 +83,11 @@
                     {
                         driver.Navigate().GoToUrl(coeficientsUrl);
 
-                        wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(@"//a[@title='Supersport']/ancestor::div[@class='ui-table__row']")));
-                        var parent = driver.FindElement(By.XPath(@"//a[@title='Supersport']/ancestor::div[@class='ui-table__row']"));
+                        //wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(@"//a[@title='Supersport']/ancestor::div[@class='ui-table__row']")));
+                        //var parent = driver.FindElement(By.XPath(@"//a[@title='Supersport']/ancestor::div[@class='ui-table__row']"));
+
+                        wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[contains(@class,'oddsCell__bookmaker oddsCell__bookmakerCell bookmaker')]//a[@title='SuperSport']/ancestor::div[@class='ui-table__row']")));
+                        var parent = driver.FindElement(By.XPath("//div[contains(@class,'oddsCell__bookmaker oddsCell__bookmakerCell bookmaker')]//a[@title='SuperSport']/ancestor::div[@class='ui-table__row']"));
                         var coeficientValues = parent.FindElements(By.CssSelector(@".oddsCell__odd"));
 
                         // Always expect 3 coeficients
