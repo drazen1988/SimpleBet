@@ -20,3 +20,31 @@
 .container .total-replies {
     color: #0071c1;
 }
+
+.container .buttons-main-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* #region MEDIA QUERIES */
+
+@media only screen and (max-width: 768px) {
+    .container .buttons-main-container {
+        flex-direction: column;
+    }
+}
+
+@media only screen and (max-width: 640px) {
+    .container .buttons-main-container {
+        flex-direction: row;
+    }
+}
+
+@media only screen and (max-width: 460px) {
+    .container .buttons-main-container {
+        flex-direction: column;
+    }
+}
+
+/* #endregion */
