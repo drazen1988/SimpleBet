@@ -47,7 +47,6 @@
 {
     <div class="container mt-4 px-0">
         <div class="p-2 px-3 bg-success rounded" style="--bs-bg-opacity: .3;">
-
             @if (post.EditPostVisible)
             {
                 <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>post.EditPostVisible = !post.EditPostVisible"></i>
@@ -65,16 +64,20 @@
                 <br>
             }
         </div>
-        @if (Model.CurrentUserId == post.AuthorId)
-        {
-            <button type="button" class="btn btn-link p-0 px-1" @onclick="()=>DeletePost(post.PostId)">Obriši post</button>
-            <button type="button" class="btn btn-link p-0" @onclick="()=>EditPost(post.PostId)">Uredi post</button>
-        }
-        <button type="button" class="btn btn-link p-0 px-1" @onclick="()=>ShowNewReply(post.PostId)">
-            Odgovori
-        </button>
-        <button type="button" class="btn btn-link p-0" @onclick="()=>ShowReplies(post.PostId)">Prikaži komentare</button>
-        <span class="total-replies">(@post.TotalReplies)</span>
+       <div class="buttons-main-container">
+            @if (Model.CurrentUserId == post.AuthorId)
+            {
+                <div>
+                    <button type="button" class="btn btn-link p-0 px-1" @onclick="()=>DeletePost(post.PostId)">Obriši post</button>
+                    <button type="button" class="btn btn-link p-0" @onclick="()=>EditPost(post.PostId)">Uredi post</button>
+                </div>
+            }
+            <div>
+                <button type="button" class="btn btn-link p-0 px-1" @onclick="()=>ShowNewReply(post.PostId)">Odgovori</button>
+                <button type="button" class="btn btn-link p-0" @onclick="()=>ShowReplies(post.PostId)">Prikaži komentare</button>
+                <span class="total-replies">(@post.TotalReplies)</span>
+            </div>
+        </div>
     </div>
 
     @if (post.NewReplyVisible)
