@@ -8,6 +8,7 @@
 
 @inject IClanRepository ClanRepository
 @inject IUserRepository UserRepository
+@inject IMailRepository MailRepository
 @inject UserManager<ApplicationUser> _UserManager
 @inject IJSRuntime JsRuntime
 @attribute [Authorize(Roles = "Admin")]
@@ -41,6 +42,9 @@
     <SfDropDownList Width="250px" TValue="string" TItem="UserRoleDropDown" Placeholder="Razina prava" @bind-Value="Model.UserRole" DataSource="Model.UserRoleDropDownList" FloatLabelType="FloatLabelType.Auto">
         <DropDownListFieldSettings Value="Name" Text="Name"></DropDownListFieldSettings>
     </SfDropDownList>
+    <br />
+    <br />
+    <SfCheckBox Label="Obavijesti korisnika mailom" @bind-Checked="Model.NotifyUserByMail"></SfCheckBox>
     <br />
     <br />
     <button type="submit" class="btn btn-primary">Kreiraj</button>
@@ -120,6 +124,25 @@
                 }
             }
 
+            // Notify user by mail
+            if (Model.NotifyUserByMail)
+            {
+                try
+                {
+                    ClanDropDown clan = Model.ClanDropDownList.Where(c => c.ClanId == Model.ClanId).FirstOrDefault();
+                    bool mailSent = await MailRepository.NotifyUserAsync(Model.UserName, Model.Password, Model.FirstName, Model.Email, clan.ClanName);
+
+                    if (mailSent)
+                    {
+                        await JsRuntime.ToastrSuccess("Korisnik je uspješno obaviješten mailom.");
+                    }
+                }
+                catch (Exception e)
+                {
+                    await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+                }
+            }
+
             Model.UserName = "";
             Model.FirstName = "";
             Model.LastName = "";
@@ -128,6 +151,7 @@
             Model.ConfirmPassword = "";
             Model.ClanId = 0;
             Model.UserRole = "";
+            Model.NotifyUserByMail = false;
             StateHasChanged();
 
             await JsRuntime.ToastrSuccess("Novi korisnik je uspješno kreiran.");

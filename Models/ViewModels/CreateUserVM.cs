@@ -28,6 +28,8 @@ namespace Models.ViewModels
         [EmailAddress]
         public string Email { get; set; }
 
+        public bool NotifyUserByMail { get; set; }
+
         [Required]
         public string Password { get; set; }
 

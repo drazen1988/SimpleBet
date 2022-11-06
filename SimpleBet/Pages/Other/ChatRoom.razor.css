@@ -3,10 +3,10 @@
     cursor: pointer;
 }
 
-.container .rounded i span {
-    font-size: 16px;
-    cursor: auto;
-}
+    .container .rounded i span {
+        font-size: 16px;
+        cursor: auto;
+    }
 
 .container .rounded .like-icon {
     font-size: 18px;
@@ -27,7 +27,29 @@
     width: 100%;
 }
 
+.dropdown-sort {
+    float: right !important;
+}
+
+.counter-container {
+    padding: 2px 10px;
+    height: 28px;
+    position: sticky;
+    bottom: 0;
+}
+
 /* #region MEDIA QUERIES */
+
+@media only screen and (max-width: 792px) {
+    .dropdown-sort {
+        float: left !important;
+        margin-top: 12px;
+    }
+
+    .clear {
+        clear: both;
+    }
+}
 
 @media only screen and (max-width: 768px) {
     .container .buttons-main-container {

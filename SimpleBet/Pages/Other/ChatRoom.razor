@@ -14,19 +14,22 @@
 
 <PageTitle>@SITE_NAME</PageTitle>
 
+
 <SfAutoComplete TValue="string" @ref="AutoCompleteAuthor" TItem="string" Placeholder="Pretraži autora posta" Width="300px" DataSource="Model.AuthorNameUnique">
     <AutoCompleteFieldSettings Value="AuthorNameUnique" />
     <AutoCompleteEvents TValue="string" TItem="string" ValueChange="FilterAuthors"></AutoCompleteEvents>
 </SfAutoComplete>
 
-<br />
-<br />
-<button class="btn btn-primary" @onclick="()=>ShowNewPost = !ShowNewPost">Novi post</button>
+<div class="dropdown-sort">
+    <SfDropDownList Width="150px" TValue="int" TItem="PostSortDropDown" Placeholder="Sortiraj" @bind-Value="Model.SelectedValue" DataSource="Model.PostSortDropDownList">
+        <DropDownListFieldSettings Value="SortTypeValue" Text="SortTypeText"></DropDownListFieldSettings>
+        <DropDownListEvents TItem="PostSortDropDown" TValue="int" ValueChange="SortPosts"></DropDownListEvents>
+    </SfDropDownList>
+</div>
 
-<SfDropDownList Width="150px" CssClass="float-end" TValue="int" TItem="PostSortDropDown" Placeholder="Sortiraj" @bind-Value="Model.SelectedValue" DataSource="Model.PostSortDropDownList">
-    <DropDownListFieldSettings Value="SortTypeValue" Text="SortTypeText"></DropDownListFieldSettings>
-    <DropDownListEvents TItem="PostSortDropDown" TValue="int" ValueChange="SortPosts"></DropDownListEvents>
-</SfDropDownList>
+<br class="clear" />
+
+<button class="btn btn-primary mt-3" @onclick="()=>ShowNewPost = !ShowNewPost">Novi post</button>
 
 @if (ShowNewPost)
 {
@@ -45,7 +48,7 @@
 
 @foreach (ChatPostVM post in Model.ChatPostsFiltered)
 {
-    <div class="container mt-4 px-0">
+    <div class="container mt-3 px-0">
         <div class="p-2 px-3 bg-success rounded" style="--bs-bg-opacity: .3;">
             @if (post.EditPostVisible)
             {
@@ -58,13 +61,19 @@
             {
                 <h4>@post.Title</h4>
                 <p class="mb-3">@post.Message</p>
-                <i class="fa fa-thumbs-up float-start text-primary like-icon" title="Sviđa mi se" @onclick="() => LikePost(post.PostId)"><span class="mx-2 text-secondary">@post.TotalLikes</span></i>
-                <i class="fa fa-thumbs-down float-start text-danger dislike-icon" title="Sviđa mi se" @onclick="() => DislikePost(post.PostId)"><span class="mx-2 text-secondary">@post.TotalDislikes</span></i>
-                <p class="float-end">@post.PostFooter</p>
+                <div class="float-start">
+                    <i class="fa fa-thumbs-up text-primary like-icon" title="Sviđa mi se" @onclick="() => LikePost(post.PostId)"></i>
+                    <span class="mx-1 text-secondary like-icon">@post.TotalLikes</span>
+                </div>
+                <div class="float-start">
+                    <i class="fa fa-thumbs-down text-danger dislike-icon" title="Ne sviđa mi se" @onclick="() => DislikePost(post.PostId)"></i>
+                    <span class="mx-1 text-secondary dislike-icon">@post.TotalDislikes</span>
+                </div>
+                <p class="float-end m-0">@post.PostFooter</p>
                 <br>
             }
         </div>
-       <div class="buttons-main-container">
+        <div class="buttons-main-container">
             @if (Model.CurrentUserId == post.AuthorId)
             {
                 <div>
@@ -108,7 +117,7 @@
                         else
                         {
                             <p>@reply.Message</p>
-                            <p class="float-end">@reply.ReplyFooter</p>
+                            <p class="float-end m-0">@reply.ReplyFooter</p>
                             @if (Model.CurrentUserId == reply.AuthorId)
                             {
                                 <button type="button" class="btn btn-link p-0" @onclick="()=>DeleteReply(reply.ReplyId)">Obriši</button>
@@ -123,12 +132,24 @@
     }
 }
 
+@if (currentPostNumber < Model.ChatPosts.Count())
+{
+    <button type="button" class="btn btn-success mt-2 mb-4" @onclick="LoadMorePosts"><span class="oi oi-arrow-thick-bottom"></span> Učitaj još postova</button>
+}
+
+<div class="counter-container rounded mt-2 bg-info" style="--bs-bg-opacity: .15;">
+    <div class="float-end">
+        Učitano postova: @currentPostNumber/@Model.ChatPosts.Count()
+    </div>
+</div>
 
 @code {
     private const string SITE_NAME = "ChatRoom";
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
+    private const int postRangeToDisplay = 2;
+    private int currentPostNumber = postRangeToDisplay;
     public bool ShowNewPost { get; set; } = false;
     public ChatRoomVM Model { get; set; } = new ChatRoomVM();
     public ChatPostVM NewPost { get; set; } = new ChatPostVM();
@@ -142,7 +163,8 @@
             var authState = await authenticationStateTask;
             ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
 
-            Model.ChatPostsFiltered = Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+            Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+            Model.ChatPostsFiltered = Model.ChatPosts.Take(currentPostNumber).ToList();
             Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
             Model.CurrentUserId = user.Id;
             Model.PostSortDropDownList = Model.InitializeDropDown();
@@ -393,8 +415,13 @@
     public async void LoadMorePosts()
     {
         await JsRuntime.ToastrSuccess("LoadMorePosts.");
-        //Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
-        //Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
+        currentPostNumber += postRangeToDisplay;
+        Model.ChatPostsFiltered = Model.ChatPosts.Take(currentPostNumber).ToList();
+
+        if (Model.ChatPosts.Count() < currentPostNumber)
+            currentPostNumber = Model.ChatPosts.Count();
+
+        StateHasChanged();
     }
 
     public void FilterAuthors(Syncfusion.Blazor.DropDowns.ChangeEventArgs<string, string> args)
