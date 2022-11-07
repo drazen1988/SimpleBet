@@ -174,6 +174,12 @@
             Model.CurrentUserId = user.Id;
             Model.PostSortDropDownList = Model.InitializeDropDown();
             Model.AuthorNameUnique = Model.ChatPosts.Select(c => c.AuthorName).Distinct().ToList();
+
+            // Number of currently loaded posts can't be greater then total number of posts.
+            if (currentPostNumber > Model.ChatPosts.Count())
+            {
+                currentPostNumber = Model.ChatPosts.Count();
+            }
         }
         catch (Exception e)
         {
@@ -194,17 +200,18 @@
 
             if (success)
             {
+                currentPostNumber++;
                 ShowNewPost = false;
                 NewPost.Title = "";
                 NewPost.Message = "";
-                Model.ChatPostsFiltered = Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                Model.ChatPostsFiltered = Model.ChatPosts.Take(currentPostNumber).ToList();
                 Model.AuthorNameUnique = Model.ChatPosts.Select(c => c.AuthorName).Distinct().ToList();
 
                 // After save and refresh, filter author again.
                 string value = AutoCompleteAuthor.Value;
                 if (!String.IsNullOrWhiteSpace(value))
                     Model.ChatPostsFiltered = Model.ChatPosts.Where(c => c.AuthorName == value).ToList();
-
             }
         }
         catch (Exception e)
@@ -263,7 +270,9 @@
 
             if (success)
             {
-                Model.ChatPostsFiltered = Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                currentPostNumber--;
+                Model.ChatPosts = await ChatRepository.GetAllPostsAsync();
+                Model.ChatPostsFiltered = Model.ChatPosts.Take(currentPostNumber).ToList();
                 Model.AuthorNameUnique = Model.ChatPosts.Select(c => c.AuthorName).Distinct().ToList();
 
                 // After delete and refresh, filter author again.
@@ -417,9 +426,8 @@
         }
     }
 
-    public async void LoadMorePosts()
+    public void LoadMorePosts()
     {
-        await JsRuntime.ToastrSuccess("LoadMorePosts.");
         currentPostNumber += postRangeToDisplay;
         Model.ChatPostsFiltered = Model.ChatPosts.Take(currentPostNumber).ToList();
 
