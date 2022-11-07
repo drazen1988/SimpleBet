@@ -61,16 +61,21 @@
             {
                 <h4>@post.Title</h4>
                 <p class="mb-3">@post.Message</p>
-                <div class="float-start">
-                    <i class="fa fa-thumbs-up text-primary like-icon" title="Sviđa mi se" @onclick="() => LikePost(post.PostId)"></i>
-                    <span class="mx-1 text-secondary like-icon">@post.TotalLikes</span>
+                <div class="footer-wrapper">
+                    <div class="d-flex">
+                        <div>
+                            <i class="fa fa-thumbs-up text-primary like-icon" title="Sviđa mi se" @onclick="() => LikePost(post.PostId)"></i>
+                            <span class="mx-1 text-secondary like-icon">@post.TotalLikes</span>
+                        </div>
+                        <div>
+                            <i class="fa fa-thumbs-down text-danger dislike-icon" title="Ne sviđa mi se" @onclick="() => DislikePost(post.PostId)"></i>
+                            <span class="mx-1 text-secondary dislike-icon">@post.TotalDislikes</span>
+                        </div>
+                    </div>
+                    <div class="m-0 ">
+                        @post.PostFooter
+                    </div>
                 </div>
-                <div class="float-start">
-                    <i class="fa fa-thumbs-down text-danger dislike-icon" title="Ne sviđa mi se" @onclick="() => DislikePost(post.PostId)"></i>
-                    <span class="mx-1 text-secondary dislike-icon">@post.TotalDislikes</span>
-                </div>
-                <p class="float-end m-0">@post.PostFooter</p>
-                <br>
             }
         </div>
         <div class="buttons-main-container">
