@@ -2,6 +2,7 @@
 
 @using DataAcesss.Data
 @using DataAcesss.Repositories.Interfaces
+@using IdentityPasswordGenerator
 @using Microsoft.AspNetCore.Identity
 @using Models.ViewModels
 @using SimpleBet.Helpers
@@ -35,9 +36,11 @@
         <DropDownListFieldSettings Value="ClanId" Text="ClanName"></DropDownListFieldSettings>
     </SfDropDownList>
     <br />
-    <SfTextBox Placeholder="Lozinka" CssClass="mb-2" Type="InputType.Password" @bind-Value="Model.Password" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+    <SfCheckBox Label="Generiraj lozinku" @bind-Checked="Model.AutoGeneratePassword" @onclick="GeneratePassword"></SfCheckBox>
     <br />
-    <SfTextBox Placeholder="Potvrdi lozinku" CssClass="mb-2" Type="InputType.Password" @bind-Value="Model.ConfirmPassword" FloatLabelType="FloatLabelType.Auto"></SfTextBox>
+    <SfTextBox Placeholder="Lozinka" CssClass="mb-2" Type="InputType.Password" @bind-Value="Model.Password" FloatLabelType="FloatLabelType.Auto" Readonly="disableInput"></SfTextBox>
+    <br />
+    <SfTextBox Placeholder="Potvrdi lozinku" CssClass="mb-2" Type="InputType.Password" @bind-Value="Model.ConfirmPassword" FloatLabelType="FloatLabelType.Auto" Readonly="disableInput"></SfTextBox>
     <br />
     <SfDropDownList Width="250px" TValue="string" TItem="UserRoleDropDown" Placeholder="Razina prava" @bind-Value="Model.UserRole" DataSource="Model.UserRoleDropDownList" FloatLabelType="FloatLabelType.Auto">
         <DropDownListFieldSettings Value="Name" Text="Name"></DropDownListFieldSettings>
@@ -52,6 +55,7 @@
 
 @code {
     private const string SITE_NAME = "CreateUser";
+    private bool disableInput = false;
     public CreateUserVM Model = new CreateUserVM();
 
     protected override async Task OnInitializedAsync()
@@ -127,18 +131,17 @@
             // Notify user by mail
             if (Model.NotifyUserByMail)
             {
-                try
-                {
-                    ClanDropDown clan = Model.ClanDropDownList.Where(c => c.ClanId == Model.ClanId).FirstOrDefault();
-                    bool mailSent = await MailRepository.NotifyUserAsync(Model.UserName, Model.Password, Model.FirstName, Model.Email, clan.ClanName);
+                ClanDropDown clan = Model.ClanDropDownList.Where(c => c.ClanId == Model.ClanId).FirstOrDefault();
+                bool mailSent = await MailRepository.NotifyUserAsync(Model.UserName, Model.Password, Model.FirstName, Model.Email, clan.ClanName);
 
-                    if (mailSent)
-                    {
-                        await JsRuntime.ToastrSuccess("Korisnik je uspješno obaviješten mailom.");
-                    }
-                }
-                catch (Exception e)
+                if (mailSent)
                 {
+                    await JsRuntime.ToastrSuccess("Korisnik je uspješno obaviješten mailom.");
+                }
+                else
+                {
+                    await JsRuntime.ToastrError("Mail nije poslan!", "Greška");
+                    Exception e = new Exception("Dogodila se greška prilikom slanja maila.");
                     await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
                 }
             }
@@ -155,6 +158,39 @@
             StateHasChanged();
 
             await JsRuntime.ToastrSuccess("Novi korisnik je uspješno kreiran.");
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task GeneratePassword()
+    {
+        try
+        {
+            Model.AutoGeneratePassword = !Model.AutoGeneratePassword;
+
+            if (Model.AutoGeneratePassword)
+            {
+                disableInput = true;
+                // Third party password generator.
+                var passwordGenerator = new PasswordGenerator();
+                var options = new PasswordOptions();
+                options.RequiredLength = 8;
+                options.RequireNonAlphanumeric = false;
+                options.RequireUppercase = true;
+                var password = passwordGenerator.GeneratePassword(options);
+
+                Model.Password = password;
+                Model.ConfirmPassword = password;
+            }
+            else
+            {
+                disableInput = false;
+                Model.Password = "";
+                Model.ConfirmPassword = "";
+            }
         }
         catch (Exception e)
         {

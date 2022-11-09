@@ -5,9 +5,11 @@
 @using Microsoft.AspNetCore.Identity
 @using Models.ViewModels
 @using SimpleBet.Helpers
+@using IdentityPasswordGenerator;
 
 @inject IUserRepository UserRepository
 @inject IClanRepository ClanRepository
+@inject IMailRepository MailRepository
 @inject UserManager<ApplicationUser> _UserManager
 @inject IJSRuntime JsRuntime
 @attribute [Authorize(Roles = "Admin")]
@@ -32,7 +34,15 @@
                 <SfDropDownList Width="250px" TValue="int" TItem="ClanDropDown" @bind-Value="@((context as UsersOverviewVM).ClanId)" DataSource="ClanDropDownList">
                     <DropDownListFieldSettings Value="ClanId" Text="ClanName"></DropDownListFieldSettings>
                 </SfDropDownList>
-			</EditTemplate>
+            </EditTemplate>
+        </GridColumn>
+        <GridColumn Width="180">
+            <Template>
+                @{
+                    var user = (context as UsersOverviewVM);
+                }
+                <button class="btn btn-primary" @onclick="()=>ResetPassword(user)">Resetiraj lozinku</button>
+            </Template>
         </GridColumn>
     </GridColumns>
     <GridTemplates>
@@ -133,6 +143,52 @@
             {
                 await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
             }
+        }
+    }
+
+    public async Task ResetPassword(UsersOverviewVM val)
+    {
+        try
+        {
+            // Third party password generator.
+            var passwordGenerator = new PasswordGenerator();
+            var options = new PasswordOptions();
+            options.RequiredLength = 8;
+            options.RequireNonAlphanumeric = false;
+            options.RequireUppercase = true;
+            var password = passwordGenerator.GeneratePassword(options);
+
+            // Get identity user and reset current password.
+            ApplicationUser user = await UserRepository.GetUserByNameAsync(val.UserName);
+            var code = await _UserManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _UserManager.ResetPasswordAsync(user, code, password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    await JsRuntime.ToastrWarning(error.Description, "Lozinka nije promijenjena");
+                    return;
+                }
+            }
+
+            // After password has been reset, send it to user via mail.
+            bool mailSent = await MailRepository.SendResetPasswordAsync(val.UserName, password, val.FirstName, val.Email);
+
+            if (mailSent)
+            {
+                await JsRuntime.ToastrSuccess("Nova lozinka je uspješno generirana i poslana korisniku na mail.");
+            }
+            else
+            {
+                await JsRuntime.ToastrError("Mail nije poslan!", "Greška");
+                Exception e = new Exception("Dogodila se greška prilikom slanja maila.");
+                await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 }

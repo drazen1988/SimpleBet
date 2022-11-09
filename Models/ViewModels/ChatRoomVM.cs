@@ -62,7 +62,7 @@ namespace Models.ViewModels
         public DateTime PostDateTime { get; set; }
         public string PostFooter
         {
-            get { return AuthorName + ", " + PostDateTime.ToString(); }
+            get { return AuthorName + ", " + PostDateTime.ToString("g"); }
             set { }
         }
         public bool NewReplyVisible { get; set; }
@@ -82,7 +82,7 @@ namespace Models.ViewModels
 
         public string ReplyFooter
         {
-            get { return AuthorName + ", " + ReplyDateTime.ToString(); }
+            get { return AuthorName + ", " + ReplyDateTime.ToString("g"); }
             set { }
         }
     }

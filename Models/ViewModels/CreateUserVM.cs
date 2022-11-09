@@ -36,6 +36,8 @@ namespace Models.ViewModels
         [Required]
         public string ConfirmPassword { get; set; }
 
+        public bool AutoGeneratePassword { get; set; }
+
         [Required]
         public string UserRole { get; set; }
 
