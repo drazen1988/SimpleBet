@@ -1,6 +1,7 @@
 ﻿export function CounterUp() {
     let valueDisplays = document.querySelectorAll(".counter");
     let interval = 1000;
+    console.log(interval);
     valueDisplays.forEach((valueDisplay) => {
         let startValue = 0;
         let endValue = parseInt(valueDisplay.getAttribute("data-val"));
