@@ -1,0 +1,4 @@
+# SimpleBet
+
+## Project Setup
+
