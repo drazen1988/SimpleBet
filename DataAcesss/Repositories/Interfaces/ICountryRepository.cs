@@ -14,5 +14,6 @@ namespace DataAcesss.Repositories.Interfaces
         Task<List<CountryBetVM>> GetAllCountryBetsAsync();
         Task<List<ManageCountriesVM>> GetAllCountriesAsync();
         Task<string> SaveCountryBetAsync(CountryBetVM countryBetVM);
+        Task UpdateWinningCountryBetsAsync(int countryId, bool isWinningBet);
     }
 }

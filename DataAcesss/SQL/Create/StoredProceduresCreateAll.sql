@@ -47,14 +47,36 @@ on Cl.ClanId = A.ClanId
 where C.IsWinningBet = 1
 
 
+Create table #AggregateCoeficients(
+ UserId nvarchar(400),
+ UserName nvarchar (400),
+ ClanName nvarchar(400),
+ TotalCoeficient decimal (15,2)
+)
+
+Insert into #AggregateCoeficients(
+UserId,
+UserName,
+ClanName,
+TotalCoeficient
+)
+
+Select 
+UserId, 
+UserName, 
+ClanName, 
+CAST(EXP(SUM(LOG(TotalCoeficient))) As Decimal(15,2)) As TotalCoeficient
+from #LeaderBoard
+group by UserId, UserName, ClanName
+
+--Final select
 Select 
 CAST(ROW_NUMBER() over (order by TotalCoeficient desc) As Int) As Position,
 UserId, 
 UserName, 
 ClanName, 
-CAST(EXP(SUM(LOG(TotalCoeficient))) As Decimal(15,2)) As TotalCoeficient 
-from #LeaderBoard
-group by UserId, UserName, ClanName, TotalCoeficient
+TotalCoeficient
+from #AggregateCoeficients
 order by Position
 End;
 GO
@@ -70,6 +92,7 @@ M.AwayTeam,
 M.Result,
 (Select count(*) from Bets As B where B.IsWinningBet = 1 and B.MatchId = M.MatchId) As WinnersCount
 from Matches As M
+where M.Result is not null
 order by MatchDateTime
 End;
 GO

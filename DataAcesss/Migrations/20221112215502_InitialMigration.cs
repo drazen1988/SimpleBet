@@ -504,8 +504,8 @@ namespace DataAcesss.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1", "a9d3ef3b-360e-4172-86e5-4b24c4449dcc", "Admin", "Admin" },
-                    { "2", "7659ae18-5455-4270-bb76-512fb68801dc", "Korisnik", "Korisnik" }
+                    { "1", "2e102b0c-d269-4fb0-8587-d9e58f6ddef7", "Admin", "Admin" },
+                    { "2", "aa685b39-c46a-4aea-a65d-3b04222f68d4", "Korisnik", "Korisnik" }
                 });
 
             migrationBuilder.InsertData(

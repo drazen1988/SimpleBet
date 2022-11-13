@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAcesss.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221104193839_InitialMigration")]
+    [Migration("20221112215502_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -896,14 +896,14 @@ namespace DataAcesss.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "a9d3ef3b-360e-4172-86e5-4b24c4449dcc",
+                            ConcurrencyStamp = "2e102b0c-d269-4fb0-8587-d9e58f6ddef7",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "7659ae18-5455-4270-bb76-512fb68801dc",
+                            ConcurrencyStamp = "aa685b39-c46a-4aea-a65d-3b04222f68d4",
                             Name = "Korisnik",
                             NormalizedName = "Korisnik"
                         });

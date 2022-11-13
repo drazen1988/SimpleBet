@@ -153,7 +153,7 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
-    private const int postRangeToDisplay = 2;
+    private const int postRangeToDisplay = 50;
     private int currentPostNumber = postRangeToDisplay;
     public bool ShowNewPost { get; set; } = false;
     public ChatRoomVM Model { get; set; } = new ChatRoomVM();

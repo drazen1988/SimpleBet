@@ -13,7 +13,7 @@
 
 <PageTitle>Pregled klanova</PageTitle>
 
-<SfGrid @ref="GridClans" DataSource="ClanList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+<SfGrid @ref="GridClans" DataSource="ClanList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Update", "Cancel" })">
     <GridEvents OnActionBegin="OnActionBegin" TValue="UsersPerClanVM"></GridEvents>
     <GridPageSettings PageSize="12"></GridPageSettings>
     <GridEditSettings AllowDeleting="true" AllowEditing="true" AllowAdding="true" Mode="EditMode.Normal" ShowDeleteConfirmDialog="true"></GridEditSettings>
@@ -53,28 +53,28 @@
 
     public async void OnActionBegin(ActionEventArgs<UsersPerClanVM> Args)
     {
-        if (Args.RequestType.ToString() == "Delete")
-        {
-            try
-            {
-                bool success = await ClanRepository.DeleteClanAsync(Args.Data.ClanId);
+        //if (Args.RequestType.ToString() == "Delete")
+        //{
+        //    try
+        //    {
+        //        bool success = await ClanRepository.DeleteClanAsync(Args.Data.ClanId);
 
-                if (success)
-                {
-                    await JsRuntime.ToastrSuccess("Klan je uspješno obrisan.");
-                    ClanList = await ClanRepository.GetUsersPerClanAsync();
-                    await GridClans.Refresh();
-                }
-                else
-                {
-                    await JsRuntime.ToastrInfo("Nije obrisan nijedan redak.");
-                }
-            }
-            catch (Exception e)
-            {
-                await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
-            }
-        }
+        //        if (success)
+        //        {
+        //            await JsRuntime.ToastrSuccess("Klan je uspješno obrisan.");
+        //            ClanList = await ClanRepository.GetUsersPerClanAsync();
+        //            await GridClans.Refresh();
+        //        }
+        //        else
+        //        {
+        //            await JsRuntime.ToastrInfo("Nije obrisan nijedan redak.");
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        //    }
+        //}
 
         if (Args.RequestType.ToString() == "Save")
         {

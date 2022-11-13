@@ -30,6 +30,7 @@ namespace DataAcesss.Repositories.Implementations
             if (existingBet != null)
             {
                 existingBet.BetType = betVM.BetType;
+                existingBet.BetCoeficient = betVM.BetCoeficient;
                 context.Bets.Update(existingBet);
                 await context.SaveChangesAsync();
                 return "update";

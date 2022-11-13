@@ -27,8 +27,8 @@ namespace DataAcesss
                     new ApplicationUser()
                     {
                         Id = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6",
-                        UserName = "dmarinkovic",
-                        NormalizedUserName = "DMARINKOVIC",
+                        UserName = "KamikazaSKacigom",
+                        NormalizedUserName = "KAMIKAZASKACIGOM",
                         Email = "drazen.marinkovic1@gmail.com",
                         NormalizedEmail = "DRAZEN.MARINKOVIC1@GMAIL.COM",
                         EmailConfirmed = false,
@@ -61,25 +61,6 @@ namespace DataAcesss
                         ClanId = 2,
                         FirstName = "Tomislav",
                         LastName = "Berišić"
-                    },
-                    new ApplicationUser()
-                    {
-                        Id = "d2b416d1-7861-4d6e-835e-4e1ebc65ce7b",
-                        UserName = "korisnik",
-                        NormalizedUserName = "KORISNIK",
-                        Email = "test@test.com",
-                        NormalizedEmail = "TEST@TEST.COM",
-                        EmailConfirmed = false,
-                        PasswordHash = "AQAAAAEAACcQAAAAECCRKBsGtZvndBuz9iFwly0sqK8/vI/2GskOb/RMBxQYQXXu/ZUBlmXye+qZ+PMxjg==",
-                        SecurityStamp = "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46",
-                        ConcurrencyStamp = "77dd27c4-8531-4741-9231-2c0d859d0c09",
-                        PhoneNumberConfirmed = false,
-                        TwoFactorEnabled = false,
-                        LockoutEnabled = true,
-                        AccessFailedCount = 0,
-                        ClanId = 2,
-                        FirstName = "Pero",
-                        LastName = "Perić"
                     }
                     );
 
@@ -87,7 +68,7 @@ namespace DataAcesss
                     new Clan()
                     { 
                         ClanId = 1,
-                        ClanName = "HRPRO",
+                        ClanName = "Lajbeki",
                         UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
                     },
                     new Clan()
@@ -95,7 +76,38 @@ namespace DataAcesss
                         ClanId = 2,
                         ClanName = "Erste",
                         UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                    });
+                    },
+                    new Clan()
+                    {
+                        ClanId = 3,
+                        ClanName = "Lajbeki",
+                        UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
+                    },
+                    new Clan()
+                    {
+                        ClanId = 3,
+                        ClanName = "Drago Simijaja",
+                        UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
+                    },
+                    new Clan()
+                    {
+                        ClanId = 4,
+                        ClanName = "Pobjednička grupa",
+                        UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
+                    },
+                    new Clan()
+                    {
+                        ClanId = 5,
+                        ClanName = "Paul the Octopus",
+                        UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
+                    },
+                    new Clan()
+                    {
+                        ClanId = 6,
+                        ClanName = "Prikrivene plavuše",
+                        UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
+                    }
+                    );
 
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(
                 new IdentityUserRole<string>
@@ -107,11 +119,6 @@ namespace DataAcesss
                 {
                     RoleId = "1",
                     UserId = "45a0f303-506b-4a0e-b42f-0b1c814d84f7"
-                },
-                new IdentityUserRole<string>
-                {
-                    RoleId = "2",
-                    UserId = "d2b416d1-7861-4d6e-835e-4e1ebc65ce7b"
                 });
         }
 

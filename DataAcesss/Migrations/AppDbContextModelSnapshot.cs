@@ -894,14 +894,14 @@ namespace DataAcesss.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "a9d3ef3b-360e-4172-86e5-4b24c4449dcc",
+                            ConcurrencyStamp = "2e102b0c-d269-4fb0-8587-d9e58f6ddef7",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "7659ae18-5455-4270-bb76-512fb68801dc",
+                            ConcurrencyStamp = "aa685b39-c46a-4aea-a65d-3b04222f68d4",
                             Name = "Korisnik",
                             NormalizedName = "Korisnik"
                         });

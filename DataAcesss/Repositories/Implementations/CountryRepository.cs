@@ -70,6 +70,8 @@ namespace DataAcesss.Repositories.Implementations
             }
             else
             {
+                await UpdateWinningCountryBetsAsync(countryVM.CountryId, countryVM.IsWinner);
+
                 Country country = _mapper.Map<ManageCountriesVM, Country>(countryVM);
                 context.Countries.Add(country);
                 await context.SaveChangesAsync();
@@ -83,6 +85,8 @@ namespace DataAcesss.Repositories.Implementations
 
             if (existingCountry != null)
             {
+                await UpdateWinningCountryBetsAsync(countryVM.CountryId, countryVM.IsWinner);
+
                 existingCountry.CountryName = countryVM.CountryName;
                 existingCountry.CountryCoeficient = countryVM.CountryCoeficient;
                 existingCountry.IsWinner = countryVM.IsWinner;
@@ -93,6 +97,25 @@ namespace DataAcesss.Repositories.Implementations
             {
                 return 0;
             }
+        }
+
+        public void UpdateWinningBets(int matchId, int betType)
+        {
+            List<Bet> winningBets = context.Bets.Where(b => b.MatchId == matchId).ToList();
+
+            foreach (Bet bet in winningBets)
+            {
+                if (bet.BetType == betType)
+                {
+                    bet.IsWinningBet = true;
+                }
+                else
+                {
+                    bet.IsWinningBet = false;
+                }
+                context.Update(bet);
+            }
+            context.SaveChanges();
         }
 
         public async Task<bool> DeleteCountryAsync(int countryId)
@@ -112,6 +135,21 @@ namespace DataAcesss.Repositories.Implementations
         public async Task<Country> GetCountryAsync(int countryId)
         {
             return await context.Countries.FirstOrDefaultAsync(c => c.CountryId == countryId);
+        }
+
+        public async Task UpdateWinningCountryBetsAsync(int countryId, bool isWinningBet)
+        {
+            List<CountryBet> countryBets = await context.CountryBets.Where(cb => cb.CountryId == countryId).ToListAsync();
+
+            if (countryBets != null && countryBets.Any())
+            {
+                foreach (CountryBet countryBet in countryBets)
+                {
+                    countryBet.IsWinningBet = isWinningBet;
+                    context.Update(countryBet);
+                    await context.SaveChangesAsync();
+                }
+            }
         }
     }
 }

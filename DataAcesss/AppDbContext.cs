@@ -94,6 +94,15 @@ namespace DataAcesss
             .Property(cl => cl.LikeDate)
             .HasDefaultValueSql("getdate()");
 
+            modelBuilder.Ignore<LeaderBoardVM>();
+            modelBuilder.Ignore<UsersPerClanVM>();
+            modelBuilder.Ignore<MyStatsGridVM>();
+            modelBuilder.Ignore<GeneralStatsVM.WinsPerDay>();
+            modelBuilder.Ignore<MyStatsVM>();
+            modelBuilder.Ignore<MatchResultsVM>();
+            modelBuilder.Ignore<ClanStatsVM.ClanStatsPercentage>();
+            modelBuilder.Ignore<ClanStatsVM.ClanStatsAbs>();
+            modelBuilder.Ignore<ClanStatsVM.ClanUsers>();
             modelBuilder.Entity<LeaderBoardVM>().HasNoKey();
             modelBuilder.Entity<MatchResultsVM>().HasNoKey();
             modelBuilder.Entity<ClanStatsVM.ClanStatsPercentage>().HasNoKey();
