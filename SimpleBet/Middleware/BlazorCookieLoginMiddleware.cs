@@ -1,6 +1,8 @@
 ﻿using DataAcesss.Data;
 using Microsoft.AspNetCore.Identity;
 using NLog;
+using SimpleBet.Helpers;
+using Syncfusion.Blazor.Charts.Chart.Models;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
@@ -19,7 +21,7 @@ namespace SimpleBet.Middleware
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, SignInManager<ApplicationUser> signInMgr)
+        public async Task Invoke(HttpContext context, SignInManager<ApplicationUser> signInMgr, UserManager<ApplicationUser> userManager)
         {
             if (context.Request.Path == "/login" && context.Request.Query.ContainsKey("key"))
             {
@@ -35,8 +37,11 @@ namespace SimpleBet.Middleware
                     Logins.Remove(key);
                     context.Response.Redirect("/Home");
 
+                string deviceType = BrowserHelper.DetectDevice(context);
+                var user = await userManager.FindByNameAsync(info.UserName);
+
                 Logger logger = LogManager.GetLogger("auditLogger");
-                logger.WithProperty("UserName", info.UserName).WithProperty("LogType", "Sign in").Info("User signed in.");
+                logger.WithProperty("UserId", user.Id).WithProperty("LogType", "Sign in").WithProperty("DeviceType", deviceType).Info("User signed in.");
                 return;
                 //}
             }

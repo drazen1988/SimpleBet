@@ -16,6 +16,8 @@ namespace DataAcesss.Repositories.Interfaces
         Task<Match> GetFirstMatchAsync();
         Task<int> AddCoeficientsAsync(MatchVM matchVM);
         Task<int> AddResultsAsync(MatchVM matchVM);
+        Task<int> GetPlayedMatches();
         Task<List<MatchResultsVM>> GetAllMatchResultsAsync();
+        Task<List<CurrentMatchVM>> GetOngoingMatchesAsync();
     }
 }

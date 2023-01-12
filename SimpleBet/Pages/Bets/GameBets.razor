@@ -31,9 +31,9 @@
         <GridColumn Field=@nameof(MatchVM.MatchDateTime) TextAlign="TextAlign.Center" Width="150"></GridColumn>
         <GridColumn Field=@nameof(MatchVM.HomeTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
         <GridColumn Field=@nameof(MatchVM.AwayTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.HomeCoeficient) TextAlign="TextAlign.Center" Width="50"></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.DrawCoeficient) TextAlign="TextAlign.Center" Width="50"></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.AwayCoeficient) TextAlign="TextAlign.Center" Width="50"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.HomeCoeficient) TextAlign="TextAlign.Center" Width="70"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.DrawCoeficient) TextAlign="TextAlign.Center" Width="70"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.AwayCoeficient) TextAlign="TextAlign.Center" Width="70"></GridColumn>
         <GridColumn Field=@nameof(MatchVM.IsBetPlaced) DisplayAsCheckBox=true TextAlign="TextAlign.Center" Width="130"></GridColumn>
         <GridColumn Width="120">
             <Template>
@@ -81,7 +81,7 @@
     private BetVM CurrentBet { get; set; } = new BetVM();
     private CountryBetVM CurrentCountryBet { get; set; } = new CountryBetVM();
     private int valueChecked = 0;
-    private bool countryBetEnabled = true;
+    private bool countryBetEnabled = false;
     private int countryBetValue = 0;
 
     protected override async Task OnInitializedAsync()
@@ -107,7 +107,7 @@
             // After the first match begins, disable dropdown
             Match firstMatch = await MatchRepository.GetFirstMatchAsync();
 
-            if (firstMatch != null && firstMatch.MatchDateTime < DateTime.Now)
+            if (firstMatch != null && firstMatch.MatchDateTime > DateTime.Now)
             {
                 countryBetEnabled = true;
             }

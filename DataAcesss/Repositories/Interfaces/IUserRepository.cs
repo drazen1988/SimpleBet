@@ -9,5 +9,8 @@ namespace DataAcesss.Repositories.Interfaces
         Task<int> GetUserCountAsync();
         Task<ApplicationUser> GetUserByNameAsync(string userName);
         Task<List<UserRoleDropDown>> GetUserRolesAsync();
+        Task<List<UnactiveUsersVM>> GetUnActiveUsersAsync();
+        Task<int> GetActiveUserCountAsync();
+        Task<List<ApplicationUsageVM.LoginTypes>> GetApplicationUsageAsync();
     }
 }

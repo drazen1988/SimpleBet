@@ -1,9 +1,6 @@
 ﻿
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Models.ViewModels
 {
-    [NotMapped]
     public class MyStatsVM
     {
         public string UserId { get; set; }

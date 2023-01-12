@@ -4,6 +4,7 @@ using DataAcesss.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Models.ViewModels;
+using System.Collections.Generic;
 
 namespace DataAcesss.Repositories.Implementations
 {
@@ -46,5 +47,23 @@ namespace DataAcesss.Repositories.Implementations
         {
             return _mapper.Map<List<IdentityRole>, List<UserRoleDropDown>>(await _roleManager.Roles.OrderBy(r => r.Id).ToListAsync());
         }
+
+        public async Task<List<UnactiveUsersVM>> GetUnActiveUsersAsync()
+        {
+            return await context.UsageOverview.FromSqlRaw("spGetUnActiveUsers").ToListAsync();
+        }
+
+        public async Task<List<ApplicationUsageVM.LoginTypes>> GetApplicationUsageAsync()
+        {
+            return await context.AplicationUsage.FromSqlRaw("spApplicationUsage").ToListAsync();
+        }
+
+        public async Task<int> GetActiveUserCountAsync()
+        {
+            int totalUserCount = await context.Users.CountAsync();
+            List<UnactiveUsersVM> unactiveUsers = await GetUnActiveUsersAsync();
+            return totalUserCount - unactiveUsers.Count();
+        }
+
     }
 }

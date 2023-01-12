@@ -24,10 +24,16 @@ namespace DataAcesss.Repositories.Implementations
             mail.Subject = "SimpleBet - kreiran login";
 
             var builder = new BodyBuilder();
-
-            builder.TextBody = "\nDragi/a " + firstName + ",\n\nU nastavku maila naći ćeš pristupne podatke za aplikaciju SimpleBet.\n\nKorisničko ime: " + userName + 
+            
+            builder.TextBody = "\nDragi/a " + firstName + ",\n\nU nastavku maila naći ćeš pristupne podatke za aplikaciju SimpleBet.\n\nKorisničko ime: " + userName +
                                "\nLozinka: " + password + "\nKlan: " + clanName + "\nLink na aplikaciju: www.simple-apps.info" + "\n\nSavjetujemo ti da nakon prve prijave u aplikaciju promijeniš lozinku." +
+                               "\n\nU privitku maila možeš pronaći korisničke upute za SimpleBet aplikaciju." +
                                "\n\nZahvaljujemo na sudjelovanju i želimo ti dobru zabavu! Sretno!" + "\n\nOvo je automatska poruka i nemoj odgovarati na nju.";
+
+
+            // Add app user manual in attachment
+            byte[] fileBytes = File.ReadAllBytes(@"./wwwroot/files/SimpleBet - Korisničke upute.docx");
+            builder.Attachments.Add("SimpleBet - Korisničke upute.docx", fileBytes);
 
             mail.Body = builder.ToMessageBody();
 
@@ -47,20 +53,21 @@ namespace DataAcesss.Repositories.Implementations
             return true;
         }
 
-        public async Task<bool> SendFeedbackAsync(string feedbackTypeText, string description, string userName, string fullName)
+        public async Task<bool> SendFeedbackAsync(string feedbackTypeText, string description, string userName, string fullName, string email)
         {
             // Build email
-            var email = new MimeMessage();
-            email.Sender = MailboxAddress.Parse(_smtpSettings.Value.SenderEmail);
-            email.From.Add(MailboxAddress.Parse(_smtpSettings.Value.SenderEmail));
-            email.To.Add(MailboxAddress.Parse("info@simple-apps.info"));
-            email.Subject = "SimpleBet feedback - " + feedbackTypeText;
+            var mail = new MimeMessage();
+            mail.Sender = MailboxAddress.Parse(_smtpSettings.Value.SenderEmail);
+            mail.From.Add(MailboxAddress.Parse(_smtpSettings.Value.SenderEmail));
+            mail.To.Add(MailboxAddress.Parse("info@simple-apps.info"));
+            mail.Subject = "SimpleBet feedback - " + feedbackTypeText;
 
             var builder = new BodyBuilder();
 
-            builder.TextBody = "\nOpis prijedloga:\n" + description + "\n\nKorisnik: " + userName + "(" + fullName + ")";
+            builder.TextBody = "\nOpis prijedloga:\n" + description + "\n\nKorisnik: " + userName
+                + "\nIme i prezime: " + fullName + "\nMail: " + email;
 
-            email.Body = builder.ToMessageBody();
+            mail.Body = builder.ToMessageBody();
 
             // Send email
             using (var smtp = new MailKit.Net.Smtp.SmtpClient())
@@ -71,7 +78,41 @@ namespace DataAcesss.Repositories.Implementations
 
                 await smtp.ConnectAsync(_smtpSettings.Value.Server, _smtpSettings.Value.Port, true);
                 await smtp.AuthenticateAsync(_smtpSettings.Value.UserName, _smtpSettings.Value.Password);
-                await smtp.SendAsync(email);
+                await smtp.SendAsync(mail);
+                await smtp.DisconnectAsync(true);
+            }
+
+            return true;
+        }
+
+        public async Task<bool> SendReminderAsync(string firstName, string email)
+        {
+            // Build email
+            var mail = new MimeMessage();
+            mail.Sender = MailboxAddress.Parse(_smtpSettings.Value.SenderEmail);
+            mail.From.Add(MailboxAddress.Parse(_smtpSettings.Value.SenderEmail));
+            mail.To.Add(MailboxAddress.Parse(email));
+            mail.Subject = "SimpleBet - podsjetnik";
+
+            var builder = new BodyBuilder();
+
+            builder.TextBody = "\nDragi/a " + firstName + ",\n\nPrvenstvo uskoro počinje a još uvijek nismo evidentirali nijednu tvoju okladu! Požuri da ne zakasniš jer naknadne oklade nećemo uvažavati!" +
+                               "\n\nLink na aplikaciju: www.simple-apps.info" +
+                               "\n\nP.S. Nemoj se zaboraviti kladiti i na pobjednika prvenstva." +
+                               "\n\nOvo je automatska poruka i nemoj odgovarati na nju.";
+
+            mail.Body = builder.ToMessageBody();
+
+            // Send email
+            using (var smtp = new MailKit.Net.Smtp.SmtpClient())
+            {
+                smtp.MessageSent += (sender, args) =>
+                { };
+                smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+                await smtp.ConnectAsync(_smtpSettings.Value.Server, _smtpSettings.Value.Port, true);
+                await smtp.AuthenticateAsync(_smtpSettings.Value.UserName, _smtpSettings.Value.Password);
+                await smtp.SendAsync(mail);
                 await smtp.DisconnectAsync(true);
             }
 

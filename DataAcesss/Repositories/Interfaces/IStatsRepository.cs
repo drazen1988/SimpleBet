@@ -13,5 +13,6 @@ namespace DataAcesss.Repositories.Interfaces
         Task<List<GeneralStatsVM.WinsPerDay>> GetWinsPerDayAsync();
         Task<MyStatsVM> GetMyStatsAsync(string userId);
         Task<List<MyStatsGridVM>> GetBetsByUserAsync(string userId);
+        Task<ScalarInt> GetCurrentRankingAsync(string userId);
     }
 }

@@ -71,47 +71,13 @@ namespace DataAcesss.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClanStats",
-                columns: table => new
-                {
-                    ClanName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AvgCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ClanStatsAbs",
-                columns: table => new
-                {
-                    ClanName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    WinningBetsCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ClanUsers",
-                columns: table => new
-                {
-                    ClanName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UsersCount = table.Column<int>(type: "int", nullable: false),
-                    Label = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Countries",
                 columns: table => new
                 {
                     CountryId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CountryName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CountryCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CountryCoeficient = table.Column<decimal>(type: "decimal(15,2)", nullable: false),
                     IsWinner = table.Column<bool>(type: "bit", nullable: false),
                     CountryDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -162,20 +128,6 @@ namespace DataAcesss.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LeaderBoard",
-                columns: table => new
-                {
-                    Position = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClanName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TotalCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Matches",
                 columns: table => new
                 {
@@ -185,9 +137,9 @@ namespace DataAcesss.Migrations
                     HomeTeam = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AwayTeam = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MatchDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    HomeCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DrawCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    AwayCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    HomeCoeficient = table.Column<decimal>(type: "decimal(15,2)", nullable: false),
+                    DrawCoeficient = table.Column<decimal>(type: "decimal(15,2)", nullable: false),
+                    AwayCoeficient = table.Column<decimal>(type: "decimal(15,2)", nullable: false),
                     Result = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     WinningBetType = table.Column<int>(type: "int", nullable: false),
                     MatchDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
@@ -196,76 +148,6 @@ namespace DataAcesss.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Matches", x => x.MatchId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MatchResults",
-                columns: table => new
-                {
-                    MatchId = table.Column<int>(type: "int", nullable: false),
-                    MatchDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    HomeTeam = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AwayTeam = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Result = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    WinnersCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MyBetList",
-                columns: table => new
-                {
-                    MatchId = table.Column<int>(type: "int", nullable: false),
-                    HomeTeam = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AwayTeam = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Result = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BetType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BetCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IsWinningBet = table.Column<bool>(type: "bit", nullable: false),
-                    MatchDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MyStats",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClanName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TotalBetCount = table.Column<int>(type: "int", nullable: true),
-                    WinningBetCount = table.Column<int>(type: "int", nullable: true),
-                    BestWinningCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UsersPerClan",
-                columns: table => new
-                {
-                    ClanId = table.Column<int>(type: "int", nullable: false),
-                    ClanName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UsersPerClan = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WinsPerDay",
-                columns: table => new
-                {
-                    MatchDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    WinnersCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
                 });
 
             migrationBuilder.CreateTable(
@@ -375,7 +257,7 @@ namespace DataAcesss.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CountryId = table.Column<int>(type: "int", nullable: false),
-                    CountryCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CountryCoeficient = table.Column<decimal>(type: "decimal(15,2)", nullable: false),
                     IsWinningBet = table.Column<bool>(type: "bit", nullable: false),
                     CountryBetDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
                 },
@@ -399,7 +281,7 @@ namespace DataAcesss.Migrations
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MatchId = table.Column<int>(type: "int", nullable: false),
                     BetType = table.Column<int>(type: "int", nullable: false),
-                    BetCoeficient = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BetCoeficient = table.Column<decimal>(type: "decimal(15,2)", nullable: false),
                     IsWinningBet = table.Column<bool>(type: "bit", nullable: false),
                     BetDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
                 },
@@ -504,8 +386,8 @@ namespace DataAcesss.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1", "2e102b0c-d269-4fb0-8587-d9e58f6ddef7", "Admin", "Admin" },
-                    { "2", "aa685b39-c46a-4aea-a65d-3b04222f68d4", "Korisnik", "Korisnik" }
+                    { "1", "c48a7922-cb9a-4619-93d9-c72debc40753", "Admin", "Admin" },
+                    { "2", "38b724cb-d8ba-4dc8-bffc-e55dbb36ccc8", "Korisnik", "Korisnik" }
                 });
 
             migrationBuilder.InsertData(
@@ -513,8 +395,12 @@ namespace DataAcesss.Migrations
                 columns: new[] { "ClanId", "ClanName", "UserId" },
                 values: new object[,]
                 {
-                    { 1, "HRPRO", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 2, "Erste", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" }
+                    { 1, "Lajbeki", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 2, "Erste", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 3, "Drago Simijaja", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 4, "Pobjednička grupa", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 5, "Paul the Octopus", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
+                    { 6, "Prikrivene plavuše", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" }
                 });
 
             migrationBuilder.InsertData(
@@ -559,17 +445,12 @@ namespace DataAcesss.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ClanId", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6", 0, 1, "77dd27c4-8531-4741-9231-2c0d859d0c09", "drazen.marinkovic1@gmail.com", false, "Dražen", "Marinković", true, null, "DRAZEN.MARINKOVIC1@GMAIL.COM", "DMARINKOVIC", "AQAAAAEAACcQAAAAELAPlQf8sVUM/Sc31lIipH7sBfuUsCGeZawx2x0YYRl4pDu1viNlCOk4SEiznbNjlw==", null, false, "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46", false, "dmarinkovic" });
+                values: new object[] { "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6", 0, 1, "77dd27c4-8531-4741-9231-2c0d859d0c09", "drazen.marinkovic1@gmail.com", false, "Dražen", "Marinković", true, null, "DRAZEN.MARINKOVIC1@GMAIL.COM", "KAMIKAZASKACIGOM", "AQAAAAEAACcQAAAAELAPlQf8sVUM/Sc31lIipH7sBfuUsCGeZawx2x0YYRl4pDu1viNlCOk4SEiznbNjlw==", null, false, "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46", false, "KamikazaSKacigom" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ClanId", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[] { "45a0f303-506b-4a0e-b42f-0b1c814d84f7", 0, 2, "77dd27c4-8531-4741-9231-2c0d859d0c09", "tomislav.berisic@gmail.com", false, "Tomislav", "Berišić", true, null, "TOMISLAV.BERISIC@GMAIL.COM", "TBERISIC", "AQAAAAEAACcQAAAAECCRKBsGtZvndBuz9iFwly0sqK8/vI/2GskOb/RMBxQYQXXu/ZUBlmXye+qZ+PMxjg==", null, false, "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46", false, "tberisic" });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ClanId", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "d2b416d1-7861-4d6e-835e-4e1ebc65ce7b", 0, 2, "77dd27c4-8531-4741-9231-2c0d859d0c09", "test@test.com", false, "Pero", "Perić", true, null, "TEST@TEST.COM", "KORISNIK", "AQAAAAEAACcQAAAAECCRKBsGtZvndBuz9iFwly0sqK8/vI/2GskOb/RMBxQYQXXu/ZUBlmXye+qZ+PMxjg==", null, false, "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46", false, "korisnik" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -580,11 +461,6 @@ namespace DataAcesss.Migrations
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[] { "1", "45a0f303-506b-4a0e-b42f-0b1c814d84f7" });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "2", "d2b416d1-7861-4d6e-835e-4e1ebc65ce7b" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -709,15 +585,6 @@ namespace DataAcesss.Migrations
                 name: "ChatReplies");
 
             migrationBuilder.DropTable(
-                name: "ClanStats");
-
-            migrationBuilder.DropTable(
-                name: "ClanStatsAbs");
-
-            migrationBuilder.DropTable(
-                name: "ClanUsers");
-
-            migrationBuilder.DropTable(
                 name: "CountryBets");
 
             migrationBuilder.DropTable(
@@ -725,24 +592,6 @@ namespace DataAcesss.Migrations
 
             migrationBuilder.DropTable(
                 name: "EventLogs");
-
-            migrationBuilder.DropTable(
-                name: "LeaderBoard");
-
-            migrationBuilder.DropTable(
-                name: "MatchResults");
-
-            migrationBuilder.DropTable(
-                name: "MyBetList");
-
-            migrationBuilder.DropTable(
-                name: "MyStats");
-
-            migrationBuilder.DropTable(
-                name: "UsersPerClan");
-
-            migrationBuilder.DropTable(
-                name: "WinsPerDay");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

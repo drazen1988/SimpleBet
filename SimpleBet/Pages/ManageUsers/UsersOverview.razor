@@ -20,7 +20,7 @@
     <SfSpinner @bind-Visible="@SpinnerVisible" Size="50"></SfSpinner>
 </div>
 
-<SfGrid @ref="GridUsers" DataSource="UserList" AllowPaging="true" Toolbar="@(new List<string>() { "Edit", "Delete", "Update", "Cancel" })">
+<SfGrid @ref="GridUsers" DataSource="UserList" AllowFiltering="true" AllowPaging="true" Toolbar="@(new List<string>() { "Edit", "Delete", "Update", "Cancel" })">
     <GridEvents OnActionBegin="OnActionBegin" TValue="UsersOverviewVM"></GridEvents>
     <GridPageSettings PageSize="12"></GridPageSettings>
     <GridEditSettings AllowDeleting="true" AllowEditing="true" Mode="EditMode.Normal" ShowDeleteConfirmDialog="true"></GridEditSettings>
@@ -36,7 +36,7 @@
                 </SfDropDownList>
             </EditTemplate>
         </GridColumn>
-        <GridColumn Width="180">
+        <GridColumn Width="180" AllowFiltering="false">
             <Template>
                 @{
                     var user = (context as UsersOverviewVM);
@@ -131,6 +131,8 @@
 
                     if (result.Succeeded)
                     {
+                        UserList = await UserRepository.GetUsersAsync();
+                        await GridUsers.Refresh();
                         await JsRuntime.ToastrSuccess("Korisnik je uspješno ažuriran.");
                     }
                     else

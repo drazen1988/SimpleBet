@@ -62,6 +62,16 @@
                     <span class="oi oi-shield" aria-hidden="true"></span> Pregled klanova
                 </NavLink>
             </div>
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/ManageUsers/UnactiveUsers">
+                    <span class="oi oi-ban" aria-hidden="true"></span> Neaktivni korisnici
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="expand-menu nav-link" @onclick="ToggleNavMenu" href="/ManageUsers/ApplicationUsage">
+                    <span class="oi oi-monitor" aria-hidden="true"></span> Korištenje aplikacije
+                </NavLink>
+            </div>
         }
         <AuthorizeView Roles="Admin">
             <Authorized>
@@ -103,6 +113,11 @@
         <div class="nav-item px-3">
             <NavLink class="nav-link" @onclick="ToggleNavMenu" href="/Bets/GameBets">
                 <span class="oi oi-spreadsheet" aria-hidden="true"></span> Ponuda
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="ToggleNavMenu" href="/Results/CurrentMatch">
+                <span class="oi oi-play-circle" aria-hidden="true"></span> Utakmica u tijeku
             </NavLink>
         </div>
         <div class="nav-item px-3">

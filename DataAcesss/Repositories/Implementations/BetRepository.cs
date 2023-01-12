@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using DataAcesss.Data;
 using DataAcesss.Repositories.Interfaces;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Models.ViewModels;
+using System.Security.Cryptography;
 
 namespace DataAcesss.Repositories.Implementations
 {
@@ -49,13 +51,14 @@ namespace DataAcesss.Repositories.Implementations
             throw new NotImplementedException();
         }
 
-        public async Task<List<WinnerListVM>> GetWinnerListAsync(int matchId)
+        public async Task<List<UserListVM>> GetWinnerListAsync(int matchId)
         {
-            Task<List<WinnerListVM>> winnerList = (from bet in context.Bets
-                                              join user in context.Users
-                                                  on bet.UserId equals user.Id
-                                              where bet.MatchId == matchId && bet.IsWinningBet == true
-                                              select new WinnerListVM() { UserId = user.Id, UserName = user.UserName }).ToListAsync();
+            Task<List<UserListVM>> winnerList = (from bet in context.Bets
+                                                   join user in context.Users
+                                                   on bet.UserId equals user.Id
+                                                   where bet.MatchId == matchId && bet.IsWinningBet == true
+                                                   orderby user.UserName
+                                                   select new UserListVM() { UserId = user.Id, UserName = user.UserName }).ToListAsync();
 
             return await winnerList;
         }
@@ -79,34 +82,38 @@ namespace DataAcesss.Repositories.Implementations
             context.SaveChanges();
         }
 
-        //public bool Add(Bet bet)
-        //{
-        //    context.Bets.Add(bet);
-        //    context.SaveChanges();
-        //    return true;
-        //}
+        public async Task<int> GetAllClosedBetsAsync()
+        {
+            Task<int> closedBetsCount = (from bet in context.Bets
+                                join match in context.Matches
+                                on bet.MatchId equals match.MatchId
+                                where match.MatchDateTime < DateTime.Now
+                                select bet.BetId).CountAsync();
 
-        //public Bet Delete(int id)
-        //{
-        //    Bet bet = context.Bets.SingleOrDefault(b => b.BetId == id);
+            return await closedBetsCount;
+        }
 
-        //    if (bet != null)
-        //    {
-        //        context.Bets.Remove(bet);
-        //        context.SaveChanges();
-        //    }
+        public async Task<int> GetAllWinningBetsAsync()
+        {
+            return await context.Bets.Where(b => b.IsWinningBet == true).CountAsync();
+        }
 
-        //    return bet;
-        //}
+        public async Task<List<LeaderBoardDetailsVM>> GetAllWinningBetsByUserAsync(string userId)
+        {
+            var userIdParam = new SqlParameter("@UserId", userId);
+            return await context.LeaderBoardDetails.FromSqlRaw("spGetAllWinningBetsByUser @UserId", parameters: new[] { userIdParam }).ToListAsync();
+        }
 
-        //public bool Update(Bet betChanges)
-        //{
-        //    context.Update(betChanges).Property(b => b.BetId).IsModified = false;
-        //    context.Entry(betChanges).Property(b => b.BetDate).IsModified = false;
-        //    context.Entry(betChanges).Property(b => b.UserId).IsModified = false;
+        public async Task<List<UserListVM>> GetUserBetsAsync(int matchId, int betType)
+        {
+            Task<List<UserListVM>> winnerList = (from bet in context.Bets
+                                                 join user in context.Users
+                                                 on bet.UserId equals user.Id
+                                                 where bet.MatchId == matchId && bet.BetType == betType
+                                                 orderby user.UserName
+                                                 select new UserListVM() { UserId = user.Id, UserName = user.UserName }).ToListAsync();
 
-        //    context.SaveChanges();
-        //    return true;
-        //}
+            return await winnerList;
+        }
     }
 }

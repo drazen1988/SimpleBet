@@ -21,7 +21,7 @@
 <br />
 <br />
 <br />
-<SfGrid @ref="GridMatchResults" DataSource="MatchResultsList" AllowPaging="true">
+<SfGrid @ref="GridMatchResults" DataSource="MatchResultsList" AllowFiltering="true" AllowPaging="true">
     <GridPageSettings PageSize="8"></GridPageSettings>
     <GridColumns>
         <GridColumn Field=@nameof(MatchResultsVM.MatchId) IsPrimaryKey=true Visible=false></GridColumn>
@@ -30,7 +30,7 @@
         <GridColumn Field=@nameof(MatchResultsVM.AwayTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
         <GridColumn Field=@nameof(MatchResultsVM.Result) TextAlign="TextAlign.Center" Width="100"></GridColumn>
         <GridColumn Field=@nameof(MatchResultsVM.WinnersCount) TextAlign="TextAlign.Center" Width="130"></GridColumn>
-        <GridColumn Width="120">
+        <GridColumn Width="120" AllowFiltering="false">
             <Template>
                 @{
                     var match = (context as MatchResultsVM);
@@ -57,8 +57,8 @@
             <div class="dialog-content">
                 <SfGrid @ref="GridWinnersList" DataSource="WinnersList">
                     <GridColumns>
-                        <GridColumn Field=@nameof(WinnerListVM.UserId) IsPrimaryKey=true Visible=false></GridColumn>
-                        <GridColumn Field=@nameof(WinnerListVM.UserName) TextAlign="TextAlign.Center"></GridColumn>
+                        <GridColumn Field=@nameof(UserListVM.UserId) IsPrimaryKey=true Visible=false></GridColumn>
+                        <GridColumn Field=@nameof(UserListVM.UserName) TextAlign="TextAlign.Center"></GridColumn>
                     </GridColumns>
                     <GridTemplates>
                         <EmptyRecordTemplate>
@@ -76,13 +76,13 @@
 @code {
     private const string SITE_NAME = "MatchResults";
     SfGrid<MatchResultsVM> GridMatchResults;
-    SfGrid<WinnerListVM> GridWinnersList;
+    SfGrid<UserListVM> GridWinnersList;
     SfDropDownList<int, Country> dropObj;
     private bool DialogVisible { get; set; } = false;
     private int countryBetValue = 0;
     public List<Country> CountryList { get; set; } = new List<Country>();
     public List<MatchResultsVM> MatchResultsList { get; set; } = new List<MatchResultsVM>();
-    public List<WinnerListVM> WinnersList { get; set; } = new List<WinnerListVM>();
+    public List<UserListVM> WinnersList { get; set; } = new List<UserListVM>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -101,7 +101,7 @@
         }
         catch (Exception e)
         {
-await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
         }
     }
 

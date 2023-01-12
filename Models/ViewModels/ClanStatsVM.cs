@@ -1,13 +1,9 @@
-﻿
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Models.ViewModels
 {
-    [NotMapped]
     public class ClanStatsVM
     {
-        [NotMapped]
         public class ClanStatsPercentage
         {
             [Display(Name = "Klan")]
@@ -17,14 +13,13 @@ namespace Models.ViewModels
             public decimal AvgCoeficient { get; set; }
         }
 
-        [NotMapped]
         public class ClanStatsAbs
         {
             public string ClanName { get; set; }
             public int WinningBetsCount { get; set; }
+            public decimal WinningBetsAvg { get; set; }
         }
 
-        [NotMapped]
         public class ClanUsers
         {
             public string ClanName { get; set; }
@@ -32,5 +27,4 @@ namespace Models.ViewModels
             public string Label { get; set; }
         }
     }
-    
 }

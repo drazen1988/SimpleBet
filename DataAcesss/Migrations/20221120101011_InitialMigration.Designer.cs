@@ -4,6 +4,7 @@ using DataAcesss;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAcesss.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221120101011_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,9 +59,6 @@ namespace DataAcesss.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTime>("LoginNotificationDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -118,7 +117,6 @@ namespace DataAcesss.Migrations
                             FirstName = "Dražen",
                             LastName = "Marinković",
                             LockoutEnabled = true,
-                            LoginNotificationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NormalizedEmail = "DRAZEN.MARINKOVIC1@GMAIL.COM",
                             NormalizedUserName = "KAMIKAZASKACIGOM",
                             PasswordHash = "AQAAAAEAACcQAAAAELAPlQf8sVUM/Sc31lIipH7sBfuUsCGeZawx2x0YYRl4pDu1viNlCOk4SEiznbNjlw==",
@@ -138,7 +136,6 @@ namespace DataAcesss.Migrations
                             FirstName = "Tomislav",
                             LastName = "Berišić",
                             LockoutEnabled = true,
-                            LoginNotificationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NormalizedEmail = "TOMISLAV.BERISIC@GMAIL.COM",
                             NormalizedUserName = "TBERISIC",
                             PasswordHash = "AQAAAAEAACcQAAAAECCRKBsGtZvndBuz9iFwly0sqK8/vI/2GskOb/RMBxQYQXXu/ZUBlmXye+qZ+PMxjg==",
@@ -156,9 +153,6 @@ namespace DataAcesss.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogId"), 1L, 1);
-
-                    b.Property<string>("DeviceType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LogDateTime")
                         .ValueGeneratedOnAdd()
@@ -911,14 +905,14 @@ namespace DataAcesss.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "9b62be56-d2d6-4d24-8ae4-cc9066fa11e2",
+                            ConcurrencyStamp = "c48a7922-cb9a-4619-93d9-c72debc40753",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "35fe5bb3-960d-4e9f-8238-6b80edfee638",
+                            ConcurrencyStamp = "38b724cb-d8ba-4dc8-bffc-e55dbb36ccc8",
                             Name = "Korisnik",
                             NormalizedName = "Korisnik"
                         });
@@ -1080,6 +1074,9 @@ namespace DataAcesss.Migrations
 
             modelBuilder.Entity("Models.ViewModels.GeneralStatsVM+WinsPerDay", b =>
                 {
+                    b.Property<string>("MatchDate")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("MatchDateTime")
                         .HasColumnType("datetime2");
 
@@ -1182,40 +1179,6 @@ namespace DataAcesss.Migrations
                         .HasColumnType("int");
 
                     b.ToTable("MyStats", t => t.ExcludeFromMigrations());
-                });
-
-            modelBuilder.Entity("Models.ViewModels.ScalarInt", b =>
-                {
-                    b.Property<int>("Value")
-                        .HasColumnType("int");
-
-                    b.ToTable("ScalarInt", t => t.ExcludeFromMigrations());
-                });
-
-            modelBuilder.Entity("Models.ViewModels.UsageOverviewVM", b =>
-                {
-                    b.Property<string>("ClanName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("LoginNotificationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("UsageOverview", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.UsersPerClanVM", b =>

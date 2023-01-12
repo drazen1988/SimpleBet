@@ -1,0 +1,113 @@
+﻿@page "/Results/CurrentMatch"
+@using DataAcesss.Repositories.Interfaces
+@using Models.ViewModels
+@using SimpleBet.Helpers
+
+@inject IJSRuntime JsRuntime
+@inject IMatchRepository MatchRepository
+@inject IBetRepository BetRepository
+@attribute [Authorize]
+
+<PageTitle>Utakmica u tijeku</PageTitle>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="text-center mt-4">
+        <div class="main-header">Provjerite što su odigrali ostali igrači</div>
+
+        @foreach (var match in Model)
+        {
+            <div class="match-date mt-5 mb-3">@match.MatchDateTime.ToString("g")</div>
+            <div class="match-header mb-3">@match.HomeTeam - @match.AwayTeam</div>
+            <div class="d-flex justify-content-center">
+                <div class="px-3 mx-3">1</div>
+                <div class="px-3 mx-4">X</div>
+                <div class="px-3 mx-3">2</div>
+            </div>
+            <div class="d-flex justify-content-center mt-1">
+                <button class="btn btn-link border px-3 mx-3" @onclick="()=>GetHomeBets(match.MatchId, 1)">@match.HomeCoeficient</button>
+                <button class="btn btn-link border px-3" @onclick="()=>GetHomeBets(match.MatchId, 3)">@match.DrawCoeficient</button>
+                <button class="btn btn-link border px-3 mx-3" @onclick="()=>GetHomeBets(match.MatchId, 2)">@match.AwayCoeficient</button>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center mt-4">
+        <h3>Trenutno se ne igra nijedna utakmica.</h3>
+    </div>
+}
+
+<SfDialog Width="250px" @bind-Visible="UserListDialog" IsModal="true" ShowCloseIcon="true">
+    <DialogTemplates>
+        <Header>
+            <span>@DialogHeader</span>
+        </Header>
+        <Content>
+            <div class="dialog-content">
+                <SfGrid DataSource="UserList">
+                    <GridColumns>
+                        <GridColumn Field=@nameof(UserListVM.UserId) IsPrimaryKey=true Visible=false></GridColumn>
+                        <GridColumn Field=@nameof(UserListVM.UserName) TextAlign="TextAlign.Center"></GridColumn>
+                    </GridColumns>
+                    <GridTemplates>
+                        <EmptyRecordTemplate>
+                            <div class="text-center">
+                                <span>Nitko se nije kladio na ovu opciju.</span>
+                            </div>
+                        </EmptyRecordTemplate>
+                    </GridTemplates>
+                </SfGrid>
+            </div>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+
+@code {
+    private const string SITE_NAME = "CurrentMatch";
+    public List<CurrentMatchVM> Model { get; set; } = new List<CurrentMatchVM>();
+    public List<UserListVM> UserList { get; set; } = new List<UserListVM>();
+    private bool UserListDialog { get; set; } = false;
+    private string DialogHeader { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Model = await MatchRepository.GetOngoingMatchesAsync();
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task GetHomeBets(int matchId, int betType)
+    {
+        try
+        {
+            UserList = await BetRepository.GetUserBetsAsync(matchId, betType);
+
+            switch (betType)
+            {
+                case 1:
+                    DialogHeader = "Domaći pobjeđuju";
+                    break;
+                case 2:
+                    DialogHeader = "Gosti pobjeđuju";
+                    break;
+                case 3:
+                    DialogHeader = "Neodlučeno";
+                    break;
+            }
+
+            this.UserListDialog = true;
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+}

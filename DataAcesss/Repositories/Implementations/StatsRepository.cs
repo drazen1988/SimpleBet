@@ -132,5 +132,12 @@ namespace DataAcesss.Repositories.Implementations
             var userIdParam = new SqlParameter("@UserId", userId);
             return await context.MyBetList.FromSqlRaw("spGetMyBetList @UserId", parameters: new[] { userIdParam }).ToListAsync();
         }
+
+        public async Task<ScalarInt> GetCurrentRankingAsync(string userId)
+        {
+            var userIdParam = new SqlParameter("@UserId", userId);
+            var currentRanking = await context.ScalarInt.FromSqlRaw("spGetLeaderBoardById @UserId", parameters: new[] { userIdParam }).ToListAsync();
+            return currentRanking.FirstOrDefault();
+        }
     }
 }

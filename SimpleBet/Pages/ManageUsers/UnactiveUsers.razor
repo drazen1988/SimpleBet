@@ -1,0 +1,132 @@
+﻿@page "/ManageUsers/UnactiveUsers"
+
+@using DataAcesss.Data
+@using Microsoft.AspNetCore.Identity
+@using Models.ViewModels
+@using DataAcesss.Repositories.Interfaces
+@using SimpleBet.Helpers
+
+@inject IJSRuntime JsRuntime
+@inject IUserRepository UserRepository
+@inject IMailRepository MailRepository
+@inject UserManager<ApplicationUser> _UserManager
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Neaktivni korisnici</PageTitle>
+
+<button class="btn btn-primary" @onclick="RemindAll">Pošalji svima podsjetnik</button>
+<br />
+<br />
+<SfGrid @ref="GridUsers" DataSource="UserList" AllowFiltering="true" AllowPaging="true">
+    <GridPageSettings PageSize="12"></GridPageSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(UnactiveUsersVM.Id) IsPrimaryKey=true Visible=false></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.UserName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.FullName) AllowEditing="false" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.Email) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.ClanName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.HasLoggedIn) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.LoginNotificationDate) AllowFiltering="false" TextAlign="TextAlign.Center" Width="200"></GridColumn>
+        <GridColumn Width="180" AllowFiltering="false">
+            <Template>
+                @{
+                    var user = (context as UnactiveUsersVM);
+                }
+                <button class="btn btn-primary" @onclick="()=>SendReminder(user)">Pošalji podsjetnik</button>
+            </Template>
+        </GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema podataka za prikaz.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+
+@code {
+    private const string SITE_NAME = "UsersOverview";
+    public List<UnactiveUsersVM> UserList { get; set; } = new List<UnactiveUsersVM>();
+    SfGrid<UnactiveUsersVM> GridUsers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            UserList = await UserRepository.GetUnActiveUsersAsync();
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task SendReminder(UnactiveUsersVM val)
+    {
+        try
+        {
+            bool mailSent = await MailRepository.SendReminderAsync(val.FirstName, val.Email);
+
+            if (mailSent)
+            {
+                ApplicationUser user = await _UserManager.FindByIdAsync(val.Id);
+
+                if (user != null)
+                {
+                    user.LoginNotificationDate = DateTime.Now;
+
+                    var result = await _UserManager.UpdateAsync(user);
+
+                    if (result.Succeeded)
+                    {
+                        UserList = await UserRepository.GetUnActiveUsersAsync();
+                        await GridUsers.Refresh();
+                        await JsRuntime.ToastrSuccess("Podsjetnik je poslan korisniku na mail.");
+                    }
+                }
+            }
+            else
+            {
+                await JsRuntime.ToastrError("Mail nije poslan!", "Greška");
+                Exception e = new Exception("Dogodila se greška prilikom slanja maila.");
+                await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+            }
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task RemindAll()
+    {
+        try
+        {
+            foreach (var item in UserList)
+            {
+                bool mailSent = await MailRepository.SendReminderAsync(item.FirstName, item.Email);
+
+                if (mailSent)
+                {
+                    ApplicationUser user = await _UserManager.FindByIdAsync(item.Id);
+
+                    if (user != null)
+                    {
+                        user.LoginNotificationDate = DateTime.Now;
+                        var result = await _UserManager.UpdateAsync(user);
+                    }
+                }
+            }
+
+            UserList = await UserRepository.GetUnActiveUsersAsync();
+            await GridUsers.Refresh();
+            await JsRuntime.ToastrSuccess("Podsjetnik je poslan svima na mail.");
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+}

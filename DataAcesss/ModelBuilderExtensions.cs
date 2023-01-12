@@ -80,12 +80,6 @@ namespace DataAcesss
                     new Clan()
                     {
                         ClanId = 3,
-                        ClanName = "Lajbeki",
-                        UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                    },
-                    new Clan()
-                    {
-                        ClanId = 3,
                         ClanName = "Drago Simijaja",
                         UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
                     },

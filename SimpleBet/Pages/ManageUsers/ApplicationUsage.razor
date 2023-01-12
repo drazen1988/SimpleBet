@@ -1,0 +1,126 @@
+﻿@page "/ManageUsers/ApplicationUsage"
+@using Models.ViewModels
+@using DataAcesss.Repositories.Interfaces
+@using SimpleBet.Helpers
+
+@inject IJSRuntime JsRuntime
+@inject IUserRepository UserRepository
+@inject IClanRepository ClanRepository
+@inject IBetRepository BetRepository
+@inject IMatchRepository MatchRepository
+@inject ILeaderBoardRepository LeaderBoardRepository
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Korištenje aplikacije</PageTitle>
+
+<h3>Općenito</h3>
+
+<div class="form-container p-3 mb-4 bg-light rounded">
+    <div class="mb-3 mb-3">
+        <div class="label fw-bold">Broj aktivnih korisnika: </div>
+        <div class="value">@Model.ActiveUserCount</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Broj klanova: </div>
+        <div class="value">@Model.ClanCount</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Ukupan broj odigranih oklada: </div>
+        <div class="value">@Model.ClosedBetsCount</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Ukupan broj mogućih oklada: </div>
+        <div class="value">@(Model.PlayedMatches * Model.ActiveUserCount)</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Omjer odigranih oklada / mogućih oklada: </div>
+        <div class="value">@Model.BetRatio</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Broj pogođenih oklada: </div>
+        <div class="value">@Model.WinningBetsCount</div>
+    </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Omjer pogođenih oklada / odigranih oklada: </div>
+        <div class="value">@Model.WinningBetsRatio</div>
+    </div>
+    <div>
+        <div class="label fw-bold">Prosječni koeficijent svih igrača: </div>
+        <div class="value">@Model.OverallAverageCoeficient</div>
+    </div>
+</div>
+
+<h3>Prijave u aplikaciju</h3>
+
+<SfGrid DataSource="Model.LoginTypesList">
+    <GridAggregates>
+        <GridAggregate>
+            <GridAggregateColumns>
+                <GridAggregateColumn Field="@nameof(ApplicationUsageVM.LoginTypes.DeviceType)" Type="AggregateType.Custom">
+                    <FooterTemplate>
+                        Ukupno:
+                    </FooterTemplate>
+                </GridAggregateColumn>
+                <GridAggregateColumn Field="@nameof(ApplicationUsageVM.LoginTypes.NumberOfLogins)" Type="AggregateType.Sum">
+                    <FooterTemplate>
+                        @{
+                            var SumValue = (context as AggregateTemplateContext);
+                            <div>
+                                @SumValue.Sum
+                            </div>
+                        }
+                    </FooterTemplate>
+                </GridAggregateColumn>
+                <GridAggregateColumn Field="@nameof(ApplicationUsageVM.LoginTypes.DeviceRatio)" Type="AggregateType.Sum" Format="P2">
+                    <FooterTemplate>
+                        @{
+                            var SumValue = (context as AggregateTemplateContext);
+                                <div>
+                                @SumValue.Sum
+                                </div>
+                        }
+                    </FooterTemplate>
+                </GridAggregateColumn>
+            </GridAggregateColumns>
+        </GridAggregate>
+    </GridAggregates>
+    <GridColumns>
+        <GridColumn Field=@nameof(ApplicationUsageVM.LoginTypes.DeviceType) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(ApplicationUsageVM.LoginTypes.NumberOfLogins) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(ApplicationUsageVM.LoginTypes.DeviceRatio) Format="p1" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+    </GridColumns>
+    <GridTemplates>
+        <EmptyRecordTemplate>
+            <div class="text-center">
+                <span>Nema podataka za prikaz.</span>
+            </div>
+        </EmptyRecordTemplate>
+    </GridTemplates>
+</SfGrid>
+
+
+@code {
+    private const string SITE_NAME = "ApplicationUsage";
+    public ApplicationUsageVM Model { get; set; } = new ApplicationUsageVM();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Model.LoginTypesList = await UserRepository.GetApplicationUsageAsync();
+            Model.ClanCount = await ClanRepository.GetClanCountAsync();
+            Model.ActiveUserCount = await UserRepository.GetActiveUserCountAsync();
+            Model.WinningBetsCount = await BetRepository.GetAllWinningBetsAsync();
+            Model.OverallAverageCoeficient = await LeaderBoardRepository.GetOverallAverageCoeficientAsync();
+            Model.ClosedBetsCount = await BetRepository.GetAllClosedBetsAsync();
+            Model.PlayedMatches = await MatchRepository.GetPlayedMatches();
+            Model.BetRatio = (Convert.ToDecimal(Model.ClosedBetsCount) / Convert.ToDecimal((Model.PlayedMatches * Model.ActiveUserCount))).ToString("p");
+            Model.WinningBetsRatio = (Convert.ToDecimal(Model.WinningBetsCount) / Convert.ToDecimal((Model.ClosedBetsCount))).ToString("p");
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+}

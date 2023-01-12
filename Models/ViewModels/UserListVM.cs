@@ -2,7 +2,7 @@
 
 namespace Models.ViewModels
 {
-    public class WinnerListVM
+    public class UserListVM
     {
         public string UserId { get; set; }
 

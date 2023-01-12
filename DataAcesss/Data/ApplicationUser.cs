@@ -12,6 +12,8 @@ namespace DataAcesss.Data
         [Required]
         public string LastName { get; set; }
 
+        public DateTime? LoginNotificationDate { get; set; }
+
         [NotMapped]
         public string FullName
         {

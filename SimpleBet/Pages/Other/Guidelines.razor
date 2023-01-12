@@ -8,13 +8,16 @@
 
 <PageTitle>Pravila</PageTitle>
 
+
+<button class="btn btn-primary mt-2 mb-4" @onclick="DownloadGuidelines">Preuzmi korisničke upute</button>
+
 <h3>Pravila</h3>
 
 <div id="container">
     <SfSpinner @bind-Visible="@SpinnerVisible" Size="50"></SfSpinner>
 </div>
 
-<div class="container mb-4">
+<div class="container">
     <div class="mt-4 p-4 bg-light rounded">
         <p>Kladimo se na ishod svake utakmice od početka do kraja prvenstva, a opcije su 1, X, 2.</p>
         <p>Do početka prvenstva je dostupno klađenje na pobjednika prvenstva, i u slučaju pogotka taj se koeficijent uključuje u ukupni koeficijent igrača.</p>
@@ -25,12 +28,10 @@
         <p>Igrači su podijeljeni u klanove i svaki igrač mora pripadati nekom klanu.</p>
         <p>Svaki klan se sastoji od minimalno 4 igrača a maksimalni broj igrača u jednom klanu nije limitiran.</p>
         <p>Ukupni koeficijent klana je samo informativnog karaktera i <b>ne utječe na konačni poredak igrača.</b> Svrha klanova je jačanje timskog duha i dodatne zabave :)</p>
-        <p>Pogođeni koeficijenti se međusobno množe a pobijednik kladionice je igrač koji na kraju prvenstva ima najveći ukupni koeficijent!</p>
+        <p>Pogođeni koeficijenti se međusobno množe a pobjednik kladionice je igrač koji na kraju prvenstva ima najveći ukupni koeficijent!</p>
     </div>
 </div>
 
-<h3>Korisničke upute</h3>
-<button class="btn btn-primary mt-2 mb-4" @onclick="DownloadGuidelines">Preuzmi korisničke upute</button>
 
 @code {
     private const string SITE_NAME = "Guidelines";

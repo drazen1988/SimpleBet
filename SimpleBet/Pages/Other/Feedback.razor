@@ -49,7 +49,7 @@
             ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
 
             FeedbackDropDown dropDownItem = Model.FeedbackDropDownList.Where(f => f.FeedbackTypeValue == Model.SelectedValue).FirstOrDefault();
-            bool success = await MailRepository.SendFeedbackAsync(dropDownItem.FeedbackTypeText, Model.Description, user.UserName, user.FullName);
+            bool success = await MailRepository.SendFeedbackAsync(dropDownItem.FeedbackTypeText, Model.Description, user.UserName, user.FullName, user.Email);
 
             if (success)
             {

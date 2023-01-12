@@ -63,7 +63,7 @@ namespace DataAcesss.Repositories.Implementations
 
         public async Task<List<MatchVM>> GetAllMatchesAsync()
         {
-            return _mapper.Map<List<Match>, List<MatchVM>>(await context.Matches.OrderBy(m => m.MatchDateTime).ToListAsync());
+            return _mapper.Map<List<Match>, List<MatchVM>>(await context.Matches.Where(m => m.HomeCoeficient == 0).OrderBy(m => m.MatchDateTime).ToListAsync());
         }
 
         public async Task<int> AddCoeficientsAsync(MatchVM matchVM)
@@ -159,7 +159,7 @@ namespace DataAcesss.Repositories.Implementations
 
         public async Task<List<MatchVM>> GetFutureMatchesAsync()
         {
-            return _mapper.Map<List<Match>, List<MatchVM>>(await context.Matches.Where(m => m.MatchDateTime > DateTime.Now).OrderBy(m => m.MatchDateTime).ToListAsync());
+            return _mapper.Map<List<Match>, List<MatchVM>>(await context.Matches.Where(m => m.MatchDateTime > DateTime.Now && m.HomeCoeficient > 0).OrderBy(m => m.MatchDateTime).ToListAsync());
         }
 
         public async Task<Match> GetFirstMatchAsync()
@@ -170,6 +170,18 @@ namespace DataAcesss.Repositories.Implementations
         public async Task<List<MatchResultsVM>> GetAllMatchResultsAsync()
         {
             return await context.MatchResults.FromSqlRaw("spGetMatchResults").ToListAsync();
+        }
+
+        public async Task<int> GetPlayedMatches()
+        {
+            return await context.Matches.Where(m => m.MatchDateTime < DateTime.Now).CountAsync();
+        }
+
+        public async Task<List<CurrentMatchVM>> GetOngoingMatchesAsync()
+        {
+            List<Match> matches = await context.Matches.Where(m => m.MatchDateTime < DateTime.Now && m.Result == null).OrderByDescending(m => m.MatchDateTime).ToListAsync();
+            List<CurrentMatchVM> currentMatches = _mapper.Map<List<Match>, List<CurrentMatchVM>>(matches);
+            return currentMatches;
         }
     }
 }

@@ -33,21 +33,33 @@ namespace DataAcesss
         public DbSet<MyStatsVM> MyStats { get; set; }
         public DbSet<MyStatsGridVM> MyBetList { get; set; }
         public DbSet<GeneralStatsVM.WinsPerDay> WinsPerDay { get; set; }
+        public DbSet<UnactiveUsersVM> UsageOverview { get; set; }
+        public DbSet<ScalarInt> ScalarInt { get; set; }
+        public DbSet<LeaderBoardDetailsVM> LeaderBoardDetails { get; set; }
+        public DbSet<ApplicationUsageVM.LoginTypes> AplicationUsage { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            // ApplicationUser
             modelBuilder.Entity<ApplicationUser>()
             .HasIndex(u => u.UserName).IsUnique();
 
+
+            // Country
             modelBuilder.Entity<Country>()
             .HasIndex(c => c.CountryName).IsUnique();
 
             modelBuilder.Entity<Country>()
-            .Property(e => e.CountryDate)
+            .Property(c => c.CountryDate)
             .HasDefaultValueSql("getdate()");
 
+            modelBuilder.Entity<Country>()
+            .Property(c => c.CountryCoeficient)
+            .HasColumnType("decimal(15,2)");
+
+            // Match
             modelBuilder.Entity<Match>()
             .HasIndex(m => m.WebId).IsUnique();
 
@@ -55,18 +67,39 @@ namespace DataAcesss
             .Property(m => m.MatchDate)
             .HasDefaultValueSql("getdate()");
 
+            modelBuilder.Entity<Match>()
+            .Property(m => m.AwayCoeficient)
+            .HasColumnType("decimal(15,2)");
+
+            modelBuilder.Entity<Match>()
+            .Property(m => m.DrawCoeficient)
+            .HasColumnType("decimal(15,2)");
+
+            modelBuilder.Entity<Match>()
+            .Property(m => m.HomeCoeficient)
+            .HasColumnType("decimal(15,2)");
+
+            // Bet
             modelBuilder.Entity<Bet>()
             .Property(b => b.BetDate)
             .HasDefaultValueSql("getdate()");
 
+            modelBuilder.Entity<Bet>()
+            .Property(b => b.BetCoeficient)
+            .HasColumnType("decimal(15,2)");
+
+
+            // CountryBet
             modelBuilder.Entity<CountryBet>()
             .Property(c => c.CountryBetDate)
             .HasDefaultValueSql("getdate()");
 
-            modelBuilder.Entity<EventLog>()
-            .Property(e => e.LogDate)
-            .HasDefaultValueSql("getdate()");
+            modelBuilder.Entity<CountryBet>()
+            .Property(c => c.CountryCoeficient)
+            .HasColumnType("decimal(15,2)");
 
+
+            // Clan
             modelBuilder.Entity<Clan>()
             .HasIndex(c => c.ClanName).IsUnique();
 
@@ -74,45 +107,75 @@ namespace DataAcesss
             .Property(c => c.ClanDate)
             .HasDefaultValueSql("getdate()");
 
+
+            // ErrorLog
             modelBuilder.Entity<ErrorLog>()
             .Property(l => l.LogDate)
             .HasDefaultValueSql("getdate()");
 
+
+            // EventLog
+            modelBuilder.Entity<EventLog>()
+            .Property(e => e.LogDate)
+            .HasDefaultValueSql("getdate()");
+
+
+            // AuditLog
             modelBuilder.Entity<AuditLog>()
             .Property(l => l.LogDateTime)
             .HasDefaultValueSql("getdate()");
 
+
+            // ChatPost
             modelBuilder.Entity<ChatPost>()
             .Property(cp => cp.PostDateTime)
             .HasDefaultValueSql("getdate()");
 
+
+            // ChatReply
             modelBuilder.Entity<ChatReply>()
             .Property(cr => cr.ReplyDateTime)
             .HasDefaultValueSql("getdate()");
 
+
+            // ChatLike
             modelBuilder.Entity<ChatLike>()
             .Property(cl => cl.LikeDate)
             .HasDefaultValueSql("getdate()");
 
-            modelBuilder.Ignore<LeaderBoardVM>();
-            modelBuilder.Ignore<UsersPerClanVM>();
-            modelBuilder.Ignore<MyStatsGridVM>();
-            modelBuilder.Ignore<GeneralStatsVM.WinsPerDay>();
-            modelBuilder.Ignore<MyStatsVM>();
-            modelBuilder.Ignore<MatchResultsVM>();
-            modelBuilder.Ignore<ClanStatsVM.ClanStatsPercentage>();
-            modelBuilder.Ignore<ClanStatsVM.ClanStatsAbs>();
-            modelBuilder.Ignore<ClanStatsVM.ClanUsers>();
-            modelBuilder.Entity<LeaderBoardVM>().HasNoKey();
-            modelBuilder.Entity<MatchResultsVM>().HasNoKey();
-            modelBuilder.Entity<ClanStatsVM.ClanStatsPercentage>().HasNoKey();
-            modelBuilder.Entity<ClanStatsVM.ClanStatsAbs>().HasNoKey();
-            modelBuilder.Entity<ClanStatsVM.ClanUsers>().HasNoKey();
-            modelBuilder.Entity<UsersPerClanVM>().HasNoKey();
-            modelBuilder.Entity<MyStatsVM>().HasNoKey();
-            modelBuilder.Entity<MyStatsGridVM>().HasNoKey();
-            modelBuilder.Entity<GeneralStatsVM.WinsPerDay>().HasNoKey();
 
+            // ViewModels
+            modelBuilder.Entity<LeaderBoardVM>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<UsersPerClanVM>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<MyStatsGridVM>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<GeneralStatsVM.WinsPerDay>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<MyStatsVM>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<MatchResultsVM>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<ClanStatsVM.ClanStatsPercentage>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<ClanStatsVM.ClanStatsAbs>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<ClanStatsVM.ClanUsers>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<UnactiveUsersVM>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<ScalarInt>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<LeaderBoardDetailsVM>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+            modelBuilder.Entity<ApplicationUsageVM.LoginTypes>().HasNoKey().ToTable(t => t.ExcludeFromMigrations());
+
+            modelBuilder.Entity<ClanStatsVM.ClanStatsPercentage>()
+            .Property(c => c.AvgCoeficient)
+            .HasColumnType("decimal(15,2)");
+
+            modelBuilder.Entity<LeaderBoardVM>()
+            .Property(l => l.TotalCoeficient)
+            .HasColumnType("decimal(15,2)");
+
+            modelBuilder.Entity<MyStatsGridVM>()
+            .Property(g => g.BetCoeficient)
+            .HasColumnType("decimal(15,2)");
+
+            modelBuilder.Entity<MyStatsVM>()
+            .Property(s => s.BestWinningCoeficient)
+            .HasColumnType("decimal(15,2)");
+
+            // Seeds
             modelBuilder.SeedUsers();
             modelBuilder.SeedCountries();
         }

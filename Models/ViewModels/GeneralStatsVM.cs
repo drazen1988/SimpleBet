@@ -1,13 +1,10 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models.ViewModels
 {
-    [NotMapped]
     public class GeneralStatsVM
     {
-        [NotMapped]
         public class BestUserStreak
         {
             public BestUserStreak()
@@ -25,14 +22,12 @@ namespace Models.ViewModels
             public List<int> MatchIdList { get; set; }
         }
 
-        [NotMapped]
         public class MatchList
         {
             [Display(Name = "Utakmica")]
             public string Match { get; set; }
         }
 
-        [NotMapped]
         public class BestUserCoeficient
         {
             public string UserId { get; set; }
@@ -47,7 +42,6 @@ namespace Models.ViewModels
             public string Match { get; set; }
         }
 
-        [NotMapped]
         public class WinsPerDay
         {
             public DateTime MatchDateTime { get; set; }

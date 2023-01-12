@@ -8,18 +8,27 @@
 
 @inject IJSRuntime JsRuntime
 @inject ILeaderBoardRepository LeaderBoardRepository
+@inject IBetRepository BetRepository
 @attribute [Authorize]
 
 <PageTitle>Ukupni poredak</PageTitle>
 
-<SfGrid DataSource="LeaderBoardList" AllowPaging="true">
+<SfGrid DataSource="LeaderBoardList" AllowFiltering="true" AllowPaging="true">
     <GridPageSettings PageSize="10"></GridPageSettings>
     <GridColumns>
         <GridColumn Field=@nameof(LeaderBoardVM.UserId) IsPrimaryKey=true Visible=false></GridColumn>
         <GridColumn Field=@nameof(LeaderBoardVM.Position) TextAlign="TextAlign.Center" Width="100"></GridColumn>
         <GridColumn Field=@nameof(LeaderBoardVM.UserName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
         <GridColumn Field=@nameof(LeaderBoardVM.ClanName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(LeaderBoardVM.TotalCoeficient) TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(LeaderBoardVM.TotalCoeficient) AllowFiltering="false" TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Width="120">
+            <Template>
+                @{
+                    var user = (context as LeaderBoardVM);
+                }
+                <button class="btn btn-primary" @onclick="()=>GetDetails(user)">Detalji</button>
+            </Template>
+        </GridColumn>
     </GridColumns>
     <GridTemplates>
         <EmptyRecordTemplate>
@@ -30,15 +39,56 @@
     </GridTemplates>
 </SfGrid>
 
+
+<SfDialog Width="420px" @bind-Visible="DialogVisible" IsModal="true" ShowCloseIcon="true">
+    <DialogTemplates>
+        <Header>
+            <span>Pogođene utakmice</span>
+        </Header>
+        <Content>
+            <div class="dialog-content">
+                <SfGrid DataSource="MatchList">
+                    <GridColumns>
+                        <GridColumn Field=@nameof(LeaderBoardDetailsVM.WinningMatch) TextAlign="TextAlign.Center"></GridColumn>
+                        <GridColumn Field=@nameof(LeaderBoardDetailsVM.WinningCoeficient) TextAlign="TextAlign.Center"></GridColumn>
+                    </GridColumns>
+                    <GridTemplates>
+                        <EmptyRecordTemplate>
+                            <div class="text-center">
+                                <span>Nema dostupnih podataka.</span>
+                            </div>
+                        </EmptyRecordTemplate>
+                    </GridTemplates>
+                </SfGrid>
+            </div>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
 @code {
     private const string SITE_NAME = "MainLeaderBoard";
     public List<LeaderBoardVM> LeaderBoardList { get; set; } = new List<LeaderBoardVM>();
+    public List<LeaderBoardDetailsVM> MatchList { get; set; } = new List<LeaderBoardDetailsVM>();
+    private bool DialogVisible { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             LeaderBoardList = await LeaderBoardRepository.GetLeaderBoardAsync();
+        }
+        catch (Exception e)
+        {
+            await JsRuntime.ToastrError(ExceptionHelper.LogAndDisplayErrorMessage(e, SITE_NAME));
+        }
+    }
+
+    public async Task GetDetails(LeaderBoardVM val)
+    {
+        try
+        {
+            MatchList = await BetRepository.GetAllWinningBetsByUserAsync(val.UserId);
+            this.DialogVisible = true;
         }
         catch (Exception e)
         {

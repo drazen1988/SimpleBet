@@ -49,7 +49,7 @@
 @foreach (ChatPostVM post in Model.ChatPostsFiltered)
 {
     <div class="container mt-3 px-0">
-        <div class="p-2 px-3 bg-success rounded" style="--bs-bg-opacity: .3;">
+        <div class="p-2 px-3 bg-success rounded text-break" style="--bs-bg-opacity: .3;">
             @if (post.EditPostVisible)
             {
                 <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>post.EditPostVisible = !post.EditPostVisible"></i>
@@ -72,7 +72,7 @@
                             <span class="mx-1 text-secondary dislike-icon">@post.TotalDislikes</span>
                         </div>
                     </div>
-                    <div class="m-0 ">
+                    <div class="m-0">
                         @post.PostFooter
                     </div>
                 </div>
@@ -112,7 +112,7 @@
             @if (reply.PostId == post.PostId)
             {
                 <div class="container mt-2">
-                    <div class="mx-3 p-2 bg-warning rounded" style="--bs-bg-opacity: .3;">
+                    <div class="mx-3 p-2 bg-warning rounded text-break" style="--bs-bg-opacity: .3;">
                         @if (reply.EditReplyVisible)
                         {
                             <i class="fa fa-times float-end mb-2 mt-2 text-muted" @onclick="()=>reply.EditReplyVisible = !reply.EditReplyVisible"></i>
@@ -122,14 +122,17 @@
                         else
                         {
                             <p>@reply.Message</p>
-                            <p class="float-end m-0">@reply.ReplyFooter</p>
+                            <div class="footer-wrapper">
+                                <div class="m-0">
+                                    @reply.ReplyFooter
+                                </div>
+                            </div>
                             @if (Model.CurrentUserId == reply.AuthorId)
                             {
-                                <button type="button" class="btn btn-link p-0" @onclick="()=>DeleteReply(reply.ReplyId)">Obriši</button>
+                                <button type="button" class="btn btn-link p-0" @onclick="()=>DeleteReply(reply.ReplyId, post.PostId)">Obriši</button>
                                 <button type="button" class="btn btn-link p-0" @onclick="()=>EditReply(reply.ReplyId)">Uredi</button>
                             }
                         }
-                        <br>
                     </div>
                 </div>
             }
@@ -324,6 +327,7 @@
 
     public void ShowNewReply(int postId)
     {
+        NewReply.Message = "";
         Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().NewReplyVisible = !Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().NewReplyVisible;
     }
 
@@ -386,7 +390,7 @@
         }
     }
 
-    public async Task DeleteReply(int replyId)
+    public async Task DeleteReply(int replyId, int postId)
     {
         try
         {
@@ -395,6 +399,7 @@
             if (success)
             {
                 Model.ChatReplies = await ChatRepository.GetAllRepliesAsync();
+                Model.ChatPosts.Where(c => c.PostId == postId).FirstOrDefault().TotalReplies -= 1;
             }
         }
         catch (Exception e)

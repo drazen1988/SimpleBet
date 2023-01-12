@@ -10,6 +10,7 @@ namespace DataAcesss.Mapper
         public MappingProfile()
         {
             CreateMap<Match, MatchVM>().ReverseMap();
+            CreateMap<Match, CurrentMatchVM>().ReverseMap();
             CreateMap<Bet, BetVM>().ReverseMap();
             CreateMap<CountryBet, CountryBetVM>().ReverseMap();
             CreateMap<Country, CountryBetVM>().ReverseMap();

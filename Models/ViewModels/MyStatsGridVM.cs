@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models.ViewModels
 {
-    [NotMapped]
     public class MyStatsGridVM
     {
         public int MatchId { get; set; }

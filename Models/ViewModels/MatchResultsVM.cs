@@ -1,10 +1,7 @@
-﻿
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Models.ViewModels
 {
-    [NotMapped]
     public class MatchResultsVM
     {
         public int MatchId { get; set; }

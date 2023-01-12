@@ -9,3 +9,7 @@ drop procedure spGetWinsPerDay
 drop procedure spInsertErrorLog
 drop procedure spInsertAuditLog
 drop procedure spGetMyBetList
+drop procedure spGetUnActiveUsers
+drop procedure spGetLeaderBoardById
+drop procedure spApplicationUsage
+drop procedure spGetAllWinningBetsByUser

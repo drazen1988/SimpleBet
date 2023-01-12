@@ -14,7 +14,7 @@
 
 <h3>Općenito</h3>
 
-<div class="form-container p-3 mb-2 bg-light rounded">
+<div class="form-container p-3 mb-4 bg-light rounded">
     <div class="mb-3 mb-3">
         <div class="label fw-bold">Korisnik: </div>
         <div class="value">@Model.UserName</div>
@@ -32,15 +32,23 @@
         <div class="value">@Model.WinningBetCount</div>
     </div>
     <div class="mb-3">
+        <div class="label fw-bold">Postotak pogođenih oklada: </div>
+        <div class="value">@WinningBetsRatio</div>
+    </div>
+    <div class="mb-3">
         <div class="label fw-bold">Najbolji pogođeni koeficijent: </div>
         <div class="value">@Model.BestWinningCoeficient</div>
     </div>
+    <div class="mb-3">
+        <div class="label fw-bold">Trenutna pozicija u poretku: </div>
+        <div class="value">@CurrentRank.Value</div>
+    </div>
 </div>
 
-<br />
+
 <h3>Detalji</h3>
 
-<SfGrid DataSource="betList" AllowPaging="true">
+<SfGrid DataSource="BetList" AllowPaging="true" AllowFiltering="true"> 
     <GridPageSettings PageSize="10"></GridPageSettings>
     <GridColumns>
         <GridColumn Field=@nameof(MyStatsGridVM.MatchId) IsPrimaryKey=true Visible=false></GridColumn>
@@ -67,7 +75,9 @@
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
     private MyStatsVM Model { get; set; } = new MyStatsVM();
-    private List<MyStatsGridVM> betList { get; set; } = new List<MyStatsGridVM>();
+    private List<MyStatsGridVM> BetList { get; set; } = new List<MyStatsGridVM>();
+    public ScalarInt CurrentRank { get; set; } = new ScalarInt();
+    private string WinningBetsRatio = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,7 +87,9 @@
             ApplicationUser user = await _UserManager.GetUserAsync(authState.User);
 
             Model = await StatsRepository.GetMyStatsAsync(user.Id);
-            betList = await StatsRepository.GetBetsByUserAsync(user.Id);
+            CurrentRank = await StatsRepository.GetCurrentRankingAsync(user.Id);
+            BetList = await StatsRepository.GetBetsByUserAsync(user.Id);
+            WinningBetsRatio = (Convert.ToDecimal(Model.WinningBetCount) / Convert.ToDecimal(Model.TotalBetCount)).ToString("P");
         }
         catch (Exception e)
         {

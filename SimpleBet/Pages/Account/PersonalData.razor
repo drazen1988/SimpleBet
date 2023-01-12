@@ -11,7 +11,7 @@
 
 <PageTitle>Osobni podaci</PageTitle>
 
-<div class="form-container p-3 mb-2 bg-light rounded">
+<div class="form-container p-3 mb-4 bg-light rounded">
     <div class="mb-3 mb-3">
         <div class="label fw-bold">Korisničko ime: </div>
         <div class="value">@Model.UserName</div>
@@ -29,6 +29,8 @@
         <div class="value">@ClanName</div>
     </div>
 </div>
+
+<p class="fst-italic">Za promjene osobnih podataka kontaktirajte svog administratora.</p>
 
 @code {
     private const string SITE_NAME = "PersonalData";
