@@ -1,88 +1,80 @@
 ﻿.container .rounded i {
-    font-size: 24px;
-    cursor: pointer;
+  font-size: 24px;
+  cursor: pointer;
 }
 
-    .container .rounded i span {
-        font-size: 16px;
-        cursor: auto;
-    }
+.container .rounded i span {
+  font-size: 16px;
+  cursor: auto;
+}
 
 .container .rounded .like-icon {
-    font-size: 18px;
+  font-size: 18px;
 }
 
 .container .rounded .dislike-icon {
-    font-size: 18px;
-    margin-left: 12px;
+  font-size: 18px;
+  margin-left: 12px;
 }
 
 .container .total-replies {
-    color: #0071c1;
+  color: #0459a9;
 }
 
 .container .buttons-main-container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .dropdown-sort {
-    float: right !important;
+  float: right !important;
 }
 
 .counter-container {
-    padding: 2px 10px;
-    height: 28px;
-    position: sticky;
-    bottom: 0;
+  padding: 2px 10px;
+  height: 28px;
+  position: sticky;
+  bottom: 0;
 }
 
 .container .footer-wrapper {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* #region MEDIA QUERIES */
 @media only screen and (max-width: 792px) {
-    .dropdown-sort {
-        float: left !important;
-        margin-top: 12px;
-    }
-
-    .clear {
-        clear: both;
-    }
+  .dropdown-sort {
+    float: left !important;
+    margin-top: 12px;
+  }
+  .clear {
+    clear: both;
+  }
 }
-
 @media only screen and (max-width: 768px) {
-    .container .buttons-main-container {
-        flex-direction: column;
-    }
-
-    .container .footer-wrapper {
-        display: block;
-    }
+  .container .buttons-main-container {
+    flex-direction: column;
+  }
+  .container .footer-wrapper {
+    display: block;
+  }
 }
-
 @media only screen and (max-width: 640px) {
-    .container .buttons-main-container {
-        flex-direction: row;
-    }
-
-    .container .footer-wrapper {
-        display: flex;
-    }
+  .container .buttons-main-container {
+    flex-direction: row;
+  }
+  .container .footer-wrapper {
+    display: flex;
+  }
 }
-
 @media only screen and (max-width: 460px) {
-    .container .buttons-main-container {
-        flex-direction: column;
-    }
-
-    .container .footer-wrapper {
-        display: block;
-    }
+  .container .buttons-main-container {
+    flex-direction: column;
+  }
+  .container .footer-wrapper {
+    display: block;
+  }
 }
-
 /* #endregion */

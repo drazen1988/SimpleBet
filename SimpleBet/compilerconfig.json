@@ -1,0 +1,30 @@
+﻿[
+  {
+    "outputFile": "wwwroot/css/site.css",
+    "inputFile": "wwwroot/scss/site.scss"
+  },
+  {
+    "outputFile": "Pages/Login.razor.css",
+    "inputFile": "Pages/Login.razor.scss"
+  },
+  {
+    "outputFile": "Shared/MainLayout.razor.css",
+    "inputFile": "Shared/MainLayout.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Home.razor.css",
+    "inputFile": "Pages/Home.razor.scss"
+  },
+  {
+    "outputFile": "Shared/NavMenu.razor.css",
+    "inputFile": "Shared/NavMenu.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Results/CurrentMatch.razor.css",
+    "inputFile": "Pages/Results/CurrentMatch.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Other/ChatRoom.razor.css",
+    "inputFile": "Pages/Other/ChatRoom.razor.scss"
+  }
+]

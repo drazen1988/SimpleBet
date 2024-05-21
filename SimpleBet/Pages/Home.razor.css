@@ -1,34 +1,34 @@
 ﻿.counter-section {
-    margin: 10% auto;
-    color: black;
+  margin: 10% auto;
+  color: black;
 }
 
 .icon-box {
-    border: 1px solid black;
-    height: 100px;
-    width: 100px;
-    margin: 20px auto;
-    transform: rotate(45deg);
+  border: 1px solid black;
+  height: 100px;
+  width: 100px;
+  margin: 20px auto;
+  transform: rotate(45deg);
 }
 
-    .icon-box i {
-        font-size: 40px;
-        margin: 25px auto;
-        color: #e02b52;
-        transform: rotate(-45deg);
-    }
+.icon-box i {
+  font-size: 40px;
+  margin: 25px auto;
+  color: #0459a9;
+  transform: rotate(-45deg);
+}
 
 .counter-box {
-    font-size: 20px;
+  font-size: 20px;
 }
 
-    .counter-box .counter {
-        font-size: 60px;
-        margin-top: 30px;
-        margin-bottom: 0px;
-    }
+.counter-box .counter {
+  font-size: 60px;
+  margin-top: 30px;
+  margin-bottom: 0px;
+}
 
-    .counter-box p {
-        font-size: 30px;
-        margin-bottom: 60px;
-    }
+.counter-box p {
+  font-size: 30px;
+  margin-bottom: 60px;
+}
