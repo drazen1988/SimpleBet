@@ -60,7 +60,9 @@
         this.SpinnerVisible = true;
         await Task.Delay(1);
         //string resultsUrl = "https://www.rezultati.com/nogomet/hrvatska/supersport-hnl/rezultati/";
-        string resultsUrl = "https://www.rezultati.com/nogomet/svijet/svjetsko-prvenstvo/rezultati/";
+        //string resultsUrl = "https://www.rezultati.com/nogomet/svijet/svjetsko-prvenstvo/rezultati/";
+        string resultsUrl = "https://www.rezultati.com/nogomet/europa/euro/raspored/rezultati/";
+
         int resultCounter = 0;
 
         MatchList = await MatchRepository.GetAllMatchesAsync();

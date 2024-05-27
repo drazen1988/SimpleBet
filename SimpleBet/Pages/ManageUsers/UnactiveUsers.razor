@@ -21,12 +21,12 @@
     <GridPageSettings PageSize="12"></GridPageSettings>
     <GridColumns>
         <GridColumn Field=@nameof(UnactiveUsersVM.Id) IsPrimaryKey=true Visible=false></GridColumn>
-        <GridColumn Field=@nameof(UnactiveUsersVM.UserName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(UnactiveUsersVM.FullName) AllowEditing="false" TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(UnactiveUsersVM.Email) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(UnactiveUsersVM.ClanName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(UnactiveUsersVM.HasLoggedIn) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(UnactiveUsersVM.LoginNotificationDate) AllowFiltering="false" TextAlign="TextAlign.Center" Width="200"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.UserName) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.FullName) AllowEditing="false" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.Email) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.ClanName) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.HasLoggedIn) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UnactiveUsersVM.LoginNotificationDate) AllowFiltering="false" Width="200"></GridColumn>
         <GridColumn Width="180" AllowFiltering="false">
             <Template>
                 @{

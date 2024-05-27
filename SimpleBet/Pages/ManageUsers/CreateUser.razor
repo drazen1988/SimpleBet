@@ -36,7 +36,9 @@
         <DropDownListFieldSettings Value="ClanId" Text="ClanName"></DropDownListFieldSettings>
     </SfDropDownList>
     <br />
+    <br />
     <SfCheckBox Label="Generiraj lozinku" @bind-Checked="Model.AutoGeneratePassword" @onclick="GeneratePassword"></SfCheckBox>
+    <br />
     <br />
     <SfTextBox Placeholder="Lozinka" CssClass="mb-2" Type="InputType.Password" @bind-Value="Model.Password" FloatLabelType="FloatLabelType.Auto" Readonly="disableInput"></SfTextBox>
     <br />
@@ -51,6 +53,8 @@
     <br />
     <br />
     <button type="submit" class="btn btn-primary">Kreiraj</button>
+    <br />
+    <br />
 </EditForm>
 
 @code {

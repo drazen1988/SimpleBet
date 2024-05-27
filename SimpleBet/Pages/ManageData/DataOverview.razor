@@ -20,20 +20,24 @@
 <button class="btn btn-danger" @onclick="DeleteClickHandler">Obriši sve</button>
 <br />
 <br />
-<SfGrid @ref="GridMatches" DataSource="MatchList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+<SfGrid @ref="GridMatches" DataSource="MatchList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete" })">
     <GridEvents OnActionBegin="OnActionBegin" TValue="MatchVM"></GridEvents>
     <GridPageSettings PageSize="12"></GridPageSettings>
-    <GridEditSettings AllowDeleting="true" AllowEditing="true" AllowAdding="true" Mode="EditMode.Normal" ShowDeleteConfirmDialog="true"></GridEditSettings>
+    <GridEditSettings AllowDeleting="true" AllowEditing="true" AllowAdding="true" Mode="EditMode.Dialog" ShowDeleteConfirmDialog="true">
+        <HeaderTemplate>
+            <span>Match details</span>
+        </HeaderTemplate>
+    </GridEditSettings>
     <GridColumns>
         <GridColumn Field=@nameof(MatchVM.MatchId) IsPrimaryKey=true Visible=false></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.MatchDateTime) EditType="EditType.DateTimePickerEdit" DefaultValue="@(DateTime.Now)" TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.WebId) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.HomeTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.AwayTeam) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.HomeCoeficient) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.DrawCoeficient) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.AwayCoeficient) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(MatchVM.Result) TextAlign="TextAlign.Center" Width="100"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.MatchDateTime) EditType="EditType.DateTimePickerEdit" DefaultValue="@(DateTime.Now)" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.WebId) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.HomeTeam) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.AwayTeam) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.HomeCoeficient) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.DrawCoeficient) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.AwayCoeficient) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(MatchVM.Result) Width="100"></GridColumn>
     </GridColumns>
     <GridTemplates>
         <EmptyRecordTemplate>

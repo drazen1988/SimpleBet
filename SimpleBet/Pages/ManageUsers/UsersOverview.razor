@@ -20,17 +20,22 @@
     <SfSpinner @bind-Visible="@SpinnerVisible" Size="50"></SfSpinner>
 </div>
 
-<SfGrid @ref="GridUsers" DataSource="UserList" AllowFiltering="true" AllowPaging="true" Toolbar="@(new List<string>() { "Edit", "Delete", "Update", "Cancel" })">
+<SfGrid @ref="GridUsers" DataSource="UserList" AllowFiltering="true" AllowPaging="true" Toolbar="@(new List<string>() { "Edit", "Delete"})">
     <GridEvents OnActionBegin="OnActionBegin" TValue="UsersOverviewVM"></GridEvents>
     <GridPageSettings PageSize="12"></GridPageSettings>
-    <GridEditSettings AllowDeleting="true" AllowEditing="true" Mode="EditMode.Normal" ShowDeleteConfirmDialog="true"></GridEditSettings>
+    <GridEditSettings AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog" ShowDeleteConfirmDialog="true">
+        <HeaderTemplate>
+            <span>User details</span>
+        </HeaderTemplate>
+    </GridEditSettings>
     <GridColumns>
         <GridColumn Field=@nameof(UsersOverviewVM.Id) IsPrimaryKey=true Visible=false></GridColumn>
-        <GridColumn Field=@nameof(UsersOverviewVM.UserName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(UsersOverviewVM.FullName) AllowEditing="false" TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(UsersOverviewVM.Email) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(UsersOverviewVM.ClanName) TextAlign="TextAlign.Center" Width="150" EditType="EditType.DropDownEdit">
+        <GridColumn Field=@nameof(UsersOverviewVM.UserName) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UsersOverviewVM.FullName) AllowEditing="false" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UsersOverviewVM.Email) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UsersOverviewVM.ClanName) Width="150" EditType="EditType.DropDownEdit">
             <EditTemplate>
+                <span class="grid-dialog-label">Klan</span>
                 <SfDropDownList Width="250px" TValue="int" TItem="ClanDropDown" @bind-Value="@((context as UsersOverviewVM).ClanId)" DataSource="ClanDropDownList">
                     <DropDownListFieldSettings Value="ClanId" Text="ClanName"></DropDownListFieldSettings>
                 </SfDropDownList>
@@ -43,6 +48,8 @@
                 }
                 <button class="btn btn-primary" @onclick="()=>ResetPassword(user)">Resetiraj lozinku</button>
             </Template>
+            <EditTemplate>
+            </EditTemplate>
         </GridColumn>
     </GridColumns>
     <GridTemplates>

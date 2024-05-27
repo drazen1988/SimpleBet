@@ -12,15 +12,19 @@
 
 @attribute [Authorize(Roles = "Admin")]
 
-<SfGrid @ref="GridCountries" DataSource="CountryList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+<SfGrid @ref="GridCountries" DataSource="CountryList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete" })">
     <GridEvents OnActionBegin="OnActionBegin" TValue="ManageCountriesVM"></GridEvents>
     <GridPageSettings PageSize="12"></GridPageSettings>
-    <GridEditSettings AllowDeleting="true" AllowEditing="true" AllowAdding="true" Mode="EditMode.Normal" ShowDeleteConfirmDialog="true"></GridEditSettings>
+    <GridEditSettings AllowDeleting="true" AllowEditing="true" AllowAdding="true" Mode="EditMode.Dialog" ShowDeleteConfirmDialog="true">
+        <HeaderTemplate>
+            <span>Country details</span>
+        </HeaderTemplate>
+    </GridEditSettings>
     <GridColumns>
         <GridColumn Field=@nameof(ManageCountriesVM.CountryId) IsPrimaryKey=true Visible=false></GridColumn>
-        <GridColumn Field=@nameof(ManageCountriesVM.CountryName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(ManageCountriesVM.CountryCoeficient) TextAlign="TextAlign.Center" Width="100"></GridColumn>
-        <GridColumn Field=@nameof(ManageCountriesVM.IsWinner) DisplayAsCheckBox=true TextAlign="TextAlign.Center" Width="150"></GridColumn>
+        <GridColumn Field=@nameof(ManageCountriesVM.CountryName) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(ManageCountriesVM.CountryCoeficient) Width="100"></GridColumn>
+        <GridColumn Field=@nameof(ManageCountriesVM.IsWinner) DisplayAsCheckBox=true Width="150"></GridColumn>
     </GridColumns>
     <GridTemplates>
         <EmptyRecordTemplate>

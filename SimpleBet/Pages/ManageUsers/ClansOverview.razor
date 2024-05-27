@@ -13,14 +13,18 @@
 
 <PageTitle>Pregled klanova</PageTitle>
 
-<SfGrid @ref="GridClans" DataSource="ClanList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit", "Update", "Cancel" })">
+<SfGrid @ref="GridClans" DataSource="ClanList" AllowPaging="true" Toolbar="@(new List<string>() { "Add", "Edit" })">
     <GridEvents OnActionBegin="OnActionBegin" TValue="UsersPerClanVM"></GridEvents>
     <GridPageSettings PageSize="12"></GridPageSettings>
-    <GridEditSettings AllowDeleting="true" AllowEditing="true" AllowAdding="true" Mode="EditMode.Normal" ShowDeleteConfirmDialog="true"></GridEditSettings>
+    <GridEditSettings AllowDeleting="true" AllowEditing="true" AllowAdding="true" Mode="EditMode.Dialog" ShowDeleteConfirmDialog="true">
+        <HeaderTemplate>
+            <span>Clan details</span>
+        </HeaderTemplate>
+    </GridEditSettings>
     <GridColumns>
         <GridColumn Field=@nameof(UsersPerClanVM.ClanId) IsPrimaryKey=true Visible=false></GridColumn>
-        <GridColumn Field=@nameof(UsersPerClanVM.ClanName) TextAlign="TextAlign.Center" Width="150"></GridColumn>
-        <GridColumn Field=@nameof(UsersPerClanVM.UsersPerClan) TextAlign="TextAlign.Center" Width="150" AllowAdding="false" AllowEditing="false"></GridColumn>
+        <GridColumn Field=@nameof(UsersPerClanVM.ClanName) Width="150"></GridColumn>
+        <GridColumn Field=@nameof(UsersPerClanVM.UsersPerClan) Width="150" AllowAdding="false" AllowEditing="false"></GridColumn>
     </GridColumns>
     <GridTemplates>
         <EmptyRecordTemplate>
