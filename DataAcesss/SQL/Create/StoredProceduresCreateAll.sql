@@ -332,7 +332,7 @@ U.UserName,
 C.ClanName,
 (Select Count(*) from Bets As B inner join Matches As M on B.MatchId = M.MatchId where B.UserId = U.Id and M.MatchDateTime < GETDATE()) As TotalBetCount,
 (Select Count(*) from Bets As B where B.UserId = U.Id and B.IsWinningBet = 1) As WinningBetCount,
-(Select top 1 BetCoeficient from Bets As B where B.UserId = U.Id and B.IsWinningBet = 1 order by B.BetCoeficient desc) As BestWinningCoeficient
+isnull((Select top 1 BetCoeficient from Bets As B where B.UserId = U.Id and B.IsWinningBet = 1 order by B.BetCoeficient desc), 0) As BestWinningCoeficient
 from AspNetUsers As U
 Inner join Clans As C
 On U.ClanId = C.ClanId

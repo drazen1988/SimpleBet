@@ -115,8 +115,24 @@
             Model.OverallAverageCoeficient = await LeaderBoardRepository.GetOverallAverageCoeficientAsync();
             Model.ClosedBetsCount = await BetRepository.GetAllClosedBetsAsync();
             Model.PlayedMatches = await MatchRepository.GetPlayedMatches();
-            Model.BetRatio = (Convert.ToDecimal(Model.ClosedBetsCount) / Convert.ToDecimal((Model.PlayedMatches * Model.ActiveUserCount))).ToString("p");
-            Model.WinningBetsRatio = (Convert.ToDecimal(Model.WinningBetsCount) / Convert.ToDecimal((Model.ClosedBetsCount))).ToString("p");
+
+            if (Model.PlayedMatches * Model.ActiveUserCount > 0)
+            {
+                Model.BetRatio = (Convert.ToDecimal(Model.ClosedBetsCount) / Convert.ToDecimal((Model.PlayedMatches * Model.ActiveUserCount))).ToString("p");
+            }
+            else
+            {
+                Model.BetRatio = "0%";
+            }
+
+            if (Model.ClosedBetsCount > 0)
+            {
+                Model.WinningBetsRatio = (Convert.ToDecimal(Model.WinningBetsCount) / Convert.ToDecimal((Model.ClosedBetsCount))).ToString("p");
+            }
+            else
+            {
+                Model.WinningBetsRatio = "0%";
+            }
         }
         catch (Exception e)
         {

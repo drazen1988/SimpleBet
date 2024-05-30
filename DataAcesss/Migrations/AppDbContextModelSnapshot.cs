@@ -58,7 +58,7 @@ namespace DataAcesss.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTime>("LoginNotificationDate")
+                    b.Property<DateTime?>("LoginNotificationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("NormalizedEmail")
@@ -118,7 +118,6 @@ namespace DataAcesss.Migrations
                             FirstName = "Dražen",
                             LastName = "Marinković",
                             LockoutEnabled = true,
-                            LoginNotificationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NormalizedEmail = "DRAZEN.MARINKOVIC1@GMAIL.COM",
                             NormalizedUserName = "KAMIKAZASKACIGOM",
                             PasswordHash = "AQAAAAEAACcQAAAAELAPlQf8sVUM/Sc31lIipH7sBfuUsCGeZawx2x0YYRl4pDu1viNlCOk4SEiznbNjlw==",
@@ -126,26 +125,6 @@ namespace DataAcesss.Migrations
                             SecurityStamp = "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46",
                             TwoFactorEnabled = false,
                             UserName = "KamikazaSKacigom"
-                        },
-                        new
-                        {
-                            Id = "45a0f303-506b-4a0e-b42f-0b1c814d84f7",
-                            AccessFailedCount = 0,
-                            ClanId = 2,
-                            ConcurrencyStamp = "77dd27c4-8531-4741-9231-2c0d859d0c09",
-                            Email = "tomislav.berisic@gmail.com",
-                            EmailConfirmed = false,
-                            FirstName = "Tomislav",
-                            LastName = "Berišić",
-                            LockoutEnabled = true,
-                            LoginNotificationDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NormalizedEmail = "TOMISLAV.BERISIC@GMAIL.COM",
-                            NormalizedUserName = "TBERISIC",
-                            PasswordHash = "AQAAAAEAACcQAAAAECCRKBsGtZvndBuz9iFwly0sqK8/vI/2GskOb/RMBxQYQXXu/ZUBlmXye+qZ+PMxjg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46",
-                            TwoFactorEnabled = false,
-                            UserName = "tberisic"
                         });
                 });
 
@@ -173,7 +152,7 @@ namespace DataAcesss.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -345,41 +324,6 @@ namespace DataAcesss.Migrations
                             ClanDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ClanName = "Lajbeki",
                             UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            ClanId = 2,
-                            ClanDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ClanName = "Erste",
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            ClanId = 3,
-                            ClanDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ClanName = "Drago Simijaja",
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            ClanId = 4,
-                            ClanDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ClanName = "Pobjednička grupa",
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            ClanId = 5,
-                            ClanDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ClanName = "Paul the Octopus",
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            ClanId = 6,
-                            ClanDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ClanName = "Prikrivene plavuše",
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
                         });
                 });
 
@@ -416,296 +360,6 @@ namespace DataAcesss.Migrations
                         .IsUnique();
 
                     b.ToTable("Countries");
-
-                    b.HasData(
-                        new
-                        {
-                            CountryId = 1,
-                            CountryCoeficient = 400m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Katar",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 2,
-                            CountryCoeficient = 250m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Ekvador",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 3,
-                            CountryCoeficient = 80m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Senegal",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 4,
-                            CountryCoeficient = 15m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Nizozemska",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 5,
-                            CountryCoeficient = 8m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Engleska",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 6,
-                            CountryCoeficient = 700m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Iran",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 7,
-                            CountryCoeficient = 100m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "SAD",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 8,
-                            CountryCoeficient = 150m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Wales",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 9,
-                            CountryCoeficient = 9m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Argentina",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 10,
-                            CountryCoeficient = 999m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Saudijska Arabija",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 11,
-                            CountryCoeficient = 150m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Meksiko",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 12,
-                            CountryCoeficient = 125m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Poljska",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 13,
-                            CountryCoeficient = 7m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Francuska",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 14,
-                            CountryCoeficient = 250m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Australija",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 15,
-                            CountryCoeficient = 40m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Danska",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 16,
-                            CountryCoeficient = 800m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Tunis",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 17,
-                            CountryCoeficient = 9m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Španjolska",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 18,
-                            CountryCoeficient = 750m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Kostarika",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 19,
-                            CountryCoeficient = 12m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Njemačka",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 20,
-                            CountryCoeficient = 400m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Japan",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 21,
-                            CountryCoeficient = 15m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Belgija",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 22,
-                            CountryCoeficient = 350m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Kanada",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 23,
-                            CountryCoeficient = 450m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Maroko",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 24,
-                            CountryCoeficient = 50m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Hrvatska",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 25,
-                            CountryCoeficient = 5m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Brazil",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 26,
-                            CountryCoeficient = 80m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Srbija",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 27,
-                            CountryCoeficient = 80m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Švicarska",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 28,
-                            CountryCoeficient = 350m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Kamerun",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 29,
-                            CountryCoeficient = 15m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Portugal",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 30,
-                            CountryCoeficient = 400m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Gana",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 31,
-                            CountryCoeficient = 60m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Urugvaj",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        },
-                        new
-                        {
-                            CountryId = 32,
-                            CountryCoeficient = 600m,
-                            CountryDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            CountryName = "Južna Koreja",
-                            IsWinner = false,
-                            UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6"
-                        });
                 });
 
             modelBuilder.Entity("DataAcesss.Data.CountryBet", b =>
@@ -911,14 +565,14 @@ namespace DataAcesss.Migrations
                         new
                         {
                             Id = "1",
-                            ConcurrencyStamp = "9b62be56-d2d6-4d24-8ae4-cc9066fa11e2",
+                            ConcurrencyStamp = "fcf687e5-10bb-40ab-8c7a-a322ad48b8a7",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
                             Id = "2",
-                            ConcurrencyStamp = "35fe5bb3-960d-4e9f-8238-6b80edfee638",
+                            ConcurrencyStamp = "56a721d4-5b9e-45cd-9fc9-d28cece9b52b",
                             Name = "Korisnik",
                             NormalizedName = "Korisnik"
                         });
@@ -1015,11 +669,6 @@ namespace DataAcesss.Migrations
                         {
                             UserId = "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6",
                             RoleId = "1"
-                        },
-                        new
-                        {
-                            UserId = "45a0f303-506b-4a0e-b42f-0b1c814d84f7",
-                            RoleId = "1"
                         });
                 });
 
@@ -1042,10 +691,30 @@ namespace DataAcesss.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Models.ViewModels.ApplicationUsageVM+LoginTypes", b =>
+                {
+                    b.Property<decimal>("DeviceRatio")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("DeviceType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumberOfLogins")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalLogins")
+                        .HasColumnType("int");
+
+                    b.ToTable("AplicationUsage", t => t.ExcludeFromMigrations());
+                });
+
             modelBuilder.Entity("Models.ViewModels.ClanStatsVM+ClanStatsAbs", b =>
                 {
                     b.Property<string>("ClanName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("WinningBetsAvg")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("WinningBetsCount")
                         .HasColumnType("int");
@@ -1087,6 +756,17 @@ namespace DataAcesss.Migrations
                         .HasColumnType("int");
 
                     b.ToTable("WinsPerDay", t => t.ExcludeFromMigrations());
+                });
+
+            modelBuilder.Entity("Models.ViewModels.LeaderBoardDetailsVM", b =>
+                {
+                    b.Property<decimal>("WinningCoeficient")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("WinningMatch")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("LeaderBoardDetails", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.LeaderBoardVM", b =>
@@ -1192,7 +872,7 @@ namespace DataAcesss.Migrations
                     b.ToTable("ScalarInt", t => t.ExcludeFromMigrations());
                 });
 
-            modelBuilder.Entity("Models.ViewModels.UsageOverviewVM", b =>
+            modelBuilder.Entity("Models.ViewModels.UnactiveUsersVM", b =>
                 {
                     b.Property<string>("ClanName")
                         .HasColumnType("nvarchar(max)");
@@ -1203,13 +883,16 @@ namespace DataAcesss.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("HasLoggedIn")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("LoginNotificationDate")
+                    b.Property<DateTime?>("LoginNotificationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserName")

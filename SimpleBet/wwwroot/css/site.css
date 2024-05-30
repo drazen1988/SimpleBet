@@ -156,6 +156,11 @@ a, .btn-link {
     padding: 10px;
     left: -90px !important;
   }
+  #dropdownMenuButton,
+  #dropdownMenuButtonSmall {
+    text-decoration: none;
+    color: #ffffff;
+  }
 }
 @media (min-width: 641px) {
   .not-found {
@@ -172,18 +177,17 @@ a, .btn-link {
     padding: 10px;
     left: -12px !important;
   }
+  #dropdownMenuButton,
+  #dropdownMenuButtonSmall {
+    text-decoration: none;
+    color: #0459a9;
+  }
 }
 .top-row a,
 .profile a {
   margin-left: 0px !important;
   text-decoration: none;
   white-space: nowrap;
-  color: #0459a9;
-}
-
-#dropdownMenuButton,
-#dropdownMenuButtonSmall {
-  text-decoration: none;
   color: #0459a9;
 }
 

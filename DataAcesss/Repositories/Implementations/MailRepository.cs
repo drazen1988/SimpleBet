@@ -26,7 +26,7 @@ namespace DataAcesss.Repositories.Implementations
             var builder = new BodyBuilder();
             
             builder.TextBody = "\nDragi/a " + firstName + ",\n\nU nastavku maila naći ćeš pristupne podatke za aplikaciju SimpleBet.\n\nKorisničko ime: " + userName +
-                               "\nLozinka: " + password + "\nKlan: " + clanName + "\nLink na aplikaciju: www.simple-apps.info" + "\n\nSavjetujemo ti da nakon prve prijave u aplikaciju promijeniš lozinku." +
+                               "\nLozinka: " + password + "\nKlan: " + clanName + "\nLink na aplikaciju: www.simplebet.com.hr" + "\n\nSavjetujemo ti da nakon prve prijave u aplikaciju promijeniš lozinku." +
                                "\n\nU privitku maila možeš pronaći korisničke upute za SimpleBet aplikaciju." +
                                "\n\nZahvaljujemo na sudjelovanju i želimo ti dobru zabavu! Sretno!" + "\n\nOvo je automatska poruka i nemoj odgovarati na nju.";
 
@@ -59,7 +59,7 @@ namespace DataAcesss.Repositories.Implementations
             var mail = new MimeMessage();
             mail.Sender = MailboxAddress.Parse(_smtpSettings.Value.SenderEmail);
             mail.From.Add(MailboxAddress.Parse(_smtpSettings.Value.SenderEmail));
-            mail.To.Add(MailboxAddress.Parse("info@simple-apps.info"));
+            mail.To.Add(MailboxAddress.Parse("info@simplebet.com.hr"));
             mail.Subject = "SimpleBet feedback - " + feedbackTypeText;
 
             var builder = new BodyBuilder();
@@ -97,7 +97,7 @@ namespace DataAcesss.Repositories.Implementations
             var builder = new BodyBuilder();
 
             builder.TextBody = "\nDragi/a " + firstName + ",\n\nPrvenstvo uskoro počinje a još uvijek nismo evidentirali nijednu tvoju okladu! Požuri da ne zakasniš jer naknadne oklade nećemo uvažavati!" +
-                               "\n\nLink na aplikaciju: www.simple-apps.info" +
+                               "\n\nLink na aplikaciju: www.simplebet.com.hr" +
                                "\n\nP.S. Nemoj se zaboraviti kladiti i na pobjednika prvenstva." +
                                "\n\nOvo je automatska poruka i nemoj odgovarati na nju.";
 
@@ -131,7 +131,7 @@ namespace DataAcesss.Repositories.Implementations
             var builder = new BodyBuilder();
 
             builder.TextBody = "\nDragi/a " + firstName + ",\n\nResetirana ti je lozinka za prijavu u SimpleBet aplikaciju. Tvoji novi login podaci su sljedeći.\n\nKorisničko ime: " + userName +
-                               "\nLozinka: " + password + "\nLink na aplikaciju: www.simple-apps.info" + "\n\nSavjetujemo ti da nakon prve prijave u aplikaciju promijeniš lozinku." +
+                               "\nLozinka: " + password + "\nLink na aplikaciju: www.simplebet.com.hr" + "\n\nSavjetujemo ti da nakon prve prijave u aplikaciju promijeniš lozinku." +
                                "\n\nOvo je automatska poruka i nemoj odgovarati na nju.";
 
             mail.Body = builder.ToMessageBody();

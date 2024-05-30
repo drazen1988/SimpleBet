@@ -48,7 +48,7 @@
 
 <h3>Detalji</h3>
 
-<SfGrid DataSource="BetList" AllowPaging="true" AllowFiltering="true"> 
+<SfGrid DataSource="BetList" AllowPaging="true" AllowFiltering="true">
     <GridPageSettings PageSize="10"></GridPageSettings>
     <GridColumns>
         <GridColumn Field=@nameof(MyStatsGridVM.MatchId) IsPrimaryKey=true Visible=false></GridColumn>
@@ -77,7 +77,7 @@
     private MyStatsVM Model { get; set; } = new MyStatsVM();
     private List<MyStatsGridVM> BetList { get; set; } = new List<MyStatsGridVM>();
     public ScalarInt CurrentRank { get; set; } = new ScalarInt();
-    private string WinningBetsRatio = "";
+    private string WinningBetsRatio = "0%";
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,8 +88,18 @@
 
             Model = await StatsRepository.GetMyStatsAsync(user.Id);
             CurrentRank = await StatsRepository.GetCurrentRankingAsync(user.Id);
+
+            if (CurrentRank == null)
+            {
+                CurrentRank = new ScalarInt();
+            }
+
             BetList = await StatsRepository.GetBetsByUserAsync(user.Id);
-            WinningBetsRatio = (Convert.ToDecimal(Model.WinningBetCount) / Convert.ToDecimal(Model.TotalBetCount)).ToString("P");
+
+            if (Model.TotalBetCount > 0)
+            {
+                WinningBetsRatio = (Convert.ToDecimal(Model.WinningBetCount) / Convert.ToDecimal(Model.TotalBetCount)).ToString("P");
+            }
         }
         catch (Exception e)
         {

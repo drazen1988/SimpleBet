@@ -29,9 +29,10 @@ namespace DataAcesss.Migrations
                 {
                     LogId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LogType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DeviceType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LogDateTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
                 },
                 constraints: table =>
@@ -222,6 +223,7 @@ namespace DataAcesss.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LoginNotificationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ClanId = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -381,86 +383,33 @@ namespace DataAcesss.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTriggers();
+            migrationBuilder.CreateProcedures();
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "1", "c48a7922-cb9a-4619-93d9-c72debc40753", "Admin", "Admin" },
-                    { "2", "38b724cb-d8ba-4dc8-bffc-e55dbb36ccc8", "Korisnik", "Korisnik" }
-                });
+                values: new object[] { "1", "fcf687e5-10bb-40ab-8c7a-a322ad48b8a7", "Admin", "Admin" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "2", "56a721d4-5b9e-45cd-9fc9-d28cece9b52b", "Korisnik", "Korisnik" });
 
             migrationBuilder.InsertData(
                 table: "Clans",
                 columns: new[] { "ClanId", "ClanName", "UserId" },
-                values: new object[,]
-                {
-                    { 1, "Lajbeki", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 2, "Erste", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 3, "Drago Simijaja", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 4, "Pobjednička grupa", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 5, "Paul the Octopus", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 6, "Prikrivene plavuše", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Countries",
-                columns: new[] { "CountryId", "CountryCoeficient", "CountryName", "IsWinner", "UserId" },
-                values: new object[,]
-                {
-                    { 1, 400m, "Katar", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 2, 250m, "Ekvador", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 3, 80m, "Senegal", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 4, 15m, "Nizozemska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 5, 8m, "Engleska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 6, 700m, "Iran", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 7, 100m, "SAD", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 8, 150m, "Wales", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 9, 9m, "Argentina", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 10, 999m, "Saudijska Arabija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 11, 150m, "Meksiko", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 12, 125m, "Poljska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 13, 7m, "Francuska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 14, 250m, "Australija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 15, 40m, "Danska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 16, 800m, "Tunis", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 17, 9m, "Španjolska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 18, 750m, "Kostarika", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 19, 12m, "Njemačka", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 20, 400m, "Japan", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 21, 15m, "Belgija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 22, 350m, "Kanada", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 23, 450m, "Maroko", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 24, 50m, "Hrvatska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 25, 5m, "Brazil", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 26, 80m, "Srbija", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 27, 80m, "Švicarska", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 28, 350m, "Kamerun", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 29, 15m, "Portugal", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 30, 400m, "Gana", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 31, 60m, "Urugvaj", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" },
-                    { 32, 600m, "Južna Koreja", false, "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" }
-                });
+                values: new object[] { 1, "Lajbeki", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ClanId", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6", 0, 1, "77dd27c4-8531-4741-9231-2c0d859d0c09", "drazen.marinkovic1@gmail.com", false, "Dražen", "Marinković", true, null, "DRAZEN.MARINKOVIC1@GMAIL.COM", "KAMIKAZASKACIGOM", "AQAAAAEAACcQAAAAELAPlQf8sVUM/Sc31lIipH7sBfuUsCGeZawx2x0YYRl4pDu1viNlCOk4SEiznbNjlw==", null, false, "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46", false, "KamikazaSKacigom" });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ClanId", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "45a0f303-506b-4a0e-b42f-0b1c814d84f7", 0, 2, "77dd27c4-8531-4741-9231-2c0d859d0c09", "tomislav.berisic@gmail.com", false, "Tomislav", "Berišić", true, null, "TOMISLAV.BERISIC@GMAIL.COM", "TBERISIC", "AQAAAAEAACcQAAAAECCRKBsGtZvndBuz9iFwly0sqK8/vI/2GskOb/RMBxQYQXXu/ZUBlmXye+qZ+PMxjg==", null, false, "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46", false, "tberisic" });
+                columns: new[] { "Id", "AccessFailedCount", "ClanId", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "LoginNotificationDate", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6", 0, 1, "77dd27c4-8531-4741-9231-2c0d859d0c09", "drazen.marinkovic1@gmail.com", false, "Dražen", "Marinković", true, null, null, "DRAZEN.MARINKOVIC1@GMAIL.COM", "KAMIKAZASKACIGOM", "AQAAAAEAACcQAAAAELAPlQf8sVUM/Sc31lIipH7sBfuUsCGeZawx2x0YYRl4pDu1viNlCOk4SEiznbNjlw==", null, false, "QSJGIOPEXML4J3IXUW3PVXBZ7GB5YN46", false, "KamikazaSKacigom" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[] { "1", "4009d724-f1e3-46ab-b58b-ad78a0f8a1f6" });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "1", "45a0f303-506b-4a0e-b42f-0b1c814d84f7" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -550,9 +499,6 @@ namespace DataAcesss.Migrations
                 table: "Matches",
                 column: "WebId",
                 unique: true);
-
-            migrationBuilder.CreateProcedures();
-            migrationBuilder.CreateTriggers();
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

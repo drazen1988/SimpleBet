@@ -162,6 +162,12 @@ a, .btn-link {
         padding: 10px;
         left: -90px !important;
     }
+
+    #dropdownMenuButton,
+    #dropdownMenuButtonSmall {
+        text-decoration: none;
+        color: $foreground-light;
+    }
 }
 
 @media (min-width: 641px) {
@@ -181,6 +187,12 @@ a, .btn-link {
         padding: 10px;
         left: -12px !important;
     }
+
+    #dropdownMenuButton,
+    #dropdownMenuButtonSmall {
+        text-decoration: none;
+        color: $primary;
+    }
 }
 
 .top-row a,
@@ -188,12 +200,6 @@ a, .btn-link {
     margin-left: 0px !important;
     text-decoration: none;
     white-space: nowrap;
-    color: $primary;
-}
-
-#dropdownMenuButton,
-#dropdownMenuButtonSmall {
-    text-decoration: none;
     color: $primary;
 }
 
