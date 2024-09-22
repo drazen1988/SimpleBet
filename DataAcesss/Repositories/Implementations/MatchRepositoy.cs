@@ -63,7 +63,7 @@ namespace DataAcesss.Repositories.Implementations
 
         public async Task<List<MatchVM>> GetAllMatchesAsync()
         {
-            return _mapper.Map<List<Match>, List<MatchVM>>(await context.Matches.Where(m => m.HomeCoeficient == 0).OrderBy(m => m.MatchDateTime).ToListAsync());
+            return _mapper.Map<List<Match>, List<MatchVM>>(await context.Matches.OrderBy(m => m.MatchDateTime).ToListAsync());
         }
 
         public async Task<int> AddCoeficientsAsync(MatchVM matchVM)
