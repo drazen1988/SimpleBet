@@ -87,7 +87,7 @@ try
     //lifetime.ApplicationStarted.Register(() => logger.Error("Application started."));
     //lifetime.ApplicationStopping.Register(() => logger.Error("Application stopped"));
 
-    Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NjkzOTYwQDMyMzAyZTMyMmUzMEJiSnhFYjZ5L3lva2kxU3paZEtYczdHaHNXMXF5Qjg0RHZVR01FZGZEem89");
+    Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf0xzWmFZfVtgfV9FYFZQQmYuP1ZhSXxXd0dhUH9Xc3RUQGJVUUI=");
 
     // Configure the HTTP request pipeline.
     if (!app.Environment.IsDevelopment())
