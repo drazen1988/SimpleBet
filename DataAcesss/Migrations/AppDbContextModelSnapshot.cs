@@ -17,10 +17,10 @@ namespace DataAcesss.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "6.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("DataAcesss.Data.ApplicationUser", b =>
                 {
@@ -134,7 +134,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogId"), 1L, 1);
 
                     b.Property<string>("DeviceType")
                         .HasColumnType("nvarchar(max)");
@@ -167,7 +167,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BetId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BetId"), 1L, 1);
 
                     b.Property<decimal>("BetCoeficient")
                         .HasColumnType("decimal(15,2)");
@@ -203,7 +203,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LikeId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LikeId"), 1L, 1);
 
                     b.Property<DateTime>("LikeDate")
                         .ValueGeneratedOnAdd()
@@ -234,7 +234,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PostId"), 1L, 1);
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
@@ -264,7 +264,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReplyId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReplyId"), 1L, 1);
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
@@ -295,7 +295,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClanId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClanId"), 1L, 1);
 
                     b.Property<DateTime>("ClanDate")
                         .ValueGeneratedOnAdd()
@@ -333,7 +333,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CountryId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CountryId"), 1L, 1);
 
                     b.Property<decimal>("CountryCoeficient")
                         .HasColumnType("decimal(15,2)");
@@ -368,7 +368,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CountryBetId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CountryBetId"), 1L, 1);
 
                     b.Property<DateTime>("CountryBetDate")
                         .ValueGeneratedOnAdd()
@@ -401,7 +401,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogId"), 1L, 1);
 
                     b.Property<string>("AdditionalInfo")
                         .IsRequired()
@@ -447,7 +447,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogId"), 1L, 1);
 
                     b.Property<string>("EventType")
                         .HasColumnType("nvarchar(max)");
@@ -486,7 +486,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MatchId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MatchId"), 1L, 1);
 
                     b.Property<decimal>("AwayCoeficient")
                         .HasColumnType("decimal(15,2)");
@@ -565,12 +565,14 @@ namespace DataAcesss.Migrations
                         new
                         {
                             Id = "1",
+                            ConcurrencyStamp = "fcf687e5-10bb-40ab-8c7a-a322ad48b8a7",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
                             Id = "2",
+                            ConcurrencyStamp = "56a721d4-5b9e-45cd-9fc9-d28cece9b52b",
                             Name = "Korisnik",
                             NormalizedName = "Korisnik"
                         });
@@ -582,7 +584,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -607,7 +609,7 @@ namespace DataAcesss.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -703,10 +705,7 @@ namespace DataAcesss.Migrations
                     b.Property<int>("TotalLogins")
                         .HasColumnType("int");
 
-                    b.ToTable("AplicationUsage", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AplicationUsage", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.ClanStatsVM+ClanStatsAbs", b =>
@@ -720,10 +719,7 @@ namespace DataAcesss.Migrations
                     b.Property<int>("WinningBetsCount")
                         .HasColumnType("int");
 
-                    b.ToTable("ClanStatsAbs", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("ClanStatsAbs", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.ClanStatsVM+ClanStatsPercentage", b =>
@@ -734,10 +730,7 @@ namespace DataAcesss.Migrations
                     b.Property<string>("ClanName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("ClanStats", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("ClanStats", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.ClanStatsVM+ClanUsers", b =>
@@ -751,10 +744,7 @@ namespace DataAcesss.Migrations
                     b.Property<int>("UsersCount")
                         .HasColumnType("int");
 
-                    b.ToTable("ClanUsers", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("ClanUsers", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.GeneralStatsVM+WinsPerDay", b =>
@@ -765,10 +755,7 @@ namespace DataAcesss.Migrations
                     b.Property<int>("WinnersCount")
                         .HasColumnType("int");
 
-                    b.ToTable("WinsPerDay", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("WinsPerDay", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.LeaderBoardDetailsVM", b =>
@@ -779,10 +766,7 @@ namespace DataAcesss.Migrations
                     b.Property<string>("WinningMatch")
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("LeaderBoardDetails", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("LeaderBoardDetails", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.LeaderBoardVM", b =>
@@ -802,10 +786,7 @@ namespace DataAcesss.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("LeaderBoard", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("LeaderBoard", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.MatchResultsVM", b =>
@@ -828,10 +809,7 @@ namespace DataAcesss.Migrations
                     b.Property<int>("WinnersCount")
                         .HasColumnType("int");
 
-                    b.ToTable("MatchResults", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("MatchResults", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.MyStatsGridVM", b =>
@@ -860,10 +838,7 @@ namespace DataAcesss.Migrations
                     b.Property<string>("Result")
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("MyBetList", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("MyBetList", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.MyStatsVM", b =>
@@ -886,10 +861,7 @@ namespace DataAcesss.Migrations
                     b.Property<int?>("WinningBetCount")
                         .HasColumnType("int");
 
-                    b.ToTable("MyStats", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("MyStats", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.ScalarInt", b =>
@@ -897,10 +869,7 @@ namespace DataAcesss.Migrations
                     b.Property<int>("Value")
                         .HasColumnType("int");
 
-                    b.ToTable("ScalarInt", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("ScalarInt", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.UnactiveUsersVM", b =>
@@ -929,10 +898,7 @@ namespace DataAcesss.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("UsageOverview", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("UsageOverview", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("Models.ViewModels.UsersPerClanVM", b =>
@@ -946,10 +912,7 @@ namespace DataAcesss.Migrations
                     b.Property<int>("UsersPerClan")
                         .HasColumnType("int");
 
-                    b.ToTable("UsersPerClan", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("UsersPerClan", t => t.ExcludeFromMigrations());
                 });
 
             modelBuilder.Entity("DataAcesss.Data.ApplicationUser", b =>
