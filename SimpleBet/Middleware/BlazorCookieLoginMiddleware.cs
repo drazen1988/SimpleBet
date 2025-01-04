@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using NLog;
 using SimpleBet.Helpers;
-using Syncfusion.Blazor.Charts.Chart.Models;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace SimpleBet.Middleware
 {
